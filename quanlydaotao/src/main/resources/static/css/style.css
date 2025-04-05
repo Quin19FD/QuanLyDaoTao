@@ -1,13 +1,206 @@
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin-top: 50px;
+/* Reset mặc định các yếu tố của trang web */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
 }
 
-.login-container {
-    width: 300px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ccc;
+/* Toàn bộ trang */
+body {
+    background-color: #f3f4f6;
+    /* Màu nền xám sáng nhẹ nhàng */
+    color: #333;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Header */
+header {
+    background-color: #5C6BC0;
+    /* Màu xanh dương tím nhẹ */
+    padding: 15px 0;
+}
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 20px;
+}
+
+nav ul li a {
+    color: rgb(251, 250, 250);
+    background-color: #4962f0;
+    font-size: 18px;
+    text-decoration: none;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    background-color: #394fcd;
+    /* Màu xanh dương đậm khi hover */
     border-radius: 5px;
+}
+
+/* Section */
+section {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    /* Màu nền trắng tinh khiết */
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề */
+h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #5C6BC0;
+    /* Màu xanh dương tím nhẹ */
+    text-align: center;
+}
+
+/* Phần của các vai trò */
+h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #3F51B5;
+    /* Màu xanh dương đậm */
+}
+
+/* Danh sách các liên kết */
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul li {
+    margin: 10px 0;
+}
+
+ul li a {
+    display: inline-block;
+    text-decoration: none;
+    color: #00ACC1;
+    /* Màu xanh nước biển */
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #e1f5fe;
+    /* Màu nền xanh nước biển nhẹ */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+ul li a:hover {
+    background-color: #00ACC1;
+    /* Màu xanh nước biển khi hover */
+    color: white;
+}
+
+/* Footer */
+footer {
+    background-color: #5C6BC0;
+    /* Màu xanh dương tím nhẹ */
+    color: white;
+    text-align: center;
+    padding: 15px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+/* Form nhập liệu */
+form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    font-size: 16px;
+    color: #3F51B5;
+    /* Màu xanh dương đậm */
+}
+
+input[type="text"],
+input[type="password"],
+textarea {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #B0BEC5;
+    /* Màu xám nhạt */
+    border-radius: 5px;
+    outline: none;
+    background-color: #eceff1;
+    /* Màu nền xám sáng nhẹ */
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+    border-color: #00ACC1;
+    /* Màu xanh nước biển khi focus */
+}
+
+button {
+    background-color: #00ACC1;
+    /* Màu xanh nước biển */
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0097A7;
+    /* Màu xanh nước biển đậm khi hover */
+}
+
+/* Hiệu ứng cho các phần thông báo */
+.notification {
+    background-color: #FF7043;
+    /* Màu cam nhẹ */
+    color: white;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    display: none;
+}
+
+.notification.show {
+    display: block;
+}
+
+/* Responsive cho các thiết bị di động */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+    }
+
+    nav ul li {
+        margin: 10px 0;
+    }
+
+    section {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
 }

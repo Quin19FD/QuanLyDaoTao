@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Quản Lý Đào Tạo</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Đảm bảo đường dẫn CSS chính xác -->
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/" th:href="@{/}">Trang Chủ</a></li>
+                <li><a href="/profile" th:href="@{/profile}">Thông Tin Cá Nhân</a></li>
+                <li><a href="/logout" th:href="@{/logout}">Đăng Xuất</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Chào mừng bạn đến với hệ thống quản lý đào tạo</h2>
+
+        <!-- Kiểm tra người dùng đã đăng nhập hay chưa -->
+        <div th:if="${#authentication == null}">
+            <p>Vui lòng đăng nhập để tiếp tục.</p>
+        </div>
+
+        <!-- Phần hiển thị cho Admin -->
+        <div th:if="${#authentication != null and #authentication.authorities.contains('ROLE_ADMIN')}">
+            <h3>Trang Admin</h3>
+            <ul>
+                <li><a href="/admin/users" th:href="@{/admin/users}">Quản lý người dùng</a></li>
+                <li><a href="/admin/courses" th:href="@{/admin/courses}">Quản lý khóa học</a></li>
+                <li><a href="/admin/reports" th:href="@{/admin/reports}">Báo cáo hệ thống</a></li>
+                <li><a href="/admin/notifications" th:href="@{/admin/notifications}">Quản lý thông báo</a></li>
+                <li><a href="/admin/settings" th:href="@{/admin/settings}">Cài đặt hệ thống</a></li>
+            </ul>
+        </div>
+
+        <!-- Phần hiển thị cho Giáo viên -->
+        <div th:if="${#authentication != null and #authentication.authorities.contains('ROLE_TEACHER')}">
+            <h3>Trang Giáo Viên</h3>
+            <ul>
+                <li><a href="/teacher/courses" th:href="@{/teacher/courses}">Quản lý khóa học</a></li>
+                <li><a href="/teacher/students" th:href="@{/teacher/students}">Quản lý học sinh</a></li>
+                <li><a href="/teacher/grades" th:href="@{/teacher/grades}">Xem kết quả học sinh</a></li>
+                <li><a href="/teacher/assignments" th:href="@{/teacher/assignments}">Tạo bài tập</a></li>
+                <li><a href="/teacher/notifications" th:href="@{/teacher/notifications}">Thông báo cho học sinh</a></li>
+            </ul>
+        </div>
+
+        <!-- Phần hiển thị cho Học sinh -->
+        <div th:if="${#authentication != null and #authentication.authorities.contains('ROLE_STUDENT')}">
+            <h3>Trang Học Sinh</h3>
+            <ul>
+                <li><a href="/student/courses" th:href="@{/student/courses}">Xem khóa học</a></li>
+                <li><a href="/student/exam" th:href="@{/student/exam}">Làm bài thi</a></li>
+                <li><a href="/student/grades" th:href="@{/student/grades}">Xem kết quả học tập</a></li>
+                <li><a href="/student/notifications" th:href="@{/student/notifications}">Thông báo mới</a></li>
+            </ul>
+        </div>
+
+        <!-- Nếu người dùng không có quyền gì cả hoặc chưa đăng nhập, hiển thị thông báo -->
+        <div th:if="${#authentication == null}">
+            <p>Vui lòng đăng nhập để tiếp tục và truy cập các chức năng.</p>
+        </div>
+
+    </section>
+
+    <footer>
+        <a href="/profile" th:href="@{/profile}">Thông Tin Cá Nhân</a>
+        <p>© 2025 Hệ thống quản lý đào tạo. Tất cả quyền được bảo lưu.</p>
+    </footer>
+</body>
+
+</html>
