@@ -1,15 +1,15 @@
-/* Reset mặc định các yếu tố của trang web */
+/* Reset mặc định */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
 }
 
 /* Toàn bộ trang */
 body {
-    background-color: #f3f4f6;
-    /* Màu nền xám sáng nhẹ nhàng */
+    background: #f3f1f0;
     color: #333;
     font-size: 16px;
     line-height: 1.6;
@@ -17,65 +17,72 @@ body {
 
 /* Header */
 header {
-    background-color: #5C6BC0;
-    /* Màu xanh dương tím nhẹ */
-    padding: 15px 0;
+    background: linear-gradient(to right, #ff8a65, #ff7043);
+    padding: 20px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 999;
 }
 
+/* Navigation */
 nav ul {
-    list-style-type: none;
+    list-style: none;
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 nav ul li {
-    margin: 0 20px;
+    margin: 0 15px;
 }
 
 nav ul li a {
-    color: rgb(251, 250, 250);
-    background-color: #4962f0;
+    color: white;
     font-size: 18px;
     text-decoration: none;
-    padding: 10px 15px;
-    transition: background-color 0.3s ease;
+    padding: 10px 20px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    font-weight: 500;
 }
 
 nav ul li a:hover {
-    background-color: #394fcd;
-    /* Màu xanh dương đậm khi hover */
-    border-radius: 5px;
+    background-color: white;
+    color: #ff7043;
+    border-color: #ff7043;
+    box-shadow: 0 5px 15px rgba(255, 112, 67, 0.4);
+    transform: scale(1.05);
 }
 
 /* Section */
 section {
     max-width: 1200px;
-    margin: 30px auto;
-    padding: 20px;
-    background-color: #ffffff;
-    /* Màu nền trắng tinh khiết */
-    border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(255, 112, 67, 0.1);
+    animation: fadeIn 1s ease;
 }
 
 /* Tiêu đề */
 h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
-    color: #5C6BC0;
-    /* Màu xanh dương tím nhẹ */
+    font-size: 32px;
+    margin-bottom: 25px;
+    color: #ff5722;
     text-align: center;
 }
 
-/* Phần của các vai trò */
+/* Vai trò */
 h3 {
     font-size: 24px;
     margin-bottom: 10px;
-    color: #3F51B5;
-    /* Màu xanh dương đậm */
+    color: #e65100;
 }
 
-/* Danh sách các liên kết */
+/* Danh sách liên kết */
 ul {
     list-style-type: none;
     padding-left: 0;
@@ -88,35 +95,35 @@ ul li {
 ul li a {
     display: inline-block;
     text-decoration: none;
-    color: #00ACC1;
-    /* Màu xanh nước biển */
+    color: #ff7043;
     font-size: 18px;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #e1f5fe;
-    /* Màu nền xanh nước biển nhẹ */
-    transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 12px 20px;
+    border-radius: 10px;
+    background-color: #fdc8b0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 152, 0, 0.15);
 }
 
 ul li a:hover {
-    background-color: #00ACC1;
-    /* Màu xanh nước biển khi hover */
+    background-color: #ff7043;
     color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(255, 112, 67, 0.3);
 }
 
 /* Footer */
 footer {
-    background-color: #5C6BC0;
-    /* Màu xanh dương tím nhẹ */
+    background: linear-gradient(to right, #ff7043, #ff8a65);
     color: white;
     text-align: center;
-    padding: 15px;
+    padding: 20px;
     position: fixed;
     width: 100%;
     bottom: 0;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
 }
 
-/* Form nhập liệu */
+/* Form */
 form {
     margin-top: 20px;
     display: flex;
@@ -126,81 +133,134 @@ form {
 
 label {
     font-size: 16px;
-    color: #3F51B5;
-    /* Màu xanh dương đậm */
+    color: #e65100;
 }
 
 input[type="text"],
 input[type="password"],
 textarea {
-    padding: 12px;
+    padding: 14px;
     font-size: 16px;
-    border: 1px solid #B0BEC5;
-    /* Màu xám nhạt */
-    border-radius: 5px;
-    outline: none;
-    background-color: #eceff1;
-    /* Màu nền xám sáng nhẹ */
+    border: 1px solid #ffccbc;
+    border-radius: 10px;
+    background-color: #fff8f2;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus,
+input:focus,
 textarea:focus {
-    border-color: #00ACC1;
-    /* Màu xanh nước biển khi focus */
+    border-color: #ff7043;
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 112, 67, 0.4);
 }
 
+/* Button */
 button {
-    background-color: #00ACC1;
-    /* Màu xanh nước biển */
+    background: linear-gradient(to right, #ff8a65, #ff7043);
     color: white;
-    padding: 12px;
+    padding: 14px;
     font-size: 16px;
     border: none;
-    border-radius: 5px;
+    border-radius: 30px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
 }
 
 button:hover {
-    background-color: #0097A7;
-    /* Màu xanh nước biển đậm khi hover */
+    background: #e64a19;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
 }
 
-/* Hiệu ứng cho các phần thông báo */
+/* Neon effect for button */
+button::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 30px;
+    background: linear-gradient(to right, #ff8a65, #ff7043);
+    z-index: -1;
+    filter: blur(10px);
+    animation: neonGlow 1.5s infinite alternate;
+}
+
+/* Animation for the neon effect */
+@keyframes neonGlow {
+    0% {
+        box-shadow: 0 0 10px #ff7043, 0 0 20px #ff7043, 0 0 30px #ff7043, 0 0 40px #ff7043;
+    }
+
+    50% {
+        box-shadow: 0 0 20px #ff7043, 0 0 30px #ff7043, 0 0 50px #ff7043, 0 0 70px #ff7043;
+    }
+
+    100% {
+        box-shadow: 0 0 10px #ff7043, 0 0 20px #ff7043, 0 0 30px #ff7043, 0 0 40px #ff7043;
+    }
+}
+
+/* Thông báo */
 .notification {
-    background-color: #FF7043;
-    /* Màu cam nhẹ */
+    background-color: #ffa726;
     color: white;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 20px;
-    border-radius: 5px;
+    border-radius: 8px;
     display: none;
+    animation: slideDown 0.5s ease forwards;
 }
 
 .notification.show {
     display: block;
 }
 
-/* Responsive cho các thiết bị di động */
+/* Animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
 @media (max-width: 768px) {
     nav ul {
         flex-direction: column;
-    }
-
-    nav ul li {
-        margin: 10px 0;
+        gap: 10px;
     }
 
     section {
-        padding: 10px;
+        padding: 20px;
     }
 
     h2 {
-        font-size: 24px;
+        font-size: 26px;
     }
 
     h3 {
-        font-size: 20px;
+        font-size: 22px;
     }
 }
