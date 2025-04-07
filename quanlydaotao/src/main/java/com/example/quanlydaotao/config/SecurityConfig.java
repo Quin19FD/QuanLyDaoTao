@@ -1,51 +1,94 @@
-// package com.example.quanlydaotao.config;
+package com.example.quanlydaotao.config;
 
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
-// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-// import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-// import org.springframework.security.core.userdetails.User;
-// import org.springframework.security.core.userdetails.UserDetails;
-// import org.springframework.security.core.userdetails.UserDetailsService;
-// import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-// import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
 
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable()) // Tạm thời disable CSRF để test
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/teacher/**").hasRole("TEACHER")
+                .requestMatchers("/student/**").hasRole("STUDENT")
+                .requestMatchers("/home", "/profile").authenticated()
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/authenticate")
+                .defaultSuccessUrl("/home", true)
+                .failureUrl("/login?error")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .permitAll()
+            );
 
-// @Configuration
-// @EnableWebSecurity
-// public class SecurityConfig {
-
-//     @Bean
-//     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//         http
-//                 .authorizeRequests()
-//                 .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**").permitAll() // Cho phép không xác thực các tài nguyên tĩnh
-//                 .requestMatchers("/home").authenticated() // Trang home yêu cầu phải đăng nhập
-//                 .anyRequest().authenticated() // Các trang khác yêu cầu phải đăng nhập
-//                 .and()
-//                 .formLogin()
-//                 .loginPage("/login") // Trang đăng nhập của bạn
-//                 .defaultSuccessUrl("/home", true) // Sau khi đăng nhập thành công, chuyển hướng về /home
-//                 .failureUrl("/login?error=true") // Nếu đăng nhập thất bại
-//                 .permitAll()
-//                 .and()
-//                 .logout()
-//                 .logoutUrl("/logout")
-//                 .logoutSuccessUrl("/login?logout=true") // Sau khi logout thành công, chuyển hướng về trang login
-//                 .permitAll();
-
-//         return http.build();
-//     }
+        return http.build();
+    }
     
-//     @Bean
-//     public UserDetailsService userDetailsService() {
-//         UserDetails user = User.withUsername("user")  // Tạo tài khoản người dùng
-//                 .password("{noop}password123")  // Dùng {noop} để bỏ mã hóa mật khẩu trong trường hợp đơn giản
-//                 .roles("USER")  // Quyền của người dùng
-//                 .build();
+    @Bean
+    public UserDetailsService userDetailsService() {
+        // Tài khoản Admin
+        UserDetails admin1 = User.withUsername("admin")
+                .password("{noop}admin123")
+                .roles("ADMIN")
+                .build();
 
-//         return new InMemoryUserDetailsManager(user);
-//     }
-// }
+        // UserDetails admin2 = User.withUsername("admin2")
+        //         .password("{noop}admin456")
+        //         .roles("ADMIN")
+        //         .build();
+
+        // Tài khoản Giáo viên
+        UserDetails teacher1 = User.withUsername("teacher")
+                .password("{noop}teacher123")
+                .roles("TEACHER")
+                .build();
+
+        // UserDetails teacher2 = User.withUsername("teacher2")
+        //         .password("{noop}teacher456")
+        //         .roles("TEACHER")
+        //         .build();
+
+        // UserDetails teacher3 = User.withUsername("teacher3")
+        //         .password("{noop}teacher789")
+        //         .roles("TEACHER")
+        //         .build();
+
+        // Tài khoản Học sinh
+        UserDetails student1 = User.withUsername("student")
+                .password("{noop}student123")
+                .roles("STUDENT")
+                .build();
+
+        // UserDetails student2 = User.withUsername("student2")
+        //         .password("{noop}student456")
+        //         .roles("STUDENT")
+        //         .build();
+
+        // UserDetails student3 = User.withUsername("student3")
+        //         .password("{noop}student789")
+        //         .roles("STUDENT")
+        //         .build();
+
+        return new InMemoryUserDetailsManager(admin1, teacher1, student1);
+    }
+}

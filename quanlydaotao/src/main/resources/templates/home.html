@@ -20,51 +20,54 @@
 </header>
 
     <section>
-        <h2>Chào mừng bạn đến với hệ thống quản lý đào tạo</h2>
+        <h2>Chào mừng <span th:text="${username}"></span> đến với hệ thống quản lý đào tạo</h2>
 
-        <!-- Kiểm tra người dùng đã đăng nhập hay chưa -->
+        <!-- Kiểm tra người dùng đã đăng nhập hay chưa
         <div th:if="${#authentication == null}">
             <p>Vui lòng đăng nhập để tiếp tục.</p>
-        </div>
+        </div> -->
 
         <!-- Phần hiển thị cho Admin -->
-        <div th:if="${#authentication != null and #authentication.authorities.contains('ROLE_ADMIN')}">
+        <div th:if="${isAdmin}">
             <h3>Trang Admin</h3>
             <ul>
-                <li><a href="/admin/users" th:href="@{/admin/users}">Quản lý người dùng</a></li>
-                <li><a href="/admin/courses" th:href="@{/admin/courses}">Quản lý khóa học</a></li>
-                <li><a href="/admin/reports" th:href="@{/admin/reports}">Báo cáo hệ thống</a></li>
-                <li><a href="/admin/notifications" th:href="@{/admin/notifications}">Quản lý thông báo</a></li>
-                <li><a href="/admin/settings" th:href="@{/admin/settings}">Cài đặt hệ thống</a></li>
+                <li><a th:href="@{/admin/thongtinchung}">Thông tin chung về CTĐT</a></li>
+                <li><a th:href="@{/admin/khungchuongtrinh}">Khung chương trình</a></li>
+                <li><a th:href="@{/admin/hocphan}">Danh sách học phần</a></li>
+                <li><a th:href="@{/admin/decuongchitiet}">Đề cương chi tiết học phần</a></li>
+                <li><a th:href="@{/admin/kehoachdayhoc}">Kế hoạch dạy học từng học kỳ</a></li>
+                <li><a th:href="@{/admin/kehoachmonhoc}">Kế hoạch mở nhóm lớp</a></li>
+                <li><a th:href="@{/admin/phanconggiangday}">Phân công giảng dạy</a></li>
+                <li><a th:href="@{/admin/giangvien}">Danh sách giảng viên</a></li>
+                <li><a th:href="@{/admin/users}">Quản lý người dùng</a></li>
             </ul>
         </div>
 
         <!-- Phần hiển thị cho Giáo viên -->
-        <div th:if="${#authentication != null and #authentication.authorities.contains('ROLE_TEACHER')}">
+        <div th:if="${isTeacher}">
             <h3>Trang Giáo Viên</h3>
             <ul>
-                <li><a href="/teacher/courses" th:href="@{/teacher/courses}">Quản lý khóa học</a></li>
-                <li><a href="/teacher/students" th:href="@{/teacher/students}">Quản lý học sinh</a></li>
-                <li><a href="/teacher/grades" th:href="@{/teacher/grades}">Xem kết quả học sinh</a></li>
-                <li><a href="/teacher/assignments" th:href="@{/teacher/assignments}">Tạo bài tập</a></li>
-                <li><a href="/teacher/notifications" th:href="@{/teacher/notifications}">Thông báo cho học sinh</a></li>
+                <li><a th:href="@{/teacher/phancong}">Xem phân công giảng dạy</a></li>
+                <li><a th:href="@{/teacher/kehoachdayhoc}">Kế hoạch dạy học</a></li>
+                <li><a th:href="@{/teacher/decuong}">Xem đề cương chi tiết</a></li>
+                <li><a th:href="@{/teacher/lophoc}">Danh sách lớp học</a></li>
             </ul>
         </div>
 
         <!-- Phần hiển thị cho Học sinh -->
-        <div th:if="${#authentication != null and #authentication.authorities.contains('ROLE_STUDENT')}">
+        <div th:if="${isStudent}">
             <h3>Trang Học Sinh</h3>
             <ul>
-                <li><a href="/student/courses" th:href="@{/student/courses}">Xem khóa học</a></li>
-                <li><a href="/student/exam" th:href="@{/student/exam}">Làm bài thi</a></li>
-                <li><a href="/student/grades" th:href="@{/student/grades}">Xem kết quả học tập</a></li>
-                <li><a href="/student/notifications" th:href="@{/student/notifications}">Thông báo mới</a></li>
+                <li><a th:href="@{/student/thongtinchung}">Thông tin chung về CTĐT</a></li>
+                <li><a th:href="@{/student/khungchuongtrinh}">Khung chương trình đào tạo</a></li>
+                <li><a th:href="@{/student/hocphan}">Danh sách học phần</a></li>
+                <li><a th:href="@{/student/decuongchitiet}">Đề cương chi tiết học phần</a></li>
             </ul>
         </div>
 
-        <!-- Nếu người dùng không có quyền gì cả hoặc chưa đăng nhập, hiển thị thông báo -->
-        <div th:if="${#authentication == null}">
-            <p>Vui lòng đăng nhập để tiếp tục và truy cập các chức năng.</p>
+        <!-- Nếu người dùng không có quyền -->
+        <div th:if="${not isAdmin and not isTeacher and not isStudent}">
+            <p>Bạn không có quyền truy cập vào bất kỳ chức năng nào.</p>
         </div>
 
     </section>

@@ -1,18 +1,23 @@
-// package com.example.quanlydaotao.controller;
+package com.example.quanlydaotao.controller;
 
-// import org.springframework.stereotype.Controller;
-// import org.springframework.ui.Model;
-// import org.springframework.web.bind.annotation.GetMapping;
-// import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-// @Controller
-// public class LoginController {
+@Controller
+public class LoginController {
 
-//     @GetMapping("/login")
-//     public String login(@RequestParam(value = "error", required = false) String error, Model model) {
-//         if (error != null) {
-//             model.addAttribute("error", "Đăng nhập thất bại. Vui lòng thử lại.");
-//         }
-//         return "login";  // Trả về trang đăng nhập (login.html)
-//     }
-// }
+    @GetMapping("/login")
+    public String login(@RequestParam(value = "error", required = false) String error,
+                       @RequestParam(value = "logout", required = false) String logout,
+                       Model model) {
+        if (error != null) {
+            model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng!");
+        }
+        if (logout != null) {
+            model.addAttribute("message", "Bạn đã đăng xuất thành công!");
+        }
+        return "login";
+    }
+}

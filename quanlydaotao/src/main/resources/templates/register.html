@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - Hệ Thống Quản Lý Đào Tạo</title>
+    <link rel="stylesheet" href="/css/register.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-box">
+            <h2>Đăng Ký Tài Khoản</h2>
+            <form th:action="@{/register}" method="post">
+                <div class="textbox">
+                    <input type="text" name="username" placeholder="Tên đăng nhập" required autocomplete="off">
+                </div>
+                <div class="textbox">
+                    <input type="password" name="password" placeholder="Mật khẩu" required>
+                </div>
+                <div class="textbox">
+                    <input type="password" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                </div>
+                <div class="textbox">
+                    <input type="text" name="fullName" placeholder="Họ và tên" required>
+                </div>
+                <div class="textbox">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="textbox">
+                    <input type="text" name="phone" placeholder="Số điện thoại" required>
+                </div>
+                <div class="role-selection">
+                    <label>Vai trò:</label>
+                    <div class="role-options">
+                        <label class="role-option">
+                            <input type="radio" name="role" value="STUDENT" required>
+                            <span>Sinh viên</span>
+                        </label>
+                        <label class="role-option">
+                            <input type="radio" name="role" value="TEACHER">
+                            <span>Giảng viên</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-register">
+                    <span>Đăng Ký</span>
+                </button>
+            </form>
+            <div class="login-link">
+                Đã có tài khoản? <a href="/login">Đăng nhập</a>
+            </div>
+            <div th:if="${error}" class="error-message" th:text="${error}"></div>
+            <div th:if="${success}" class="success-message" th:text="${success}"></div>
+        </div>
+    </div>
+</body>
+</html> 
