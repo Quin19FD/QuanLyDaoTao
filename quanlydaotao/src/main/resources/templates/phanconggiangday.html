@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Phân công Giảng viên</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background-color: #fffaf0;
+            font-size: 20px;
+        }
+
+        .container {
+            max-width: 1700px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e67e22;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 30px auto;
+            justify-content: center;
+            max-width: 1200px;
+        }
+
+        .actions button {
+            padding: 10px 20px;
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        .form-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 14px;
+            width: 400px;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+            animation: popup 0.3s ease-out;
+            position: relative;
+            text-align: left;
+        }
+
+        .form-box h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #d35400;
+            font-size: 20px;
+        }
+
+        .form-box input,
+        .form-box select {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .form-box button {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .form-box button:hover {
+            background-color: #cf5e0f;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 50px;
+            cursor: pointer;
+        }
+
+        .stat-box {
+            width: 100%;
+            max-width: 1200px;
+            padding: 50px;
+            border-radius: 14px;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+            margin: 0 auto;
+        }
+
+        .form-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-content h2 {
+            color: #e67e22;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #fdf0e3;
+            color: #d35400;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="actions">
+        <button onclick="openForm('add')">➕ Thêm</button>
+        <button onclick="openForm('edit')">✏️ Sửa</button>
+        <button onclick="openForm('delete')">🗑️ Xóa</button>
+        <button onclick="openForm('search')">🔍 Tìm kiếm</button>
+        <button onclick="openForm('stat')">📊 Thống kê</button>
+    </div>
+
+    <div class="container">
+        <h1>Phân công giảng viên</h1>
+
+        <!-- Overlay Forms -->
+        <div id="overlay-add" class="overlay">
+            <div class="form-box">
+                <span class="close-btn" onclick="closeForm()">×</span>
+                <h3>➕ Thêm phân công</h3>
+                <form>
+                    <label>Mã CB:</label><input type="text">
+                    <label>Họ tên GV:</label><input type="text">
+                    <label>Tên học phần:</label><input type="text">
+                    <label>Mã học phần:</label><input type="text">
+                    <label>Số TC:</label><input type="number">
+                    <label>Số tiết:</label><input type="number">
+                    <label>Học kì:</label><input type="text">
+                    <button type="submit">Lưu</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="overlay-edit" class="overlay">
+            <div class="form-box">
+                <span class="close-btn" onclick="closeForm()">×</span>
+                <h3>✏️ Sửa phân công</h3>
+                <form>
+                    <label>Nhập Mã CB cần sửa:</label><input type="text">
+                    <label>Cập nhật tiết mới:</label><input type="number">
+                    <button type="submit">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="overlay-delete" class="overlay">
+            <div class="form-box">
+                <span class="close-btn" onclick="closeForm()">×</span>
+                <h3>🗑️ Xóa phân công</h3>
+                <form>
+                    <label>Mã CB hoặc Tên GV:</label><input type="text">
+                    <button type="submit">Xóa</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="overlay-search" class="overlay">
+            <div class="form-box">
+                <span class="close-btn" onclick="closeForm()">×</span>
+                <h3>🔍 Tìm kiếm</h3>
+                <form>
+                    <label>Nhập từ khóa:</label><input type="text">
+                    <button type="submit">Tìm</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="overlay" id="overlay-stat">
+            <div class="form-content">
+                <span class="close-btn" onclick="closeForm()">×</span>
+                <h2>📊 Thống kê giảng viên</h2>
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="width: 100%; height: 300px;">
+                        <canvas id="teachingChart"></canvas>
+                    </div>
+                    <div style="width: 100%; height: 300px;">
+                        <canvas id="semesterChart"></canvas>
+                    </div>
+                    <div style="width: 100%; height: 300px;">
+                        <canvas id="otherTaskChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng dữ liệu -->
+        <table>
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã CB</th>
+                    <th>Họ và tên GV</th>
+                    <th>Năm sinh</th>
+                    <th>Chức danh, học vị</th>
+                    <th>Phân công giảng dạy</th>
+                    <th>Công tác khác</th>
+                    <th>Tổng CLC (đã tính CVHT CLC)</th>
+                    <th>Tổng số tiết công tác của GV</th>
+                    <th>Tên học phần</th>
+                    <th>Mã học phần</th>
+                    <th>Số TC</th>
+                    <th>Số tiết của HP</th>
+                    <th>Số lượng lớp, nhóm</th>
+                    <th>Giảng dạy ở học kì</th>
+                    <th>Tổng số tiết giảng dạy của GV</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>GV01</td>
+                    <td>Nguyễn Văn A</td>
+                    <td>1980</td>
+                    <td>TS, Giảng viên chính</td>
+                    <td>CTDL & GT</td>
+                    <td>Cố vấn học tập</td>
+                    <td>45</td>
+                    <td>120</td>
+                    <td>CTDL & GT</td>
+                    <td>CS101</td>
+                    <td>3</td>
+                    <td>45</td>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>90</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>GV02</td>
+                    <td>Trần Thị B</td>
+                    <td>1985</td>
+                    <td>ThS, Giảng viên</td>
+                    <td>OOP</td>
+                    <td>Thư ký khoa</td>
+                    <td>30</td>
+                    <td>100</td>
+                    <td>OOP</td>
+                    <td>CS102</td>
+                    <td>3</td>
+                    <td>45</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>90</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>GV03</td>
+                    <td>Lê Văn C</td>
+                    <td>1978</td>
+                    <td>TS, Phó trưởng khoa</td>
+                    <td>Thiết kế web</td>
+                    <td>Chủ nhiệm bộ môn</td>
+                    <td>50</td>
+                    <td>140</td>
+                    <td>Web Design</td>
+                    <td>CS103</td>
+                    <td>3</td>
+                    <td>45</td>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>90</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>GV04</td>
+                    <td>Phạm Thị D</td>
+                    <td>1990</td>
+                    <td>CN, Trợ giảng</td>
+                    <td>Mạng máy tính</td>
+                    <td></td>
+                    <td>0</td>
+                    <td>45</td>
+                    <td>Mạng máy tính</td>
+                    <td>CS104</td>
+                    <td>2</td>
+                    <td>30</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>45</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- THÊM DÒNG NÀY -->
+
+<script>
+    function openForm(name) {
+        // Đầu tiên, ẩn tất cả các overlay khác (nếu có cái nào đang mở)
+        document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none');
+
+        // Tìm overlay tương ứng
+        const overlay = document.getElementById('overlay-' + name);
+        if (overlay) {
+            overlay.style.display = 'flex'; // Hiển thị overlay được chọn
+
+            // Nếu là form thống kê, vẽ biểu đồ sau khi overlay hiển thị
+            if (name === 'stat') {
+                 console.log("Đang mở overlay thống kê, chuẩn bị vẽ biểu đồ...");
+                 // Tăng thời gian chờ lên một chút (ví dụ: 100ms)
+                setTimeout(drawStatChart, 100);
+            }
+        }
+    }
+
+    function closeForm() {
+        // Ẩn tất cả các overlay khi đóng
+        document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none');
+         // Tùy chọn: Hủy các biểu đồ khi đóng để giải phóng bộ nhớ
+         try {
+            if (window.teachingChart instanceof Chart) window.teachingChart.destroy();
+            if (window.semesterChart instanceof Chart) window.semesterChart.destroy();
+            if (window.otherTaskChart instanceof Chart) window.otherTaskChart.destroy();
+            console.log("Đã hủy biểu đồ khi đóng form.");
+         } catch(e) {
+             console.error("Lỗi khi hủy biểu đồ:", e);
+         }
+    }
+
+    function drawStatChart() {
+        console.log("Bắt đầu vẽ biểu đồ...");
+
+        const canvas1 = document.getElementById('teachingChart');
+        const canvas2 = document.getElementById('semesterChart');
+        const canvas3 = document.getElementById('otherTaskChart');
+
+        // Kiểm tra xem canvas có tồn tại không
+        if (!canvas1 || !canvas2 || !canvas3) {
+            console.error("Lỗi: Không tìm thấy một hoặc nhiều thẻ canvas!");
+            return;
+        }
+
+        const ctx1 = canvas1.getContext('2d');
+        const ctx2 = canvas2.getContext('2d');
+        const ctx3 = canvas3.getContext('2d');
+
+        if (!ctx1 || !ctx2 || !ctx3) {
+            console.error("Lỗi: Không thể lấy context 2D cho một hoặc nhiều canvas!");
+            return;
+        }
+        console.log("Đã lấy thành công canvas và context.");
+
+        // Dữ liệu mẫu (sau này bạn sẽ lấy từ server)
+        const data = [
+            { name: "Nguyễn Văn A", tietDay: 90, tietKhac: 120, hk: "1" },
+            { name: "Trần Thị B", tietDay: 90, tietKhac: 100, hk: "2" },
+            { name: "Lê Văn C", tietDay: 90, tietKhac: 140, hk: "1" },
+            { name: "Phạm Thị D", tietDay: 45, tietKhac: 45, hk: "2" }
+        ];
+
+        // Xóa chart cũ nếu có (kiểm tra kỹ hơn)
+        try {
+            if (window.teachingChart instanceof Chart) {
+                window.teachingChart.destroy();
+                console.log("Đã hủy teachingChart cũ.");
+            }
+            if (window.semesterChart instanceof Chart) {
+                window.semesterChart.destroy();
+                console.log("Đã hủy semesterChart cũ.");
+            }
+            if (window.otherTaskChart instanceof Chart) {
+                window.otherTaskChart.destroy();
+                console.log("Đã hủy otherTaskChart cũ.");
+            }
+        } catch (e) {
+            console.error("Lỗi khi hủy biểu đồ cũ:", e);
+        }
+
+        try {
+            // Biểu đồ 1: Số tiết giảng dạy
+            console.log("Đang tạo teachingChart...");
+            window.teachingChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        label: 'Số tiết giảng dạy',
+                        data: data.map(d => d.tietDay),
+                        backgroundColor: '#4BC0C0'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Cho phép thay đổi tỷ lệ
+                    plugins: {
+                        title: { display: true, text: 'Số tiết giảng dạy theo giảng viên' }
+                    }
+                }
+            });
+            console.log("teachingChart đã tạo xong.");
+
+            // Biểu đồ 2: Phân bố học kỳ
+            console.log("Đang tạo semesterChart...");
+            const hocKyCount = data.reduce((acc, curr) => {
+                acc[curr.hk] = (acc[curr.hk] || 0) + 1;
+                return acc;
+            }, {});
+               window.semesterChart = new Chart(ctx2, {
+                            type: 'doughnut',
+                            data: {
+                                labels: Object.keys(hocKyCount).map(k => `Học kỳ ${k}`),
+                                datasets: [{
+                                    data: Object.values(hocKyCount),
+                                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    title: { display: true, text: 'Phân bố giảng dạy theo học kỳ' }
+                                }
+                            }
+                        });
+                        console.log("semesterChart đã tạo xong.");
+
+                        // Biểu đồ 3: Số tiết công tác khác
+                        console.log("Đang tạo otherTaskChart...");
+                        window.otherTaskChart = new Chart(ctx3, {
+                            type: 'bar',
+                            data: {
+                                labels: data.map(d => d.name),
+                                datasets: [{
+                                    label: 'Số tiết công tác khác',
+                                    data: data.map(d => d.tietKhac),
+                                    backgroundColor: '#FF9F40'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    title: { display: true, text: 'Số tiết công tác khác theo giảng viên' }
+                                }
+                            }
+                        });
+                        console.log("otherTaskChart đã tạo xong.");
+
+                    } catch (e) {
+                        console.error("Lỗi khi tạo biểu đồ:", e);
+                    }
+                }
+            </script>
+
+</body>
+
+</html>
+
+
+</body>
+</html>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý danh mục học phần</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fffaf0;
+            padding: 30px;
+        }
+        .table thead th {
+            background-color: #003366;
+            color: white;
+        }
+        .btn-custom {
+            background-color: #003366;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #00509e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="mb-4 text-center text-primary">QUẢN LÝ DANH MỤC HỌC PHẦN</h2>
+
+        <!-- Form thêm/sửa học phần -->
+        <form id="hocPhanForm" class="row g-3">
+            <div class="col-md-2">
+                <input type="text" class="form-control" placeholder="Mã HP" name="maHp">
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" placeholder="Tên học phần" name="tenHp">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control" placeholder="TC" name="tinChi">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control" placeholder="LT" name="lyThuyet">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control" placeholder="TH" name="thucHanh">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control" placeholder="TT" name="thucTap">
+            </div>
+            <div class="col-md-1">
+                <input type="number" class="form-control" placeholder="Hệ số" name="heSo">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-custom w-100">Thêm / Cập nhật</button>
+            </div>
+        </form>
+
+        <!-- Tìm kiếm -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm học phần...">
+            </div>
+        </div>
+
+        <!-- Bảng danh sách học phần -->
+        <table class="table table-bordered table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Mã HP</th>
+                    <th>Tên học phần</th>
+                    <th>Số TC</th>
+                    <th>LT</th>
+                    <th>TH</th>
+                    <th>TT</th>
+                    <th>Cộng</th>
+                    <th>Hệ số</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="hocPhanTable">
+                <!-- Dữ liệu sẽ được thêm tại đây -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const form = document.getElementById('hocPhanForm');
+        const tableBody = document.getElementById('hocPhanTable');
+        const searchInput = document.getElementById('searchInput');
+        let data = [];
+        let editingIndex = -1;
+
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const hocPhan = {
+                maHp: formData.get('maHp'),
+                tenHp: formData.get('tenHp'),
+                tinChi: formData.get('tinChi'),
+                lyThuyet: +formData.get('lyThuyet'),
+                thucHanh: +formData.get('thucHanh'),
+                thucTap: +formData.get('thucTap'),
+                heSo: +formData.get('heSo'),
+            };
+            hocPhan.cong = hocPhan.lyThuyet + hocPhan.thucHanh + hocPhan.thucTap;
+
+            if (editingIndex >= 0) {
+                data[editingIndex] = hocPhan;
+                editingIndex = -1;
+            } else {
+                data.push(hocPhan);
+            }
+            form.reset();
+            renderTable();
+        }
+
+        function renderTable() {
+            const keyword = searchInput.value.toLowerCase();
+            tableBody.innerHTML = '';
+            data.filter(hp => hp.maHp.toLowerCase().includes(keyword) || hp.tenHp.toLowerCase().includes(keyword)).forEach((hp, index) => {
+                const row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${hp.maHp}</td>
+                    <td>${hp.tenHp}</td>
+                    <td>${hp.tinChi}</td>
+                    <td>${hp.lyThuyet}</td>
+                    <td>${hp.thucHanh}</td>
+                    <td>${hp.thucTap}</td>
+                    <td>${hp.cong}</td>
+                    <td>${hp.heSo}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editRow(${index})">Sửa</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteRow(${index})">Xóa</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function editRow(index) {
+            const hp = data[index];
+            form.maHp.value = hp.maHp;
+            form.tenHp.value = hp.tenHp;
+            form.tinChi.value = hp.tinChi;
+            form.lyThuyet.value = hp.lyThuyet;
+            form.thucHanh.value = hp.thucHanh;
+            form.thucTap.value = hp.thucTap;
+            form.heSo.value = hp.heSo;
+            editingIndex = index;
+        }
+
+        function deleteRow(index) {
+            if (confirm('Bạn có chắc muốn xóa học phần này?')) {
+                data.splice(index, 1);
+                renderTable();
+            }
+        }
+
+        searchInput.oninput = renderTable;
+    </script>
+</body>
+
+</html>

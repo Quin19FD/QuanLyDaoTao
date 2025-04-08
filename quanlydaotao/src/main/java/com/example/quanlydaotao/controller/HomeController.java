@@ -25,7 +25,7 @@ public class HomeController {
             
             // Kiểm tra role và thêm vào model
             boolean isAdmin = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-            boolean isTeacher = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_TEACHER"));
+            boolean isTeacher = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_TEACHER")); 
             boolean isStudent = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"));
             
             model.addAttribute("isAdmin", isAdmin);
@@ -36,5 +36,10 @@ public class HomeController {
         } else {
             return "redirect:/login";
         }
+    }
+
+    @GetMapping("/admin/phanconggiangday")
+    public String showPhancongGiangDay(Model model) {
+        return "phanconggiangday";
     }
 }
