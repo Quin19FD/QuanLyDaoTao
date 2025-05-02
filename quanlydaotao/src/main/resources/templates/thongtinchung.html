@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý chương trình đào tạo CNTT (Admin)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            font-size: 20px;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 90%;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #ff8c66;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .training-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .training-table th, .training-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .training-table th {
+            background-color: #ff8c66;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .training-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .training-table tr:hover {
+            background-color: #e6f0ff;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .detail-btn {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .detail-btn:hover {
+            background-color: #218838;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .edit-btn:hover {
+            background-color: #e0a800;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .add-major-btn {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-major-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .add-major-btn i {
+            margin-right: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .detail-table th, .detail-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .detail-table th {
+            background-color: #ff8c66;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .detail-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .detail-table tr:hover {
+            background-color: #e6f0ff;
+        }
+
+        .detail-table input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .save-btn {
+            font-size: 20px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .save-btn:hover {
+            background-color: #218838;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Quản lý chương trình đào tạo ngành CNTT (Admin)</h1>
+    </div>
+
+    <button class="add-major-btn" onclick="showAddMajorModal()">
+        <i class="fas fa-plus"></i> Thêm CTĐT Mới
+    </button>
+
+    <table class="training-table" id="trainingTable">
+        <thead>
+        <tr>
+            <th>TT</th>
+            <th>Mã ngành</th>
+            <th>Ngành</th>
+            <th>Niên khóa</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody id="trainingTableBody">
+        <tr data-major="CNTT_2021">
+            <td>1</td>
+            <td>7480201</td>
+            <td>Công nghệ Thông tin</td>
+            <td>2021-2025</td>
+            <td>
+                <button class="action-btn detail-btn" onclick="showDetails('CNTT_2021')">Xem chi tiết</button>
+                <button class="action-btn edit-btn" onclick="editMajor('CNTT_2021')">Sửa</button>
+                <button class="action-btn delete-btn" onclick="deleteMajor('CNTT_2021')">Xóa</button>
+            </td>
+        </tr>
+        <tr data-major="CNTT_2022">
+            <td>2</td>
+            <td>7480201</td>
+            <td>Công nghệ Thông tin</td>
+            <td>2022-2026</td>
+            <td>
+                <button class="action-btn detail-btn" onclick="showDetails('CNTT_2022')">Xem chi tiết</button>
+                <button class="action-btn edit-btn" onclick="editMajor('CNTT_2022')">Sửa</button>
+                <button class="action-btn delete-btn" onclick="deleteMajor('CNTT_2022')">Xóa</button>
+            </td>
+        </tr>
+        <tr data-major="CNTT_2023">
+            <td>3</td>
+            <td>7480201</td>
+            <td>Công nghệ Thông tin</td>
+            <td>2023-2027</td>
+            <td>
+                <button class="action-btn detail-btn" onclick="showDetails('CNTT_2023')">Xem chi tiết</button>
+                <button class="action-btn edit-btn" onclick="editMajor('CNTT_2023')">Sửa</button>
+                <button class="action-btn delete-btn" onclick="deleteMajor('CNTT_2023')">Xóa</button>
+            </td>
+        </tr>
+        <tr data-major="CNTT_CLC_2023">
+            <td>4</td>
+            <td>7480201CLC</td>
+            <td>CNTT (Chất lượng cao)</td>
+            <td>2023-2027</td>
+            <td>
+                <button class="action-btn detail-btn" onclick="showDetails('CNTT_CLC_2023')">Xem chi tiết</button>
+                <button class="action-btn edit-btn" onclick="editMajor('CNTT_CLC_2023')">Sửa</button>
+                <button class="action-btn delete-btn" onclick="deleteMajor('CNTT_CLC_2023')">Xóa</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for viewing/editing details -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <h2 id="modalTitle">Thông tin chi tiết</h2>
+        <table class="detail-table" id="detailTable">
+            <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tiêu chí</th>
+                <th>Thông tin</th>
+            </tr>
+            </thead>
+            <tbody id="detailTableBody">
+            </tbody>
+        </table>
+        <button id="saveBtn" class="save-btn" style="display: none;" onclick="saveChanges()">Hoàn tất</button>
+    </div>
+</div>
+
+<!-- Modal for adding new major -->
+<div id="addMajorModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeAddMajorModal()">×</span>
+        <h2>Thêm CTĐT Mới</h2>
+        <form id="addMajorForm">
+            <div class="form-group">
+                <label for="newMajorCode">Mã ngành:</label>
+                <input type="text" id="newMajorCode" required>
+            </div>
+            <div class="form-group">
+                <label for="newMajorName">Tên ngành:</label>
+                <input type="text" id="newMajorName" required>
+            </div>
+            <div class="form-group">
+                <label for="newMajorYear">Niên khóa:</label>
+                <input type="text" id="newMajorYear" required placeholder="VD: 2024-2028">
+            </div>
+            <div class="form-group">
+                <label for="newMajorTitle">Tiêu đề CTĐT:</label>
+                <input type="text" id="newMajorTitle" required>
+            </div>
+            <div class="form-group">
+                <label for="newMajorDuration">Thời gian đào tạo:</label>
+                <input type="text" id="newMajorDuration" required>
+            </div>
+            <div class="form-group">
+                <label for="newMajorCredits">Số tín chỉ:</label>
+                <input type="text" id="newMajorCredits" required>
+            </div>
+            <div class="form-group">
+                <label for="newMajorKnowledge">Khối kiến thức:</label>
+                <input type="text" id="newMajorKnowledge" required>
+            </div>
+            <div class="form-group">
+                <label for="newMajorLanguages">Ngôn ngữ lập trình:</label>
+                <input type="text" id="newMajorLanguages" required>
+            </div>
+            <div class="form-group">
+                <label for="newMajorFaculty">Khóa quản lý:</label>
+                <input type="text" id="newMajorFaculty" required>
+            </div>
+            <div class="form-group">
+                <label for="newMajorWebsite">Website:</label>
+                <input type="text" id="newMajorWebsite" required>
+            </div>
+            <button type="submit" class="save-btn">Thêm</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu chương trình đào tạo CNTT
+    let majorDetails = {
+        "CNTT_2021": {
+            title: "CTĐT ngành Công nghệ Thông tin - Niên khóa 2021-2025",
+            details: [
+                { criterion: "Tên gọi", info: "Công nghệ Thông tin" },
+                { criterion: "Mã ngành", info: "7480201" },
+                { criterion: "Niên khóa", info: "2021-2025" },
+                { criterion: "Thời gian đào tạo", info: "4 năm" },
+                { criterion: "Số tín chỉ", info: "130 tín chỉ" },
+                { criterion: "Khối kiến thức", info: "Cơ bản: 40 TC, Chuyên ngành: 70 TC, Thực tập & Đồ án: 20 TC" },
+                { criterion: "Ngôn ngữ lập trình", info: "Python, Java, C++" },
+                { criterion: "Khóa quản lý", info: "Khoa Công nghệ Thông tin" },
+                { criterion: "Website", info: "https://cntt.sgu.edu.vn/" }
+            ]
+        },
+        "CNTT_2022": {
+            title: "CTĐT ngành Công nghệ Thông tin - Niên khóa 2022-2026",
+            details: [
+                { criterion: "Tên gọi", info: "Công nghệ Thông tin" },
+                { criterion: "Mã ngành", info: "7480201" },
+                { criterion: "Niên khóa", info: "2022-2026" },
+                { criterion: "Thời gian đào tạo", info: "4 năm" },
+                { criterion: "Số tín chỉ", info: "132 tín chỉ" },
+                { criterion: "Khối kiến thức", info: "Cơ bản: 42 TC, Chuyên ngành: 70 TC, Thực tập & Đồ án: 20 TC" },
+                { criterion: "Ngôn ngữ lập trình", info: "Python, Java, C#, JavaScript" },
+                { criterion: "Khóa quản lý", info: "Khoa Công nghệ Thông tin" },
+                { criterion: "Website", info: "https://cntt.sgu.edu.vn/" }
+            ]
+        },
+        "CNTT_2023": {
+            title: "CTĐT ngành Công nghệ Thông tin - Niên khóa 2023-2027",
+            details: [
+                { criterion: "Tên gọi", info: "Công nghệ Thông tin" },
+                { criterion: "Mã ngành", info: "7480201" },
+                { criterion: "Niên khóa", info: "2023-2027" },
+                { criterion: "Thời gian đào tạo", info: "4 năm" },
+                { criterion: "Số tín chỉ", info: "135 tín chỉ" },
+                { criterion: "Khối kiến thức", info: "Cơ bản: 45 TC, Chuyên ngành: 70 TC, Thực tập & Đồ án: 20 TC" },
+                { criterion: "Ngôn ngữ lập trình", info: "Python, Java, C#, JavaScript, Kotlin" },
+                { criterion: "Khóa quản lý", info: "Khoa Công nghệ Thông tin" },
+                { criterion: "Website", info: "https://cntt.sgu.edu.vn/" }
+            ]
+        },
+        "CNTT_CLC_2023": {
+            title: "CTĐT ngành CNTT (Chất lượng cao) - Niên khóa 2023-2027",
+            details: [
+                { criterion: "Tên gọi", info: "Công nghệ Thông tin (Chất lượng cao)" },
+                { criterion: "Mã ngành", info: "7480201CLC" },
+                { criterion: "Niên khóa", info: "2023-2027" },
+                { criterion: "Thời gian đào tạo", info: "4 năm" },
+                { criterion: "Số tín chỉ", info: "140 tín chỉ" },
+                { criterion: "Khối kiến thức", info: "Cơ bản: 45 TC, Chuyên ngành: 75 TC, Thực tập & Đồ án: 20 TC" },
+                { criterion: "Ngôn ngữ lập trình", info: "Python, Java, C#, JavaScript, Kotlin, Swift" },
+                { criterion: "Khóa quản lý", info: "Khoa Công nghệ Thông tin" },
+                { criterion: "Website", info: "https://cntt.sgu.edu.vn/clc" }
+            ]
+        }
+    };
+
+    let currentMajor = null;
+
+    // Xem chi tiết
+    function showDetails(major) {
+        const modal = document.getElementById("detailModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const detailTableBody = document.getElementById("detailTableBody");
+        const saveBtn = document.getElementById("saveBtn");
+
+        modalTitle.textContent = majorDetails[major].title;
+        saveBtn.style.display = "none";
+
+        detailTableBody.innerHTML = "";
+        majorDetails[major].details.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item.criterion}</td>
+                <td>${item.info}</td>
+            `;
+            detailTableBody.appendChild(row);
+        });
+
+        modal.style.display = "flex";
+    }
+
+    // Sửa chương trình
+    function editMajor(major) {
+        currentMajor = major;
+        const modal = document.getElementById("detailModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const detailTableBody = document.getElementById("detailTableBody");
+        const saveBtn = document.getElementById("saveBtn");
+
+        modalTitle.textContent = `Sửa thông tin CTĐT - ${major}`;
+        saveBtn.style.display = "block";
+
+        detailTableBody.innerHTML = "";
+        majorDetails[major].details.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item.criterion}</td>
+                <td><input type="text" value="${item.info}" data-index="${index}"></td>
+            `;
+            detailTableBody.appendChild(row);
+        });
+
+        modal.style.display = "flex";
+    }
+
+    // Lưu thay đổi
+    function saveChanges() {
+        const detailTableBody = document.getElementById("detailTableBody");
+        const inputs = detailTableBody.querySelectorAll("input");
+
+        inputs.forEach(input => {
+            const index = input.getAttribute("data-index");
+            majorDetails[currentMajor].details[index].info = input.value;
+        });
+
+        // Cập nhật bảng chính nếu tên hoặc niên khóa thay đổi
+        const newName = majorDetails[currentMajor].details[0].info;
+        const newYear = majorDetails[currentMajor].details[2].info;
+        const row = document.querySelector(`tr[data-major="${currentMajor}"]`);
+        row.querySelector("td:nth-child(3)").textContent = newName;
+        row.querySelector("td:nth-child(4)").textContent = newYear;
+
+        alert(`Sửa thành công chương trình: ${currentMajor}`);
+        closeModal();
+    }
+
+    // Xóa chương trình
+    function deleteMajor(major) {
+        if (confirm(`Bạn có chắc chắn muốn xóa chương trình: ${major}?`)) {
+            delete majorDetails[major];
+            const row = document.querySelector(`tr[data-major="${major}"]`);
+            row.remove();
+
+            const rows = document.querySelectorAll("#trainingTableBody tr");
+            rows.forEach((row, index) => {
+                row.querySelector("td:first-child").textContent = index + 1;
+            });
+
+            alert(`Đã xóa thành công chương trình: ${major}`);
+        }
+    }
+
+    // Hiển thị modal thêm mới
+    function showAddMajorModal() {
+        const modal = document.getElementById("addMajorModal");
+        modal.style.display = "flex";
+    }
+
+    // Đóng modal thêm mới
+    function closeAddMajorModal() {
+        const modal = document.getElementById("addMajorModal");
+        modal.style.display = "none";
+        document.getElementById("addMajorForm").reset();
+    }
+
+    // Thêm chương trình mới
+    document.getElementById("addMajorForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const newMajorCode = document.getElementById("newMajorCode").value;
+        const newMajorName = document.getElementById("newMajorName").value;
+        const newMajorYear = document.getElementById("newMajorYear").value;
+        const newMajorTitle = document.getElementById("newMajorTitle").value;
+        const newMajorDuration = document.getElementById("newMajorDuration").value;
+        const newMajorCredits = document.getElementById("newMajorCredits").value;
+        const newMajorKnowledge = document.getElementById("newMajorKnowledge").value;
+        const newMajorLanguages = document.getElementById("newMajorLanguages").value;
+        const newMajorFaculty = document.getElementById("newMajorFaculty").value;
+        const newMajorWebsite = document.getElementById("newMajorWebsite").value;
+
+        const newMajorKey = `${newMajorName.split(" ").join("")}_${newMajorYear.split("-")[0]}`;
+
+        majorDetails[newMajorKey] = {
+            title: newMajorTitle,
+            details: [
+                { criterion: "Tên gọi", info: newMajorName },
+                { criterion: "Mã ngành", info: newMajorCode },
+                { criterion: "Niên khóa", info: newMajorYear },
+                { criterion: "Thời gian đào tạo", info: newMajorDuration },
+                { criterion: "Số tín chỉ", info: newMajorCredits },
+                { criterion: "Khối kiến thức", info: newMajorKnowledge },
+                { criterion: "Ngôn ngữ lập trình", info: newMajorLanguages },
+                { criterion: "Khóa quản lý", info: newMajorFaculty },
+                { criterion: "Website", info: newMajorWebsite }
+            ]
+        };
+
+        const tableBody = document.getElementById("trainingTableBody");
+        const rowCount = tableBody.children.length + 1;
+        const newRow = document.createElement("tr");
+        newRow.setAttribute("data-major", newMajorKey);
+        newRow.innerHTML = `
+            <td>${rowCount}</td>
+            <td>${newMajorCode}</td>
+            <td>${newMajorName}</td>
+            <td>${newMajorYear}</td>
+            <td>
+                <button class="action-btn detail-btn" onclick="showDetails('${newMajorKey}')">Xem chi tiết</button>
+                <button class="action-btn edit-btn" onclick="editMajor('${newMajorKey}')">Sửa</button>
+                <button class="action-btn delete-btn" onclick="deleteMajor('${newMajorKey}')">Xóa</button>
+            </td>
+        `;
+        tableBody.appendChild(newRow);
+
+        alert(`Đã thêm thành công chương trình: ${newMajorKey}`);
+        closeAddMajorModal();
+    });
+
+    // Đóng modal chi tiết
+    function closeModal() {
+        const modal = document.getElementById("detailModal");
+        modal.style.display = "none";
+    }
+
+    // Đóng modal khi nhấn ngoài
+    window.onclick = function(event) {
+        const detailModal = document.getElementById("detailModal");
+        const addMajorModal = document.getElementById("addMajorModal");
+        if (event.target == detailModal) {
+            detailModal.style.display = "none";
+        }
+        if (event.target == addMajorModal) {
+            addMajorModal.style.display = "none";
+        }
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Danh Mục Học Phần - Khoa CNTT</title>
+    <style>
+        *{
+         font-size: 20px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 90;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 30px;
+            color: #ff8c66;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .controls input, .controls select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #ff8c66;
+            color: white;
+        }
+
+        td {
+            background-color: #fff7f2;
+        }
+
+        tr:hover {
+            background-color: #ffe6d5;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .add-btn {
+            background-color: #ff8c66;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .edit-btn {
+            background-color: #FFC107;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 1000px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background-color: #ff8c66;
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #ffe6d5;
+        }
+
+        .modal-body {
+            padding: 20px;
+            background-color: #fff7f2;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ffe6d5;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row label {
+            font-weight: bold;
+            color: #ff8c66;
+            flex: 1;
+        }
+
+        .info-row span, .info-row select {
+            flex: 2;
+            color: #333;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ffe6d5;
+        }
+
+        .form-row:last-child {
+            border-bottom: none;
+        }
+
+        .form-row label {
+            font-weight: bold;
+            color: #ff8c66;
+            flex: 1;
+        }
+
+        .form-row input, .form-row select, .form-row .static-field {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-row .static-field {
+            background-color: #f0f0f0;
+            border: none;
+            padding: 8px;
+            color: #666;
+        }
+
+        .form-row input:focus, .form-row select:focus {
+            border-color: #ff8c66;
+            outline: none;
+        }
+
+        .dept-select {
+            height: 80px;
+            background-color: #fff;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 20px;
+        }
+
+        .save-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .save-btn:hover {
+            background-color: #45a049;
+        }
+
+        .cancel-btn {
+            background-color: #ccc;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background-color: #b3b3b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>QUẢN LÝ DANH MỤC HỌC PHẦN - KHOA CNTT</h1>
+    <div class="controls">
+        <button class="add-btn" onclick="openAddModal()">+ Thêm Học Phần</button>
+        <input type="text" id="searchInput" placeholder="Tìm kiếm theo mã hoặc tên..." onkeyup="searchCourses()">
+        <select id="filterBlock" onchange="filterCourses()">
+            <option value="">Lọc theo Khối Kiến Thức</option>
+            <option value="Khối kiến thức giáo dục đại cương">Khối kiến thức giáo dục đại cương</option>
+            <option value="Khối kiến thức giáo dục chuyên nghiệp">Khối kiến thức giáo dục chuyên nghiệp</option>
+        </select>
+        <select id="filterGroup" onchange="filterCourses()">
+            <option value="">Lọc theo Nhóm Kiến Thức</option>
+        </select>
+        <select id="filterSpecialization" onchange="filterCourses()">
+            <option value="">Lọc theo Chuyên ngành</option>
+            <option value="Công nghệ phần mềm">Công nghệ phần mềm</option>
+            <option value="Hệ thống thông tin">Hệ thống thông tin</option>
+            <option value="Mạng máy tính">Mạng máy tính</option>
+        </select>
+    </div>
+
+    <table id="courseTable">
+        <thead>
+        <tr>
+            <th>TT</th>
+            <th>Mã HP</th>
+            <th>Tên Học phần</th>
+            <th>Số tín chỉ</th>
+            <th>Lý thuyết</th>
+            <th>Thực hành</th>
+            <th>Thực tập</th>
+            <th>Hệ số</th>
+            <th>Thao Tác</th>
+        </tr>
+        </thead>
+        <tbody id="courseTableBody"></tbody>
+    </table>
+</div>
+
+<!-- Modal for Viewing Details -->
+<div id="viewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Chi Tiết Học Phần</h2>
+            <span class="close" onclick="closeModal('viewModal')">×</span>
+        </div>
+        <div class="modal-body">
+            <div class="info-row">
+                <label>Mã Học Phần:</label>
+                <span id="viewCourseId"></span>
+            </div>
+            <div class="info-row">
+                <label>Tên Học Phần:</label>
+                <span id="viewCourseName"></span>
+            </div>
+            <div class="info-row">
+                <label>Khối Kiến Thức:</label>
+                <span id="viewBlock"></span>
+            </div>
+            <div class="info-row">
+                <label>Nhóm Kiến Thức:</label>
+                <span id="viewGroup"></span>
+            </div>
+            <div class="info-row">
+                <label>Chuyên ngành:</label>
+                <span id="viewSpecialization"></span>
+            </div>
+            <div class="info-row">
+                <label>Số Tín Chỉ:</label>
+                <span id="viewCredits"></span>
+            </div>
+            <div class="info-row">
+                <label>Số Tiết:</label>
+                <span id="viewHours"></span>
+            </div>
+            <div class="info-row">
+                <label>Hệ Số:</label>
+                <span id="viewCoefficient"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Adding New Course -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Thêm Học Phần Mới</h2>
+            <span class="close" onclick="closeModal('addModal')">×</span>
+        </div>
+        <div class="modal-body">
+            <form id="addForm">
+                <div class="form-row">
+                    <label for="newCourseId">Mã Học Phần:</label>
+                    <span id="newCourseId" class="static-field"></span>
+                </div>
+                <div class="form-row">
+                    <label for="courseName">Tên Học Phần:</label>
+                    <input type="text" id="courseName" required>
+                </div>
+                <div class="form-row">
+                    <label for="blockSelect">Khối Kiến Thức:</label>
+                    <select id="blockSelect" onchange="updateGroupSelect('add')">
+                        <option value="">-- Chọn Khối Kiến Thức --</option>
+                        <option value="Khối kiến thức giáo dục đại cương">Khối kiến thức giáo dục đại cương</option>
+                        <option value="Khối kiến thức giáo dục chuyên nghiệp">Khối kiến thức giáo dục chuyên nghiệp</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="groupSelect">Nhóm Kiến Thức:</label>
+                    <select id="groupSelect" onchange="toggleSpecializationSelect('add')" disabled></select>
+                </div>
+                <div class="form-row" id="addSpecializationRow" style="display: none;">
+                    <label for="specializationSelect">Chuyên ngành:</label>
+                    <select id="specializationSelect">
+                        <option value="">-- Chọn Chuyên ngành --</option>
+                        <option value="Công nghệ phần mềm">Công nghệ phần mềm</option>
+                        <option value="Hệ thống thông tin">Hệ thống thông tin</option>
+                        <option value="Mạng máy tính">Mạng máy tính</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="credits">Số Tín Chỉ:</label>
+                    <input type="number" id="credits" min="1" required>
+                </div>
+                <div class="form-row">
+                    <label for="hours">Số Tiết:</label>
+                    <input type="number" id="hours" min="1" required>
+                </div>
+                <div class="form-row">
+                    <label for="coefficient">Hệ Số:</label>
+                    <input type="number" id="coefficient" min="1" step="0.1" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="save-btn" onclick="saveNewCourse()">Thêm</button>
+                    <button type="button" class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Editing Course -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Sửa Học Phần</h2>
+            <span class="close" onclick="closeModal('editModal')">×</span>
+        </div>
+        <div class="modal-body">
+            <form id="editForm">
+                <div class="form-row">
+                    <label for="editCourseId">Mã Học Phần:</label>
+                    <span id="editCourseId" class="static-field"></span>
+                </div>
+                <div class="form-row">
+                    <label for="editCourseName">Tên Học Phần:</label>
+                    <input type="text" id="editCourseName" required>
+                </div>
+                <div class="form-row">
+                    <label for="editBlockSelect">Khối Kiến Thức:</label>
+                    <select id="editBlockSelect" onchange="updateGroupSelect('edit')">
+                        <option value="">-- Chọn Khối Kiến Thức --</option>
+                        <option value="Khối kiến thức giáo dục đại cương">Khối kiến thức giáo dục đại cương</option>
+                        <option value="Khối kiến thức giáo dục chuyên nghiệp">Khối kiến thức giáo dục chuyên nghiệp</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="editGroupSelect">Nhóm Kiến Thức:</label>
+                    <select id="editGroupSelect" onchange="toggleSpecializationSelect('edit')" disabled></select>
+                </div>
+                <div class="form-row" id="editSpecializationRow" style="display: none;">
+                    <label for="editSpecializationSelect">Chuyên ngành:</label>
+                    <select id="editSpecializationSelect">
+                        <option value="">-- Chọn Chuyên
+                            ngành --</option>
+                        <option value="Công nghệ phần mềm">Công nghệ phần mềm</option>
+                        <option value="Hệ thống thông tin">Hệ thống thông tin</option>
+                        <option value="Mạng máy tính">Mạng máy tính</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="editCredits">Số Tín Chỉ:</label>
+                    <input type="number" id="editCredits" min="1" required>
+                </div>
+                <div class="form-row">
+                    <label for="editHours">Số Tiết:</label>
+                    <input type="number" id="editHours" min="1" required>
+                </div>
+                <div class="form-row">
+                    <label for="editCoefficient">Hệ Số:</label>
+                    <input type="number" id="editCoefficient" min="1" step="0.1" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="save-btn" onclick="saveEdit()">Lưu</button>
+                    <button type="button" class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Delete Confirmation -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Xác Nhận Xóa</h2>
+            <span class="close" onclick="closeModal('deleteModal')">×</span>
+        </div>
+        <div class="modal-body">
+            <p>Bạn có chắc chắn muốn xóa học phần <span id="deleteCourseName"></span> không? Thông tin sẽ bị xóa vĩnh viễn.</p>
+            <div class="form-actions">
+                <button class="delete-btn" onclick="confirmDelete()">Xóa</button>
+                <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mock data for CNTT courses
+    let courses = [
+        { id: "8613101", name: "Triết học Mác – Lênin", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Lý luận chính trị", specialization: "", credits: 3, hours: 45, theory: 45, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8613102", name: "Kinh tế chính trị Mác – Lênin", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Lý luận chính trị", specialization: "", credits: 2, hours: 30, theory: 30, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8613103", name: "Chủ nghĩa xã hội khoa học", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Lý luận chính trị", specialization: "", credits: 2, hours: 30, theory: 30, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8613104", name: "Tư tưởng Hồ Chí Minh", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Lý luận chính trị", specialization: "", credits: 2, hours: 30, theory: 30, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8613105", name: "Lịch sử Đảng Cộng sản Việt Nam", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Lý luận chính trị", specialization: "", credits: 2, hours: 30, theory: 30, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8664001", name: "Tiếng Anh 1", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Ngôn ngữ", specialization: "", credits: 3, hours: 45, theory: 45, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8664002", name: "Tiếng Anh 2", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Ngôn ngữ", specialization: "", credits: 3, hours: 45, theory: 45, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8664003", name: "Tiếng Anh 3", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Ngôn ngữ", specialization: "", credits: 3, hours: 45, theory: 45, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8655006", name: "Pháp luật đại cương", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức giáo dục đại cương khác", specialization: "", credits: 2, hours: 30, theory: 30, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8645008", name: "Xác suất thống kê", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức giáo dục đại cương khác", specialization: "", credits: 3, hours: 45, theory: 45, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8644005", name: "Giải tích 1", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức giáo dục đại cương khác", specialization: "", credits: 3, hours: 45, theory: 45, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8644006", name: "Giải tích 2", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức giáo dục đại cương khác", specialization: "", credits: 3, hours: 45, theory: 45, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8644007", name: "Đại số tuyến tính", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức giáo dục đại cương khác", specialization: "", credits: 3, hours: 45, theory: 45, practice: 0, internship: 0, coefficient: 1 },
+        { id: "8622101", name: "Giáo dục thể chất (I)", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Giáo dục thể chất và Giáo dục quốc phòng và an ninh", specialization: "", credits: 1, hours: 30, theory: 2, practice: 28, internship: 0, coefficient: 1 },
+        { id: "8622406", name: "Giáo dục quốc phòng và an ninh I", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Giáo dục thể chất và Giáo dục quốc phòng và an ninh", specialization: "", credits: 3, hours: 45, theory: 37, practice: 8, internship: 0, coefficient: 1 },
+        { id: "8622407", name: "Giáo dục quốc phòng và an ninh II", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Giáo dục thể chất và Giáo dục quốc phòng và an ninh", specialization: "", credits: 2, hours: 30, theory: 22, practice: 8, internship: 0, coefficient: 1 },
+        { id: "8622408", name: "Giáo dục quốc phòng và an ninh III", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Giáo dục thể chất và Giáo dục quốc phòng và an ninh", specialization: "", credits: 2, hours: 30, theory: 14, practice: 16, internship: 0, coefficient: 1 },
+        { id: "8622409", name: "Giáo dục quốc phòng và an ninh IV", block: "Khối kiến thức giáo dục đại cương", group: "Kiến thức Giáo dục thể chất và Giáo dục quốc phòng và an ninh", specialization: "", credits: 4, hours: 60, theory: 4, practice: 56, internship: 0, coefficient: 1 },
+        { id: "CNTT1001", name: "Lập trình cơ bản", block: "Khối kiến thức giáo dục chuyên nghiệp", group: "Kiến thức cơ sở của ngành", specialization: "", credits: 3, hours: 45, theory: 30, practice: 15, internship: 0, coefficient: 1 },
+        { id: "CNTT1002", name: "Cấu trúc dữ liệu và giải thuật", block: "Khối kiến thức giáo dục chuyên nghiệp", group: "Kiến thức cơ sở của ngành", specialization: "", credits: 3, hours: 45, theory: 30, practice: 15, internship: 0, coefficient: 1 },
+        { id: "CNTT1003", name: "Kiến trúc máy tính", block: "Khối kiến thức giáo dục chuyên nghiệp", group: "Kiến thức cơ sở của ngành", specialization: "", credits: 3, hours: 45, theory: 30, practice: 15, internship: 0, coefficient: 1 },
+        { id: "CNTT2001", name: "Lập trình hướng đối tượng", block: "Khối kiến thức giáo dục chuyên nghiệp", group: "Kiến thức ngành", specialization: "", credits: 3, hours: 45, theory: 30, practice: 15, internship: 0, coefficient: 1 },
+        { id: "CNTT2002", name: "Cơ sở dữ liệu", block: "Khối kiến thức giáo dục chuyên nghiệp", group: "Kiến thức ngành", specialization: "", credits: 3, hours: 45, theory: 30, practice: 15, internship: 0, coefficient: 1 },
+        { id: "CNTT2003", name: "Mạng máy tính", block: "Khối kiến thức giáo dục chuyên nghiệp", group: "Kiến thức ngành", specialization: "", credits: 3, hours: 45, theory: 30, practice: 15, internship: 0, coefficient: 1 },
+        { id: "CNTT3001", name: "Phát triển phần mềm", block: "Khối kiến thức giáo dục chuyên nghiệp", group: "Kiến thức chuyên ngành (nếu có)", specialization: "Công nghệ phần mềm", credits: 4, hours: 60, theory: 30, practice: 30, internship: 0, coefficient: 1 },
+        { id: "CNTT3002", name: "Quản trị hệ thống thông tin", block: "Khối kiến thức giáo dục chuyên nghiệp", group: "Kiến thức chuyên ngành (nếu có)", specialization: "Hệ thống thông tin", credits: 4, hours: 60, theory: 30, practice: 30, internship: 0, coefficient: 1 },
+        { id: "CNTT3003", name: "Quản trị mạng", block: "Khối kiến thức giáo dục chuyên nghiệp", group: "Kiến thức chuyên ngành (nếu có)", specialization: "Mạng máy tính", credits: 4, hours: 60, theory: 30, practice: 30, internship: 0, coefficient: 1 }
+    ];
+
+    // Knowledge groups mapping
+    const knowledgeGroups = {
+        "Khối kiến thức giáo dục đại cương": [
+            "Các học phần bắt buộc",
+            "Kiến thức Giáo dục thể chất và Giáo dục quốc phòng và an ninh",
+            "Kiến thức Ngôn ngữ",
+            "Kiến thức Lý luận chính trị",
+            "Kiến thức giáo dục đại cương khác"
+        ],
+        "Khối kiến thức giáo dục chuyên nghiệp": [
+            "Kiến thức cơ sở của ngành",
+            "Kiến thức ngành",
+            "Kiến thức chuyên ngành (nếu có)"
+        ]
+    };
+
+    // Load courses into the table
+    function loadCourses(filteredCourses = courses) {
+        const tableBody = document.getElementById("courseTableBody");
+        tableBody.innerHTML = "";
+        filteredCourses.forEach((course, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${course.id}</td>
+                <td>${course.name}</td>
+                <td>${course.credits}</td>
+                <td>${course.theory}</td>
+                <td>${course.practice}</td>
+                <td>${course.internship}</td>
+                <td>${course.coefficient}</td>
+                <td>
+                    <button class="edit-btn" onclick="editCourse(${index})">Sửa</button>
+                    <button class="delete-btn" onclick="openDeleteModal(${index})">Xóa</button>
+                </td>
+            `;
+            row.onclick = (e) => {
+                if (e.target.tagName !== "BUTTON") viewDetails(index);
+            };
+            tableBody.appendChild(row);
+        });
+    }
+
+    // View course details
+    function viewDetails(index) {
+        const course = courses[index];
+        document.getElementById("viewCourseId").textContent = course.id;
+        document.getElementById("viewCourseName").textContent = course.name;
+        document.getElementById("viewBlock").textContent = course.block;
+        document.getElementById("viewGroup").textContent = course.group;
+        document.getElementById("viewSpecialization").textContent = course.specialization || "Không áp dụng";
+        document.getElementById("viewCredits").textContent = course.credits;
+        document.getElementById("viewHours").textContent = course.hours;
+        document.getElementById("viewCoefficient").textContent = course.coefficient;
+        document.getElementById("viewModal").style.display = "block";
+    }
+
+    // Open add modal
+    function openAddModal() {
+        document.getElementById("newCourseId").textContent = generateCourseId();
+        document.getElementById("addForm").reset();
+        document.getElementById("groupSelect").disabled = true;
+        document.getElementById("groupSelect").innerHTML = '<option value="">-- Chọn Nhóm Kiến Thức --</option>';
+        document.getElementById("addSpecializationRow").style.display = "none";
+        document.getElementById("addModal").style.display = "block";
+    }
+
+    // Generate unique course ID
+    function generateCourseId() {
+        let id;
+        do {
+            id = "CNTT" + Math.floor(1000 + Math.random() * 9000).toString();
+        } while (courses.some(course => course.id === id));
+        return id;
+    }
+
+    // Update knowledge group select based on knowledge block
+    function updateGroupSelect(modalType) {
+        const blockSelect = document.getElementById(modalType === "add" ? "blockSelect" : "editBlockSelect");
+        const groupSelect = document.getElementById(modalType === "add" ? "groupSelect" : "editGroupSelect");
+        groupSelect.innerHTML = '<option value="">-- Chọn Nhóm Kiến Thức --</option>';
+        groupSelect.disabled = !blockSelect.value;
+
+        if (blockSelect.value) {
+            const groups = knowledgeGroups[blockSelect.value];
+            groups.forEach(group => {
+                const option = document.createElement("option");
+                option.value = group;
+                option.textContent = group;
+                groupSelect.appendChild(option);
+            });
+        }
+        toggleSpecializationSelect(modalType);
+    }
+
+    // Toggle specialization select based on group
+    function toggleSpecializationSelect(modalType) {
+        const groupSelect = document.getElementById(modalType === "add" ? "groupSelect" : "editGroupSelect");
+        const specializationRow = document.getElementById(modalType === "add" ? "addSpecializationRow" : "editSpecializationRow");
+        if (groupSelect.value === "Kiến thức chuyên ngành (nếu có)") {
+            specializationRow.style.display = "flex";
+        } else {
+            specializationRow.style.display = "none";
+            document.getElementById(modalType === "add" ? "specializationSelect" : "editSpecializationSelect").value = "";
+        }
+    }
+
+    // Save new course
+    function saveNewCourse() {
+        const course = {
+            id: document.getElementById("newCourseId").textContent,
+            name: document.getElementById("courseName").value,
+            block: document.getElementById("blockSelect").value,
+            group: document.getElementById("groupSelect").value,
+            specialization: document.getElementById("groupSelect").value === "Kiến thức chuyên ngành (nếu có)" ? document.getElementById("specializationSelect").value : "",
+            credits: parseInt(document.getElementById("credits").value),
+            hours: parseInt(document.getElementById("hours").value),
+            theory: parseInt(document.getElementById("hours").value), // Simplified: assuming all hours are theory for non-specialized
+            practice: 0,
+            internship: 0,
+            coefficient: parseFloat(document.getElementById("coefficient").value)
+        };
+
+        if (!course.name || !course.block || !course.group || (course.group === "Kiến thức chuyên ngành (nếu có)" && !course.specialization)) {
+            alert("Vui lòng điền đầy đủ thông tin, bao gồm chuyên ngành nếu thuộc kiến thức chuyên ngành!");
+            return;
+        }
+
+        courses.push(course);
+        closeModal("addModal");
+        loadCourses();
+        filterCourses();
+    }
+
+    // Edit course
+    let currentEditIndex = null;
+    function editCourse(index) {
+        currentEditIndex = index;
+        const course = courses[index];
+        document.getElementById("editCourseId").textContent = course.id;
+        document.getElementById("editCourseName").value = course.name;
+        document.getElementById("editBlockSelect").value = course.block;
+        updateGroupSelect("edit");
+        document.getElementById("editGroupSelect").value = course.group;
+        toggleSpecializationSelect("edit");
+        document.getElementById("editSpecializationSelect").value = course.specialization;
+        document.getElementById("editCredits").value = course.credits;
+        document.getElementById("editHours").value = course.hours;
+        document.getElementById("editCoefficient").value = course.coefficient;
+        document.getElementById("editModal").style.display = "block";
+    }
+
+    function saveEdit() {
+        const course = courses[currentEditIndex];
+        course.name = document.getElementById("editCourseName").value;
+        course.block = document.getElementById("editBlockSelect").value;
+        course.group = document.getElementById("editGroupSelect").value;
+        course.specialization = course.group === "Kiến thức chuyên ngành (nếu có)" ? document.getElementById("editSpecializationSelect").value : "";
+        course.credits = parseInt(document.getElementById("editCredits").value);
+        course.hours = parseInt(document.getElementById("editHours").value);
+        course.theory = parseInt(document.getElementById("editHours").value); // Simplified
+        course.practice = 0;
+        course.internship = 0;
+        course.coefficient = parseFloat(document.getElementById("editCoefficient").value);
+
+        if (!course.name || !course.block || !course.group || (course.group === "Kiến thức chuyên ngành (nếu có)" && !course.specialization)) {
+            alert("Vui lòng điền đầy đủ thông tin, bao gồm chuyên ngành nếu thuộc kiến thức chuyên ngành!");
+            return;
+        }
+
+        closeModal("editModal");
+        loadCourses();
+        filterCourses();
+    }
+
+    // Delete course
+    let currentDeleteIndex = null;
+    function openDeleteModal(index) {
+        currentDeleteIndex = index;
+        document.getElementById("deleteCourseName").textContent = courses[index].name;
+        document.getElementById("deleteModal").style.display = "block";
+    }
+
+    function confirmDelete() {
+        courses.splice(currentDeleteIndex, 1);
+        closeModal("deleteModal");
+        loadCourses();
+        filterCourses();
+    }
+
+    // Search courses
+    function searchCourses() {
+        const query = document.getElementById("searchInput").value.toLowerCase();
+        const filteredCourses = courses.filter(course =>
+            course.id === query || course.name.toLowerCase().includes(query)
+        );
+        loadCourses(filteredCourses);
+    }
+
+    // Filter courses
+    function filterCourses() {
+        const blockFilter = document.getElementById("filterBlock").value;
+        const groupFilter = document.getElementById("filterGroup").value;
+        const specializationFilter = document.getElementById("filterSpecialization").value;
+
+        // Update group filter options based on block filter
+        const groupSelect = document.getElementById("filterGroup");
+        groupSelect.innerHTML = '<option value="">Lọc theo Nhóm Kiến Thức</option>';
+        if (blockFilter) {
+            const groups = knowledgeGroups[blockFilter];
+            groups.forEach(group => {
+                const option = document.createElement("option");
+                option.value = group;
+                option.textContent = group;
+                groupSelect.appendChild(option);
+            });
+        }
+
+        let filteredCourses = courses;
+        if (blockFilter) {
+            filteredCourses = filteredCourses.filter(course => course.block === blockFilter);
+        }
+        if (groupFilter) {
+            filteredCourses = filteredCourses.filter(course => course.group === groupFilter);
+        }
+        if (specializationFilter) {
+            filteredCourses = filteredCourses.filter(course => course.specialization === specializationFilter);
+        }
+
+        loadCourses(filteredCourses);
+    }
+
+    // Close modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+    // Load courses on page load
+    window.onload = () => {
+        loadCourses();
+        filterCourses();
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Quản lý đánh giá học phần</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            font-size: 20px;
+        }
+
+        .container {
+            max-width: 90%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff8c66;
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ff8c66;
+            color: white;
+            text-align: center;
+        }
+
+        tr:hover {
+            background-color: #fff7f2;
+        }
+
+        button {
+            font-size: 16px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn {
+            background-color: #ff8c66;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 18px;
+            padding: 10px 20px;
+        }
+
+        .edit-btn {
+            background-color: #FFC107;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #ccc;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 70%;
+            max-width: 800px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .form-table th, .form-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .form-table th {
+            background-color: #ff8c66;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .form-table input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-table input:focus {
+            border-color: #ff8c66;
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 140, 102, 0.3);
+        }
+
+        .action-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ĐỀ CƯƠNG CHI TIẾT</h1>
+        
+        <button class="add-btn" onclick="openAddModal()">+ Thêm Mới</button>
+        
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Bộ phận<br>được đánh giá</th>
+                    <th>Điểm<br>đánh giá bộ phận</th>
+                    <th>Trọng số</th>
+                    <th>Hình thức<br>đánh giá</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><em>1. Đánh giá quá trình</em></td>
+                    <td><em>Điểm quá trình (1.1 + 1.2)</em></td>
+                    <td>0.4</td>
+                    <td></td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditModal(0)">Sửa</button>
+                        <button class="delete-btn" onclick="openDeleteModal(0)">Xóa</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1.1. Ý thức học tập</td>
+                    <td>Điểm chuyên cần, thái độ học tập</td>
+                    <td>0.1</td>
+                    <td></td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditModal(1)">Sửa</button>
+                        <button class="delete-btn" onclick="openDeleteModal(1)">Xóa</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td rowspan="5">1.2. Hồ sơ học tập</td>
+                    <td>1.2.1 Điểm bài tập (ở nhà/trên lớp/bài tập lớn)</td>
+                    <td>0.1</td>
+                    <td></td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditModal(2)">Sửa</button>
+                        <button class="delete-btn" onclick="openDeleteModal(2)">Xóa</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1.2.2 Điểm thuyết trình, thực hành, thảo luận</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditModal(3)">Sửa</button>
+                        <button class="delete-btn" onclick="openDeleteModal(3)">Xóa</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1.2.3 Điểm làm việc nhóm</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditModal(4)">Sửa</button>
+                        <button class="delete-btn" onclick="openDeleteModal(4)">Xóa</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1.2.4 Điểm kiểm tra giữa kỳ</td>
+                    <td>0.2</td>
+                    <td></td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditModal(5)">Sửa</button>
+                        <button class="delete-btn" onclick="openDeleteModal(5)">Xóa</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1.2.5</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditModal(6)">Sửa</button>
+                        <button class="delete-btn" onclick="openDeleteModal(6)">Xóa</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><em>2. Đánh giá cuối kỳ</em></td>
+                    <td><em>Điểm cuối kỳ (≥ 0.5)</em></td>
+                    <td>0.5</td>
+                    <td>Thi tự luận</td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditModal(7)">Sửa</button>
+                        <button class="delete-btn" onclick="openDeleteModal(7)">Xóa</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Adding -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addModal')">×</span>
+            <h2>Thêm Mục Đánh Giá Mới</h2>
+            <table class="form-table">
+                <thead>
+                    <tr>
+                        <th>Tiêu chí</th>
+                        <th>Thông tin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bộ phận đánh giá</td>
+                        <td><input type="text" id="addEvalPart" placeholder="Nhập bộ phận đánh giá"></td>
+                    </tr>
+                    <tr>
+                        <td>Điểm đánh giá bộ phận</td>
+                        <td><input type="text" id="addEvalDetail" placeholder="Nhập điểm đánh giá bộ phận"></td>
+                    </tr>
+                    <tr>
+                        <td>Trọng số</td>
+                        <td><input type="text" id="addWeight" placeholder="Nhập trọng số"></td>
+                    </tr>
+                    <tr>
+                        <td>Hình thức đánh giá</td>
+                        <td><input type="text" id="addMethod" placeholder="Nhập hình thức đánh giá"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="action-buttons">
+                <button class="save-btn" onclick="addEvaluation()">Thêm</button>
+                <button class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Editing -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editModal')">×</span>
+            <h2>Sửa Mục Đánh Giá</h2>
+            <table class="form-table">
+                <thead>
+                    <tr>
+                        <th>Tiêu chí</th>
+                        <th>Thông tin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bộ phận đánh giá</td>
+                        <td><input type="text" id="editEvalPart"></td>
+                    </tr>
+                    <tr>
+                        <td>Điểm đánh giá bộ phận</td>
+                        <td><input type="text" id="editEvalDetail"></td>
+                    </tr>
+                    <tr>
+                        <td>Trọng số</td>
+                        <td><input type="text" id="editWeight"></td>
+                    </tr>
+                    <tr>
+                        <td>Hình thức đánh giá</td>
+                        <td><input type="text" id="editMethod"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="action-buttons">
+                <button class="save-btn" onclick="saveEdit()">Lưu</button>
+                <button class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Delete Confirmation -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('deleteModal')">×</span>
+            <h2>Xác Nhận Xóa</h2>
+            <div style="margin: 20px 0; text-align: center;">
+                <p>Bạn có chắc chắn muốn xóa mục đánh giá này không?</p>
+                <p style="font-weight: bold; margin-top: 10px;" id="deleteItemName"></p>
+            </div>
+            <div class="action-buttons" style="text-align: center;">
+                <button class="delete-btn" onclick="confirmDelete()">Xóa</button>
+                <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentEditIndex = null;
+        let currentDeleteIndex = null;
+
+        // Open add modal
+        function openAddModal() {
+            document.getElementById("addEvalPart").value = "";
+            document.getElementById("addEvalDetail").value = "";
+            document.getElementById("addWeight").value = "";
+            document.getElementById("addMethod").value = "";
+            document.getElementById("addModal").style.display = "flex";
+        }
+
+        // Open edit modal
+        function openEditModal(index) {
+            currentEditIndex = index;
+            const rows = document.querySelectorAll("#data-table tbody tr");
+            const row = rows[index];
+            const cells = row.querySelectorAll("td");
+            
+            document.getElementById("editEvalPart").value = cells[0].innerText;
+            document.getElementById("editEvalDetail").value = cells[1].innerText;
+            document.getElementById("editWeight").value = cells[2].innerText;
+            document.getElementById("editMethod").value = cells[3].innerText;
+            
+            document.getElementById("editModal").style.display = "flex";
+        }
+
+        // Open delete modal
+        function openDeleteModal(index) {
+            currentDeleteIndex = index;
+            const rows = document.querySelectorAll("#data-table tbody tr");
+            const row = rows[index];
+            const cells = row.querySelectorAll("td");
+            
+            document.getElementById("deleteItemName").textContent = cells[0].innerText;
+            document.getElementById("deleteModal").style.display = "flex";
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        // Add new evaluation
+        function addEvaluation() {
+            const evalPart = document.getElementById("addEvalPart").value;
+            const evalDetail = document.getElementById("addEvalDetail").value;
+            const weight = document.getElementById("addWeight").value;
+            const method = document.getElementById("addMethod").value;
+            
+            if (!evalPart || !evalDetail) {
+                alert("Vui lòng điền đầy đủ thông tin!");
+                return;
+            }
+            
+            const tableBody = document.querySelector("#data-table tbody");
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td>${evalPart}</td>
+                <td>${evalDetail}</td>
+                <td>${weight}</td>
+                <td>${method}</td>
+                <td>
+                    <button class="edit-btn" onclick="openEditModal(${tableBody.children.length})">Sửa</button>
+                    <button class="delete-btn" onclick="openDeleteModal(${tableBody.children.length})">Xóa</button>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+            
+            closeModal("addModal");
+        }
+
+        // Save edit
+        function saveEdit() {
+            const evalPart = document.getElementById("editEvalPart").value;
+            const evalDetail = document.getElementById("editEvalDetail").value;
+            const weight = document.getElementById("editWeight").value;
+            const method = document.getElementById("editMethod").value;
+            
+            if (!evalPart || !evalDetail) {
+                alert("Vui lòng điền đầy đủ thông tin!");
+                return;
+            }
+            
+            const rows = document.querySelectorAll("#data-table tbody tr");
+            const row = rows[currentEditIndex];
+            const cells = row.querySelectorAll("td");
+            
+            cells[0].innerText = evalPart;
+            cells[1].innerText = evalDetail;
+            cells[2].innerText = weight;
+            cells[3].innerText = method;
+            
+            closeModal("editModal");
+        }
+
+        // Confirm delete
+        function confirmDelete() {
+            const rows = document.querySelectorAll("#data-table tbody tr");
+            rows[currentDeleteIndex].remove();
+            closeModal("deleteModal");
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName("modal");
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

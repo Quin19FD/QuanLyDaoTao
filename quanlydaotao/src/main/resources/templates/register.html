@@ -1,40 +1,76 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Ký - Hệ Thống Quản Lý Đào Tạo</title>
-    <link rel="stylesheet" href="/css/register.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+    <style>
+        /* Đảm bảo các input có thể nhận input */
+        input, select, textarea {
+            pointer-events: auto !important;
+            opacity: 1 !important;
+            background-color: #fff !important;
+            color: #333 !important;
+            z-index: 100 !important;
+            position: relative !important;
+        }
+        
+        /* Đảm bảo các container không chặn input */
+        .textbox {
+            position: relative !important;
+            z-index: 10 !important;
+            pointer-events: auto !important;
+        }
+        
+        /* Đảm bảo form có thể nhận input */
+        form {
+            pointer-events: auto !important;
+        }
+        
+        /* Đảm bảo không có overlay nào chặn input */
+        body::before, body::after {
+            pointer-events: none !important;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="register-container">
+    <div class="login-container">
         <div class="register-box">
             <h2>Đăng Ký Tài Khoản</h2>
-            <form th:action="@{/register}" method="post">
+
+            <form id="registerForm">
                 <div class="textbox">
-                    <input type="text" name="username" placeholder="Tên đăng nhập" required autocomplete="off">
+                    <input type="text" id="username" name="username" placeholder="Tên đăng nhập" required>
                 </div>
+
                 <div class="textbox">
-                    <input type="password" name="password" placeholder="Mật khẩu" required>
+                    <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
                 </div>
+
                 <div class="textbox">
-                    <input type="password" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
                 </div>
+
                 <div class="textbox">
-                    <input type="text" name="fullName" placeholder="Họ và tên" required>
+                    <input type="text" id="fullName" name="fullName" placeholder="Họ và tên" required>
                 </div>
+
                 <div class="textbox">
-                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="email" id="email" name="email" placeholder="Email" required>
                 </div>
+
                 <div class="textbox">
-                    <input type="text" name="phone" placeholder="Số điện thoại" required>
+                    <input type="tel" id="phone" name="phone" placeholder="Số điện thoại" required>
                 </div>
+
                 <div class="role-selection">
                     <label>Vai trò:</label>
                     <div class="role-options">
                         <label class="role-option">
-                            <input type="radio" name="role" value="STUDENT" required>
+                            <input type="radio" name="role" value="STUDENT" checked>
                             <span>Sinh viên</span>
                         </label>
                         <label class="role-option">
@@ -43,16 +79,89 @@
                         </label>
                     </div>
                 </div>
-                <button type="submit" class="btn-register">
-                    <span>Đăng Ký</span>
-                </button>
+
+                <button type="submit" class="btn-register">Đăng Ký</button>
             </form>
+
+            <div id="register-message" style="margin-top: 15px; text-align: center;"></div>
+
             <div class="login-link">
-                Đã có tài khoản? <a href="/login">Đăng nhập</a>
+                Đã có tài khoản? <a th:href="@{/login}">Đăng nhập ngay</a>
             </div>
+
             <div th:if="${error}" class="error-message" th:text="${error}"></div>
             <div th:if="${success}" class="success-message" th:text="${success}"></div>
         </div>
     </div>
+
+    <script>
+        // Đảm bảo tất cả các input đều có thể nhận input
+        document.querySelectorAll('input').forEach(input => {
+            input.style.pointerEvents = 'auto';
+            input.style.opacity = '1';
+            input.style.backgroundColor = '#fff';
+            input.style.color = '#333';
+        });
+        
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const roleElement = document.querySelector('input[name="role"]:checked');
+            const role = roleElement ? roleElement.value : 'STUDENT';
+            
+            const messageDiv = document.getElementById('register-message');
+            
+            if (password !== confirmPassword) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Mật khẩu xác nhận không khớp!';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/taikhoan/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userName: username,
+                        password: password,
+                        tenUser: fullName,
+                        email: email,
+                        sdt: phone,
+                        vaiTro: role
+                    })
+                });
+                
+                const responseData = await response.text();
+                console.log('Server response:', responseData);
+                
+                if (response.ok) {
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Đăng ký thành công!';
+                    
+                    // Chuyển hướng sau 1 giây
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1000);
+                } else {
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = responseData || 'Đăng ký thất bại!';
+                    console.error('Registration error:', responseData);
+                }
+            } catch (error) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Lỗi khi kết nối máy chủ!';
+                console.error('Connection error:', error);
+            }
+        });
+    </script>
 </body>
-</html> 
+
+</html>
