@@ -339,13 +339,16 @@
 
     <script>
         function editProfile() {
-            let fields = document.querySelectorAll('.profile-item p:not(#username)');
+            let editableFields = ['email', 'phone'];
+            let fields = document.querySelectorAll('.profile-item p');
             fields.forEach(field => {
-                field.setAttribute('contenteditable', 'true');
-                field.style.border = '2px solid #f97316';
-                field.style.padding = '8px 12px';
-                field.style.borderRadius = '8px';
-                field.style.backgroundColor = '#fff';
+                if (editableFields.includes(field.id)) {
+                    field.setAttribute('contenteditable', 'true');
+                    field.style.border = '2px solid #f97316';
+                    field.style.padding = '8px 12px';
+                    field.style.borderRadius = '8px';
+                    field.style.backgroundColor = '#fff';
+                }
             });
 
             document.getElementById('editButton').innerHTML = '<i class="fas fa-save"></i> Lưu thông tin';
@@ -364,17 +367,30 @@
             document.getElementById('editButton').innerHTML = '<i class="fas fa-edit"></i> Chỉnh sửa thông tin';
             document.getElementById('editButton').setAttribute('onclick', 'editProfile()');
 
+            const email = document.getElementById('email').textContent;
+            const phone = document.getElementById('phone').textContent;
+
+            // Kiểm tra định dạng email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Email không hợp lệ!');
+                return;
+            }
+
+            // Kiểm tra định dạng số điện thoại
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phone)) {
+                alert('Số điện thoại phải có 10 chữ số!');
+                return;
+            }
+
             const updatedData = {
-                username: document.getElementById('username').textContent,
-                fullName: document.getElementById('fullName').textContent,
-                email: document.getElementById('email').textContent,
-                phone: document.getElementById('phone').textContent,
-                role: document.getElementById('role').textContent,
-                birthYear: document.getElementById('birthYear').textContent,
-                status: document.getElementById('status').textContent
+                userName: document.getElementById('username').textContent,
+                email: email,
+                sdt: phone
             };
 
-            fetch('/api/profile/update', {
+            fetch('/profile/api/update', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -385,8 +401,10 @@
             .then(data => {
                 if (data.success) {
                     alert('Cập nhật thông tin thành công!');
+                    // Tải lại trang để hiển thị thông tin mới
+                    window.location.reload();
                 } else {
-                    alert('Có lỗi xảy ra khi cập nhật thông tin!');
+                    alert(data.message || 'Có lỗi xảy ra khi cập nhật thông tin!');
                 }
             })
             .catch(error => {
@@ -410,6 +428,7 @@
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const username = document.getElementById('username').textContent;
 
             if (!currentPassword || !newPassword || !confirmPassword) {
                 alert('Vui lòng điền đầy đủ thông tin!');
@@ -421,12 +440,13 @@
                 return;
             }
 
-            fetch('/api/profile/change-password', {
+            fetch('/profile/api/change-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    username: username,
                     currentPassword: currentPassword,
                     newPassword: newPassword
                 })

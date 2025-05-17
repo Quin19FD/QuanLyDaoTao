@@ -36,11 +36,9 @@ public class ProfileController {
             TaiKhoan existingUser = taiKhoanRepo.findByUserName(updatedUser.getUserName())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
 
-            // Cập nhật thông tin
-            existingUser.setTenUser(updatedUser.getTenUser());
+            // Chỉ cập nhật email và số điện thoại
             existingUser.setEmail(updatedUser.getEmail());
             existingUser.setSdt(updatedUser.getSdt());
-            existingUser.setNamSinh(updatedUser.getNamSinh());
 
             taiKhoanRepo.save(existingUser);
 
