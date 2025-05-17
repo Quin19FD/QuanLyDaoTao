@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý sinh viên</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+        }
+        .btn-orange {
+            background: linear-gradient(to right, #f97316, #fb923c);
+            transition: all 0.3s ease;
+        }
+        .btn-orange:hover {
+            background: linear-gradient(to right, #ea580c, #f97316);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+        .btn-red {
+            background: linear-gradient(to right, #ef4444, #f87171);
+            transition: all 0.3s ease;
+        }
+        .btn-red:hover {
+            background: linear-gradient(to right, #dc2626, #ef4444);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        .btn-blue {
+            background: linear-gradient(to right, #3b82f6, #60a5fa);
+            transition: all 0.3s ease;
+        }
+        .btn-blue:hover {
+            background: linear-gradient(to right, #2563eb, #3b82f6);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .card {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+        }
+        table tr:nth-child(even) {
+            background-color: #fef5e7;
+        }
+        table tr:hover {
+            background-color: #ffedd5;
+            transition: background-color 0.2s ease;
+        }
+        input:focus, select:focus, input:hover, select:hover {
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .back-home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #f97316, #fb923c);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+        .back-home-btn:hover {
+            background: linear-gradient(to right, #ea580c, #f97316);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .back-home-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+        }
+        .back-home-btn i {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Thêm nút trở về trang chủ -->
+    <a th:href="@{/home}" class="back-home-btn">
+        <i class="fas fa-home"></i>
+        Trang Chủ
+    </a>
+    <div class="w-[100vw] p-6 sm:p-8">
+        <!-- Tiêu đề -->
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-800">Quản lý tài khoản</h1>
+        </header>
+
+        <!-- Nhập sinh viên từ Excel -->
+        <div class="mb-10 p-8 bg-white rounded-2xl card">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">Nhập danh sách tài khoản từ Excel</h2>
+            <div class="flex items-center gap-6">
+                <input
+                        type="file"
+                        id="student-file"
+                        accept=".xlsx, .xls"
+                        class="p-4 border border-gray-200 rounded-lg text-lg file:bg-orange-100 file:border-none file:px-6 file:py-3 file:rounded-lg file:text-orange-700 file:cursor-pointer file:text-lg"
+                />
+            </div>
+            <p class="text-sm text-gray-500 mt-3">File Excel cần có các cột: "username", "password", "tên user", "email", "sđt", "vaitro", "namsinh", "trangthai".</p>
+        </div>
+
+        <!-- Nhập thủ công tài khoản -->
+        <div class="mb-10 p-8 bg-white rounded-2xl card">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">Thêm tài khoản thủ công</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="text" id="manual-username" placeholder="Username" class="p-4 border border-gray-200 rounded-lg text-lg">
+                <input type="text" id="manual-password" placeholder="Mật khẩu" class="p-4 border border-gray-200 rounded-lg text-lg">
+                <input type="text" id="manual-name" placeholder="Tên user" class="p-4 border border-gray-200 rounded-lg text-lg">
+                <input type="email" id="manual-email" placeholder="Email" class="p-4 border border-gray-200 rounded-lg text-lg">
+                <input type="text" id="manual-phone" placeholder="Số điện thoại" class="p-4 border border-gray-200 rounded-lg text-lg">
+                <input type="text" id="manual-role" placeholder="Vai trò" class="p-4 border border-gray-200 rounded-lg text-lg">
+                <input type="number" id="manual-birthYear" placeholder="Năm sinh" class="p-4 border border-gray-200 rounded-lg text-lg">
+                <input type="text" id="manual-status" placeholder="Trạng thái" class="p-4 border border-gray-200 rounded-lg text-lg">
+            </div>
+            <button onclick="addManualStudent()" class="btn-orange text-white px-6 py-3 rounded-lg mt-6">Thêm tài khoản</button>
+        </div>
+
+        <!-- Tìm kiếm và lọc -->
+        <div class="mb-10 p-8 bg-white rounded-2xl card">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">Tìm kiếm và lọc tài khoản</h2>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Tìm kiếm theo tên hoặc username..."
+                        class="p-4 border border-gray-200 rounded-lg text-lg flex-1"
+                        oninput="filterStudents()"
+                />
+                <select id="role-filter" class="p-4 border border-gray-200 rounded-lg text-lg" onchange="filterStudents()">
+                    <option value="">Tất cả vai trò</option>
+                    <option value="Sinh viên">Sinh viên</option>
+                    <option value="Giảng viên">Giảng viên</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Danh sách sinh viên -->
+        <div class="p-8 bg-white rounded-2xl card">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">Danh sách tài khoản</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto" id="student-table">
+                    <thead>
+                    <tr class="bg-orange-100">
+                        <th class="p-4 text-left text-gray-600 font-semibold text-lg">Tên</th>
+                        <th class="p-4 text-left text-gray-600 font-semibold text-lg">Username</th>
+                        <th class="p-4 text-left text-gray-600 font-semibold text-lg">Mật khẩu</th>
+                        <th class="p-4 text-left text-gray-600 font-semibold text-lg">Email</th>
+                        <th class="p-4 text-left text-gray-600 font-semibold text-lg">SĐT</th>
+                        <th class="p-4 text-left text-gray-600 font-semibold text-lg">Vai trò</th>
+                        <th class="p-4 text-left text-gray-600 font-semibold text-lg">Năm sinh</th>
+                        <th class="p-4 text-left text-gray-600 font-semibold text-lg">Trạng thái</th>
+                        <th class="p-4 text-left text-gray-600 font-semibold text-lg">Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody id="student-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let students = [
+            // Dữ liệu giả cho Admin
+            { username: "AD001", password: "AD001@DHSG", name: "Nguyễn Văn An", email: "an.admin@dhsg.edu.vn", phone: "0901234567", role: "Admin", birthYear: "1980", status: "Hoạt động" },
+            { username: "AD002", password: "AD002@DHSG", name: "Trần Thị Bình", email: "binh.admin@dhsg.edu.vn", phone: "0901234568", role: "Admin", birthYear: "1985", status: "Hoạt động" },
+            // Dữ liệu giả cho Giảng viên
+            { username: "GV001", password: "GV001@DHSG", name: "Lê Văn Cường", email: "cuong.gv@dhsg.edu.vn", phone: "0901234569", role: "Giảng viên", birthYear: "1975", status: "Hoạt động" },
+            { username: "GV002", password: "GV002@DHSG", name: "Phạm Thị Dung", email: "dung.gv@dhsg.edu.vn", phone: "0901234570", role: "Giảng viên", birthYear: "1982", status: "Hoạt động" },
+            { username: "GV003", password: "GV003@DHSG", name: "Hoàng Văn Em", email: "em.gv@dhsg.edu.vn", phone: "0901234571", role: "Giảng viên", birthYear: "1978", status: "Tạm khóa" },
+            // Dữ liệu giả cho Sinh viên
+            { username: "SV001", password: "SV001@DHSG", name: "Nguyễn Thị Hoa", email: "hoa.sv@dhsg.edu.vn", phone: "0901234572", role: "Sinh viên", birthYear: "2000", status: "Hoạt động" },
+            { username: "SV002", password: "SV002@DHSG", name: "Trần Văn Hùng", email: "hung.sv@dhsg.edu.vn", phone: "0901234573", role: "Sinh viên", birthYear: "2001", status: "Hoạt động" },
+            { username: "SV003", password: "SV003@DHSG", name: "Lê Thị Kim", email: "kim.sv@dhsg.edu.vn", phone: "0901234574", role: "Sinh viên", birthYear: "2002", status: "Hoạt động" },
+            { username: "SV004", password: "SV004@DHSG", name: "Phạm Văn Long", email: "long.sv@dhsg.edu.vn", phone: "0901234575", role: "Sinh viên", birthYear: "2000", status: "Tạm khóa" },
+            { username: "SV005", password: "SV005@DHSG", name: "Hoàng Thị Mai", email: "mai.sv@dhsg.edu.vn", phone: "0901234576", role: "Sinh viên", birthYear: "2001", status: "Hoạt động" }
+        ];
+        let editingIndex = null;
+
+        // Cập nhật bảng sinh viên
+        function updateStudentTable(filteredStudents = students) {
+            const tbody = document.getElementById('student-table-body');
+            tbody.innerHTML = '';
+            if (filteredStudents.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="p-4 text-gray-500 text-center text-lg">Chưa có tài khoản nào.</td></tr>';
+            } else {
+                filteredStudents.forEach((student, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-100';
+                    row.innerHTML = `
+                        <td class="p-4 text-lg">${student.name}</td>
+                        <td class="p-4 text-lg">${student.username}</td>
+                        <td class="p-4 text-lg">${student.password}</td>
+                        <td class="p-4 text-lg">${student.email}</td>
+                        <td class="p-4 text-lg">${student.phone}</td>
+                        <td class="p-4 text-lg">${student.role}</td>
+                        <td class="p-4 text-lg">${student.birthYear}</td>
+                        <td class="p-4 text-lg">${student.status}</td>
+                        <td class="p-4 text-lg action-buttons">
+                            <button onclick="editStudent(${index})" class="btn-blue text-white px-4 py-2 rounded-lg">Sửa</button>
+                            <button onclick="deleteStudent(${index})" class="btn-red text-white px-4 py-2 rounded-lg">Xóa</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        // Tìm kiếm và lọc
+        function filterStudents() {
+            const searchValue = document.getElementById('search-input').value.toLowerCase();
+            const roleFilter = document.getElementById('role-filter').value;
+
+            const filteredStudents = students.filter(student => {
+                const matchesSearch = student.name.toLowerCase().includes(searchValue) || student.username.toLowerCase().includes(searchValue);
+                const matchesRole = roleFilter ? student.role === roleFilter : true;
+                return matchesSearch && matchesRole;
+            });
+
+            updateStudentTable(filteredStudents);
+        }
+
+        // Xóa sinh viên
+        function deleteStudent(index) {
+            if (confirm('Bạn có chắc muốn xóa tài khoản này?')) {
+                students.splice(index, 1);
+                updateStudentTable();
+                alert('Đã xóa tài khoản thành công!');
+            }
+        }
+
+        // Sửa sinh viên
+        function editStudent(index) {
+            editingIndex = index;
+            const student = students[index];
+            document.getElementById('manual-username').value = student.username;
+            document.getElementById('manual-password').value = student.password;
+            document.getElementById('manual-name').value = student.name;
+            document.getElementById('manual-email').value = student.email;
+            document.getElementById('manual-phone').value = student.phone;
+            document.getElementById('manual-role').value = student.role;
+            document.getElementById('manual-birthYear').value = student.birthYear;
+            document.getElementById('manual-status').value = student.status;
+            document.querySelector('button[onclick="addManualStudent()"]').textContent = 'Cập nhật tài khoản';
+        }
+
+        // Thêm tài khoản thủ công
+        function addManualStudent() {
+            const username = document.getElementById('manual-username').value.trim();
+            const password = document.getElementById('manual-password').value.trim() || `${username}@DHSG`;
+            const name = document.getElementById('manual-name').value.trim();
+            const email = document.getElementById('manual-email').value.trim();
+            const phone = document.getElementById('manual-phone').value.trim();
+            const role = document.getElementById('manual-role').value.trim();
+            const birthYear = document.getElementById('manual-birthYear').value.trim();
+            const status = document.getElementById('manual-status').value.trim();
+
+            if (!username || !name) {
+                alert('Vui lòng nhập ít nhất username và tên!');
+                return;
+            }
+
+            const student = { username, password, name, email, phone, role, birthYear, status };
+
+            if (editingIndex !== null) {
+                students[editingIndex] = student;
+                editingIndex = null;
+                document.querySelector('button[onclick="addManualStudent()"]').textContent = 'Thêm tài khoản';
+            } else {
+                students.push(student);
+            }
+
+            updateStudentTable();
+            alert(editingIndex !== null ? 'Đã cập nhật tài khoản thành công!' : 'Đã thêm tài khoản thành công!');
+
+            // Reset form
+            document.getElementById('manual-username').value = '';
+            document.getElementById('manual-password').value = '';
+            document.getElementById('manual-name').value = '';
+            document.getElementById('manual-email').value = '';
+            document.getElementById('manual-phone').value = '';
+            document.getElementById('manual-role').value = '';
+            document.getElementById('manual-birthYear').value = '';
+            document.getElementById('manual-status').value = '';
+        }
+
+        // Xử lý nhập file Excel
+        document.getElementById('student-file').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const sheet = workbook.Sheets[sheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+                        const newStudents = jsonData.map(row => ({
+                            username: row['username'] || '',
+                            password: row['password'] || `${row['username'] || ''}@DHSG`,
+                            name: row['tên user'] || '',
+                            email: row['email'] || '',
+                            phone: row['sđt'] || '',
+                            role: row['vaitro'] || '',
+                            birthYear: row['namsinh'] || '',
+                            status: row['trangthai'] || ''
+                        })).filter(student => student.username && student.name);
+
+                        if (newStudents.length === 0) {
+                            alert('Không tìm thấy dữ liệu hợp lệ trong file Excel!');
+                            return;
+                        }
+
+                        students.push(...newStudents);
+                        updateStudentTable();
+                        alert('Đã nhập danh sách tài khoản thành công!');
+                        event.target.value = ''; // Reset input file
+                    } catch (error) {
+                        alert('Lỗi khi đọc file Excel: ' + error.message);
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+
+        // Khởi tạo bảng với dữ liệu giả
+        updateStudentTable();
+    </script>
+</body>
+</html>

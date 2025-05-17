@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ - Hệ Thống Quản Lý Đào Tạo</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        /* Responsive grid */
+        @media (max-width: 1400px) {
+            .dashboard {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dashboard-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-left: 4px solid #ff8a65;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 138, 101, 0.1) 0%, rgba(255, 255, 255, 0) 60%);
+            z-index: 0;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card h3 {
+            color: #ff7043;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-card p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-card .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #ff7043;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .welcome-message {
+            background-color: #ffccbc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(255, 138, 101, 0.2);
+            }
+            100% {
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            }
+        }
+
+        .welcome-message::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .welcome-message h2 {
+            color: #ff7043;
+            margin-top: 0;
+            position: relative;
+            z-index: 2;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-message p {
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Style cho user menu */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+            padding: 10px 20px;
+            background: rgba(18, 149, 185, 0.15);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+        }
+
+        .user-menu:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info {
+            color: white;
+            text-align: right;
+        }
+
+        .user-info .name {
+            font-weight: 600;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info .role {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            min-width: 200px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: #1f2937;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .user-dropdown a:hover {
+            background: #f3f4f6;
+            color: #f97316;
+        }
+
+        .user-dropdown .divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 5px 0;
+        }
+
+        /* Style cho nút đăng nhập */
+        .login-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f97316;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            margin-left: auto;
+        }
+
+        .login-btn:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        /* Style cho header */
+        header {
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.2);
+            position: relative;
+            overflow: visible;
+            height: 80px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            flex-grow: 1;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Ẩn nút đăng xuất cũ trong nav */
+        nav ul li:last-child {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Hệ Thống Quản Lý Đào Tạo</h1>
+        <!-- User Menu khi đã đăng nhập -->
+        <div class="user-menu" th:if="${isLoggedIn}" onclick="toggleDropdown(event)">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+                <div class="name" th:text="${currentUser}"></div>
+                <div class="role" th:text="${userType}"></div>
+            </div>
+            <div class="user-dropdown" id="userDropdown">
+                <a th:href="@{'/profile'(username=${currentUser})}">
+                    <i class="fas fa-user-circle"></i>
+                    Thông tin cá nhân
+                </a>
+                <div class="divider"></div>
+                <a th:href="@{/logout}" style="color: #ef4444;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Đăng xuất
+                </a>
+            </div>
+        </div>
+        <!-- Nút đăng nhập khi chưa đăng nhập -->
+        <a th:unless="${isLoggedIn}" th:href="@{/login}" class="login-btn">
+            <i class="fas fa-sign-in-alt"></i>
+            Đăng nhập
+        </a>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}"><i class="fas fa-home"></i> Trang Chủ</a></li>
+            <li th:if="${isAdmin or isTeacher or isUser}"><a th:href="@{/CTDT_UserViews}"><i class="fas fa-info-circle"></i> Thông Tin Chung</a></li>
+            <li th:if="${isAdmin or isTeacher or isUser}"><a th:href="@{/khungchuongtrinh}"><i class="fas fa-book"></i> Khung Chương Trình</a></li>
+            <li th:if="${isAdmin or isTeacher or isUser}"><a th:href="@{/hocphan}"><i class="fas fa-book-open"></i> Học Phần</a></li>
+            <li th:if="${isAdmin or isTeacher or isUser}"><a th:href="@{/decuongchitiet}"><i class="fas fa-file-alt"></i> Đề Cương Chi Tiết</a></li>
+            <li th:if="${isAdmin or isTeacher or isUser}"><a th:href="@{/kehoachdayhoc}"><i class="fas fa-calendar-alt"></i> Kế Hoạch Dạy Học</a></li>
+            <li th:if="${isAdmin or isTeacher or isUser}"><a th:href="@{/kehoachmonhom}"><i class="fas fa-users"></i> Kế Hoạch Mở Nhóm</a></li>
+            <li th:if="${isAdmin or isTeacher}"><a th:href="@{/giangvien}"><i class="fas fa-chalkboard-teacher"></i> Giảng Viên</a></li>
+            <li th:if="${isAdmin or isTeacher}"><a th:href="@{/phanconggiangday}"><i class="fas fa-tasks"></i> Phân Công Giảng Dạy</a></li>
+            <li th:if="${isAdmin}"><a th:href="@{/thongke}"><i class="fas fa-chart-bar"></i> Thống Kê</a></li>
+            <li th:if="${isAdmin}"><a th:href="@{/quanlytaikhoan}"><i class="fas fa-user-cog"></i> Quản Lý Tài Khoản</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Hiển thị cho ADMIN -->
+        <div th:if="${isAdmin}">
+            <h2>Chào mừng Admin!</h2>
+            <p>Bạn có quyền truy cập vào tất cả các chức năng của hệ thống.</p>
+        </div>
+
+        <!-- Hiển thị cho GIANG_VIEN -->
+        <div th:if="${isTeacher}">
+            <h2>Chào mừng Giảng viên!</h2>
+            <p>Bạn có quyền truy cập vào các chức năng dành cho giảng viên.</p>
+        </div>
+
+        <!-- Hiển thị cho USER -->
+        <div th:if="${isUser}">
+            <h2>Chào mừng Sinh viên!</h2>
+            <p>Bạn có quyền truy cập vào các chức năng dành cho sinh viên.</p>
+        </div>
+
+        <div class="welcome-message">
+            <h2>Chào mừng đến với Hệ thống Quản lý Đào tạo!</h2>
+            <p>Hệ thống cung cấp các công cụ quản lý thông tin về chương trình đào tạo, học phần, giảng viên và sinh viên.</p>
+        </div>
+
+        <div class="dashboard">
+
+            <!-- Hiển thị cho ADMIN -->
+            <div class="dashboard-card" th:if="${isAdmin}">
+                <h3>Quản lý Đào Tạo</h3>
+                <p>Xem và quản lý thông tin về chương trình đào tạo.</p>
+                <a th:href="@{/CTDT_UserViews}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isAdmin}">
+                <h3>Quản lý Khung Chương Trình</h3>
+                <p>Xem và quản lý thông tin về khung chương trình đào tạo.</p>
+                <a th:href="@{/khungchuongtrinh}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isAdmin}">
+                <h3>Quản lý Học Phần</h3>
+                <p>Xem và quản lý thông tin về các học phần trong chương trình đào tạo.</p>
+                <a th:href="@{/hocphan}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isAdmin}">
+                <h3>Quản lý Đề Cương Chi Tiết</h3>
+                <p>Xem và quản lý thông tin về các cột điểm trong chương trình đào tạo.</p>
+                <a th:href="@{/decuongchitiet}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isAdmin}">
+                <h3>Kế Hoạch Dạy Học</h3>
+                <p>Xem và quản lý kế hoạch dạy học chuẩn từng học kì trong chương trình đào tạo.</p>
+                <a th:href="@{/kehoachdayhoc}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isAdmin}">
+                <h3>Kế Hoạch Mở Nhóm</h3>
+                <p>Xem và quản lý kế hoạch mở nhóm lớp cho các học phần trong chương trình đào tạo.</p>
+                <a th:href="@{/kehoachmonhom}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isAdmin}">
+                <h3>Quản lý Giảng Viên</h3>
+                <p>Xem và quản lý thông tin về giảng viên.</p>
+                <a th:href="@{/giangvien}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isAdmin}">
+                <h3>Phân Công Giảng Dạy</h3>
+                <p>Quản lý việc phân công giảng dạy cho giảng viên.</p>
+                <a th:href="@{/phanconggiangday}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isAdmin}">
+                <h3>Quản lý Tài khoản</h3>
+                <p>Xem và quản lý thông tin về sinh viên và giảng viên.</p>
+                <a th:href="@{/quanlytaikhoan}" class="btn">Truy cập</a>
+            </div>
+
+
+            <!-- Hiển thị cho GIANG_VIEN -->
+            <div class="dashboard-card" th:if="${isTeacher}">
+                <h3>Quản lý Đào Tạo</h3>
+                <p>Xem thông tin về chương trình đào tạo.</p>
+                <a th:href="@{/CTDT_UserViews}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isTeacher}">
+                <h3>Quản lý Khung Chương Trình</h3>
+                <p>Xem thông tin về khung chương trình đào tạo.</p>
+                <a th:href="@{/khungchuongtrinh}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isTeacher}">
+                <h3>Quản lý Học Phần</h3>
+                <p>Xem thông tin về các học phần trong chương trình đào tạo.</p>
+                <a th:href="@{/hocphan}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isTeacher}">
+                <h3>Quản lý Đề Cương Chi Tiết</h3>
+                <p>Xem thông tin về các cột điểm trong chương trình đào tạo.</p>
+                <a th:href="@{/decuongchitiet}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isTeacher}">
+                <h3>Kế Hoạch Dạy Học</h3>
+                <p>Xem kế hoạch dạy học chuẩn từng học kì trong chương trình đào tạo.</p>
+                <a th:href="@{/kehoachdayhoc}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isTeacher}">
+                <h3>Kế Hoạch Mở Nhóm</h3>
+                <p>Xem kế hoạch mở nhóm lớp cho các học phần trong chương trình đào tạo.</p>
+                <a th:href="@{/kehoachmonhom}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isTeacher}">
+                <h3>Phân Công Giảng Dạy</h3>
+                <p>Xem thông tin về giảng viên và lịch dạy học của giảng viên.</p>
+                <a th:href="@{/phanconggiangday}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isTeacher}">
+                <h3>Giảng Viên</h3>
+                <p>Xem thông tin về giảng viên và lịch dạy học của giảng viên.</p>
+                <a th:href="@{/giangvien}" class="btn">Truy cập</a>
+            </div>
+
+
+
+            <!-- Hiển thị cho USER -->
+            <div class="dashboard-card" th:if="${isUser}">
+                <h3>Xem Thông Tin Đào Tạo</h3>
+                <p>Xem thông tin về chương trình đào tạo.</p>
+                <a th:href="@{/CTDT_UserViews}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isUser}">
+                <h3>Quản lý Khung Chương Trình</h3>
+                <p>Xem thông tin về khung chương trình đào tạo.</p>
+                <a th:href="@{/khungchuongtrinh}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isUser}">
+                <h3>Quản lý Học Phần</h3>
+                <p>Xem thông tin về các học phần trong chương trình đào tạo.</p>
+                <a th:href="@{/hocphan}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isUser}">
+                <h3>Quản lý Đề Cương Chi Tiết</h3>
+                <p>Xem thông tin về các cột điểm trong chương trình đào tạo.</p>
+                <a th:href="@{/decuongchitiet}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isUser}">
+                <h3>Kế Hoạch Dạy Học</h3>
+                <p>Xem kế hoạch dạy học chuẩn từng học kì trong chương trình đào tạo.</p>
+                <a th:href="@{/kehoachdayhoc}" class="btn">Truy cập</a>
+            </div>
+
+            <div class="dashboard-card" th:if="${isUser}">
+                <h3>Kế Hoạch Mở Nhóm</h3>
+                <p>Xem kế hoạch mở nhóm lớp cho các học phần trong chương trình đào tạo.</p>
+                <a th:href="@{/kehoachmonhom}" class="btn">Truy cập</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Hệ thống quản lý đào tạo. Tất cả quyền được bảo lưu.</p>
+    </footer>
+
+    <script>
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        // Đóng dropdown khi click ra ngoài
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const userMenu = document.querySelector('.user-menu');
+            
+            if (dropdown && userMenu && !userMenu.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+
+</html>

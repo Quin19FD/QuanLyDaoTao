@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Chương Trình Khung CNTT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .program-select-table {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .btn-orange {
+            background: linear-gradient(to right, #f97316, #fb923c);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-orange:hover {
+            background: linear-gradient(to right, #ea580c, #f97316);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn-green {
+            background: linear-gradient(to right, #4CAF50, #66BB6A);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-green:hover {
+            background: linear-gradient(to right, #388E3C, #4CAF50);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-yellow {
+            background: linear-gradient(to right, #FFC107, #FFCA28);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-yellow:hover {
+            background: linear-gradient(to right, #FFA000, #FFC107);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-red {
+            background: linear-gradient(to right, #F44336, #EF5350);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-red:hover {
+            background: linear-gradient(to right, #D32F2F, #F44336);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-gray {
+            background: linear-gradient(to right, #B0BEC5, #CFD8DC);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gray:hover {
+            background: linear-gradient(to right, #90A4AE, #B0BEC5);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(176, 190, 197, 0.3);
+        }
+
+        table tr:nth-child(even) {
+            background-color: #fef5e7;
+        }
+
+        table tr:hover {
+            background-color: #ffedd5;
+            transition: background-color 0.2s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        /* Thêm style cho nút trở về trang chủ */
+        .back-home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #f97316, #fb923c);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+
+        .back-home-btn:hover {
+            background: linear-gradient(to right, #ea580c, #f97316);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .back-home-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+        }
+
+        .back-home-btn i {
+            font-size: 18px;
+        }
+    </style>
+    <!-- Thêm Font Awesome để sử dụng icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body class="bg-gray-100 min-h-screen p-6">
+    <!-- Thêm nút trở về trang chủ -->
+    <a th:href="@{/home}" class="back-home-btn">
+        <i class="fas fa-home"></i>
+        Trang Chủ
+    </a>
+    <div class="container max-w-full mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-center text-orange-600 mb-4">
+            QUẢN LÝ CHƯƠNG TRÌNH KHUNG NGÀNH CNTT
+            <span th:if="${isAdmin}" class="text-sm">(ADMIN)</span>
+        </h1>
+        <button class="btn-orange px-6 py-3 rounded-lg mb-6" th:if="${isAdmin}" onclick="openSelectProgramModal()">
+            + Thêm CTKhung Mới
+        </button>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-orange-500 text-white">
+                        <th class="p-4 text-left">TT</th>
+                        <th class="p-4 text-left">MÃ CTDT</th>
+                        <th class="p-4 text-left">TÊN CTDT</th>
+                        <th class="p-4 text-left">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody id="programTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal for Selecting Program -->
+    <div id="selectProgramModal" class="modal">
+        <div class="modal-content">
+            <span class="close text-2xl font-bold text-gray-500 float-right cursor-pointer"
+                onclick="closeModal('selectProgramModal')">×</span>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Chọn Chương Trình Đào Tạo</h2>
+            <div class="program-select-table">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-orange-500 text-white">
+                            <th class="p-3 text-left">Mã CTDT</th>
+                            <th class="p-3 text-left">Tên CTDT</th>
+                            <th class="p-3 text-left">Bậc</th>
+                            <th class="p-3 text-left">Loại bằng</th>
+                            <th class="p-3 text-left">Loại hình đào tạo</th>
+                            <th class="p-3 text-left">Thời gian đào tạo</th>
+                            <th class="p-3 text-left">Khoa quản lý</th>
+                            <th class="p-3 text-left">Tín chỉ tối thiểu</th>
+                            <th class="p-3 text-left">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="programSelectTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Viewing Details -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <span class="close text-2xl font-bold text-gray-500 float-right cursor-pointer"
+                onclick="closeModal('viewModal')">×</span>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Chi Tiết Chương Trình Khung</h2>
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-orange-500 text-white">
+                        <th class="p-3 text-left" colspan="3">Các Khối Kiến Thức</th>
+                    </tr>
+                    <tr class="bg-orange-500 text-white">
+                        <th class="p-3 text-left"></th>
+                        <th class="p-3 text-left">Số tín chỉ Bắt buộc</th>
+                        <th class="p-3 text-left">Số tín chỉ Tự chọn</th>
+                    </tr>
+                </thead>
+                <tbody id="detailTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal for Editing -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close text-2xl font-bold text-gray-500 float-right cursor-pointer"
+                onclick="closeModal('editModal')">×</span>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Sửa Chương Trình Khung</h2>
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-orange-500 text-white">
+                        <th class="p-3 text-left" colspan="3">Các Khối Kiến Thức</th>
+                    </tr>
+                    <tr class="bg-orange-500 text-white">
+                        <th class="p-3 text-left"></th>
+                        <th class="p-3 text-left">Số tín chỉ Bắt buộc</th>
+                        <th class="p-3 text-left">Số tín chỉ Tự chọn</th>
+                    </tr>
+                </thead>
+                <tbody id="editTableBody"></tbody>
+            </table>
+            <button class="btn-green px-6 py-3 rounded-lg mt-4" onclick="saveEdit()">Hoàn Thành</button>
+        </div>
+    </div>
+
+    <!-- Modal for Adding New Program -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close text-2xl font-bold text-gray-500 float-right cursor-pointer"
+                onclick="closeModal('addModal')">×</span>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Thêm Chương Trình Khung Mới</h2>
+            <div id="selectedProgramInfo" class="mb-4"></div>
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-orange-500 text-white">
+                        <th class="p-3 text-left" colspan="3">Các Khối Kiến Thức</th>
+                    </tr>
+                    <tr class="bg-orange-500 text-white">
+                        <th class="p-3 text-left"></th>
+                        <th class="p-3 text-left">Số tín chỉ Bắt buộc</th>
+                        <th class="p-3 text-left">Số tín chỉ Tự chọn</th>
+                    </tr>
+                </thead>
+                <tbody id="addTableBody"></tbody>
+            </table>
+            <button class="btn-green px-6 py-3 rounded-lg mt-4" onclick="saveNewProgram()">Thêm</button>
+        </div>
+    </div>
+
+    <!-- Modal for Delete Confirmation -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close text-2xl font-bold text-gray-500 float-right cursor-pointer"
+                onclick="closeModal('deleteModal')">×</span>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Xác Nhận Xóa</h2>
+            <p class="text-lg">Bạn có chắc chắn muốn xóa chương trình khung ngành <span id="deleteMajorName"></span>
+                không?</p>
+            <div class="flex gap-4 mt-4">
+                <button class="btn-red px-6 py-3 rounded-lg" onclick="confirmDelete()">Xóa</button>
+                <button class="btn-gray px-6 py-3 rounded-lg" onclick="closeModal('deleteModal')">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Lấy thông tin quyền từ server
+        const isAdmin = /*[[${isAdmin}]]*/ false;
+        const userRole = /*[[${userRole}]]*/ '';
+        
+        // Ẩn/hiện các nút chức năng dựa vào quyền
+        function checkPermission() {
+            const adminButtons = document.querySelectorAll('.btn-orange, .btn-yellow, .btn-red');
+            adminButtons.forEach(button => {
+                button.style.display = isAdmin ? 'inline-block' : 'none';
+            });
+
+            // Ẩn các modal không cần thiết nếu không phải admin
+            if (!isAdmin) {
+                const addModal = document.getElementById('addModal');
+                const editModal = document.getElementById('editModal');
+                const deleteModal = document.getElementById('deleteModal');
+                if (addModal) addModal.style.display = 'none';
+                if (editModal) editModal.style.display = 'none';
+                if (deleteModal) deleteModal.style.display = 'none';
+            }
+        }
+
+        // Gọi hàm kiểm tra quyền khi trang load
+        window.onload = function() {
+            checkPermission();
+            loadPrograms();
+        }
+    </script>
+
+    <script>
+        // Dữ liệu giả cho các chương trình đào tạo (CTDT)
+        const availablePrograms = [
+            { id: "7480201", name: "Công nghệ Thông tin", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480201CLC", name: "Công nghệ Thông tin (Chất lượng cao)", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 140 },
+            { id: "7480202", name: "Khoa học Máy tính", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 135 },
+            { id: "7480203", name: "Kỹ thuật Phần mềm", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 132 },
+            { id: "7480204", name: "Hệ thống Thông tin", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 128 },
+            { id: "7480205", name: "An toàn Thông tin", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 134 },
+            { id: "7480206", name: "Trí tuệ Nhân tạo", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 136 },
+            { id: "7480207", name: "Kỹ thuật Dữ liệu", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480208", name: "Công nghệ Đa phương tiện", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 129 },
+            { id: "7480209", name: "Công nghệ IoT", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 131 },
+            { id: "7480210", name: "Công nghệ Blockchain", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 133 },
+            { id: "7480211", name: "Phân tích Dữ liệu", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 132 },
+            { id: "7480212", name: "Kỹ thuật Máy tính", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480213", name: "Mạng Máy tính", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 129 },
+            { id: "7480214", name: "Khoa học Dữ liệu", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 135 },
+            { id: "7480215", name: "Công nghệ Web", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 128 },
+            { id: "7480216", name: "Ứng dụng Di động", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480217", name: "Công nghệ Cloud", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 132 },
+            { id: "7480218", name: "Thương mại Điện tử", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 129 },
+            { id: "7480219", name: "Quản trị CNTT", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 128 },
+            { id: "7480220", name: "Công nghệ AI Tăng cường", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 136 },
+            { id: "7480221", name: "Xử lý Ảnh", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480222", name: "Công nghệ Robot", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 134 },
+            { id: "7480223", name: "Học Máy", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 135 },
+            { id: "7480224", name: "Công nghệ AR/VR", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480225", name: "An ninh Mạng", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 133 },
+            { id: "7480226", name: "Công nghệ Phân tích Kinh doanh", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 129 },
+            { id: "7480227", name: "Kỹ thuật Hệ thống", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480228", name: "Công nghệ Lưu trữ", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 128 },
+            { id: "7480229", name: "Công nghệ Tự động hóa", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 131 },
+            { id: "7480230", name: "Kỹ thuật Nhúng", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 132 },
+            { id: "7480231", name: "Công nghệ 5G", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480232", name: "Phát triển Game", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 129 },
+            { id: "7480233", name: "Công nghệ Fintech", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 128 },
+            { id: "7480234", name: "Kỹ thuật Điện toán", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480235", name: "Công nghệ Sinh học", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 132 },
+            { id: "7480236", name: "Kỹ thuật Viễn thông", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 131 },
+            { id: "7480237", name: "Công nghệ Y tế", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 129 },
+            { id: "7480238", name: "Công nghệ Nông nghiệp", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 128 },
+            { id: "7480239", name: "Kỹ thuật Điều khiển", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480240", name: "Công nghệ Vật liệu", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 129 },
+            { id: "7480241", name: "Kỹ thuật Quang học", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 131 },
+            { id: "7480242", name: "Công nghệ Năng lượng", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480243", name: "Kỹ thuật Môi trường", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 128 },
+            { id: "7480244", name: "Công nghệ Giao thông", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 129 },
+            { id: "7480245", name: "Kỹ thuật Xây dựng", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480246", name: "Công nghệ Hàng không", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 131 },
+            { id: "7480247", name: "Kỹ thuật Hóa học", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 129 },
+            { id: "7480248", name: "Công nghệ Thực phẩm", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 128 },
+            { id: "7480249", name: "Kỹ thuật Dệt may", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 130 },
+            { id: "7480250", name: "Công nghệ Cơ khí", degree: "Đại học", type: "Cử nhân", trainingType: "Chính quy", duration: "4 năm", department: "CNTT", minCredits: 131 }
+        ];
+
+        // Dữ liệu giả cho các chương trình khung (CTKhung)
+        let programs = [
+            {
+                id: "7480201",
+                name: "Công nghệ Thông tin",
+                details: [
+                    { category: "Khối kiến thức giáo dục đại cương", mandatory: 34, elective: 0 },
+                    { category: "Kiến thức Giáo dục thế chất và Giáo dục quốc phòng và an ninh", mandatory: 12, elective: 2 },
+                    { category: "Kiến thức Ngôn ngữ", mandatory: 9, elective: 0 },
+                    { category: "Kiến thức Lý luận chính trị", mandatory: 11, elective: 0 },
+                    { category: "Kiến thức giáo dục đại cương khác", mandatory: 14, elective: 0 },
+                    { category: "Khối kiến thức giáo dục chuyên nghiệp", mandatory: 90, elective: 31 },
+                    { category: "Kiến thức cơ sở của ngành", mandatory: 37, elective: 0 },
+                    { category: "Kiến thức ngành", mandatory: 37, elective: 16 },
+                    { category: "Kiến thức chuyên ngành (nếu có)", mandatory: 16, elective: 15 }
+                ]
+            },
+            {
+                id: "7480201CLC",
+                name: "Công nghệ Thông tin (Chất lượng cao)",
+                details: [
+                    { category: "Khối kiến thức giáo dục đại cương", mandatory: 34, elective: 0 },
+                    { category: "Kiến thức Giáo dục thế chất và Giáo dục quốc phòng và an ninh", mandatory: 12, elective: 2 },
+                    { category: "Kiến thức Ngôn ngữ", mandatory: 9, elective: 0 },
+                    { category: "Kiến thức Lý luận chính trị", mandatory: 11, elective: 0 },
+                    { category: "Kiến thức giáo dục đại cương khác", mandatory: 14, elective: 0 },
+                    { category: "Khối kiến thức giáo dục chuyên nghiệp", mandatory: 95, elective: 35 },
+                    { category: "Kiến thức cơ sở của ngành", mandatory: 40, elective: 0 },
+                    { category: "Kiến thức ngành", mandatory: 40, elective: 20 },
+                    { category: "Kiến thức chuyên ngành (nếu có)", mandatory: 15, elective: 15 }
+                ]
+            }
+        ];
+
+        // Load programs into the table
+        function loadPrograms() {
+            const tableBody = document.getElementById("programTableBody");
+            tableBody.innerHTML = "";
+            programs.forEach((program, index) => {
+                const row = document.createElement("tr");
+                row.className = "hover:bg-orange-100";
+                row.innerHTML = `
+                <td class="p-4">${index + 1}</td>
+                <td class="p-4">${program.id}</td>
+                <td class="p-4">${program.name}</td>
+                <td class="p-4 flex gap-2">
+                    <button class="btn-green px-4 py-2 rounded-lg" onclick="viewDetails(${index})">Xem chi tiết</button>
+                    ${isAdmin ? `
+                        <button class="btn-yellow px-4 py-2 rounded-lg" onclick="editProgram(${index})">Sửa</button>
+                        <button class="btn-red px-4 py-2 rounded-lg" onclick="openDeleteModal(${index})">Xóa</button>
+                    ` : ''}
+                </td>
+            `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Load available programs for selection
+        function loadAvailablePrograms() {
+            const existingProgramIds = programs.map(p => p.id);
+            const available = availablePrograms.filter(p => !existingProgramIds.includes(p.id));
+            const tableBody = document.getElementById("programSelectTableBody");
+            tableBody.innerHTML = "";
+            if (available.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="9" class="p-4 text-center text-gray-500">Không còn chương trình đào tạo nào để thêm.</td></tr>';
+            } else {
+                available.forEach((program, index) => {
+                    const row = document.createElement("tr");
+                    row.className = "hover:bg-orange-100";
+                    row.innerHTML = `
+                    <td class="p-3">${program.id}</td>
+                    <td class="p-3">${program.name}</td>
+                    <td class="p-3">${program.degree}</td>
+                    <td class="p-3">${program.type}</td>
+                    <td class="p-3">${program.trainingType}</td>
+                    <td class="p-3">${program.duration}</td>
+                    <td class="p-3">${program.department}</td>
+                    <td class="p-3">${program.minCredits}</td>
+                    <td class="p-3">
+                        <button class="btn-green px-4 py-2 rounded-lg" onclick="selectProgram('${program.id}', '${program.name}')">Chọn</button>
+                    </td>
+                `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        // Open modal to select program
+        function openSelectProgramModal() {
+            loadAvailablePrograms();
+            document.getElementById("selectProgramModal").style.display = "block";
+        }
+
+        // Select a program and move to add modal
+        let selectedProgram = null;
+        function selectProgram(id, name) {
+            selectedProgram = { id, name };
+            document.getElementById("selectProgramModal").style.display = "none";
+            document.getElementById("addModal").style.display = "block";
+            document.getElementById("selectedProgramInfo").innerHTML = `
+            <p class="text-lg font-medium text-gray-700">Chương trình: ${name} (${id})</p>
+        `;
+            showAddForm();
+        }
+
+        // View program details
+        function viewDetails(index) {
+            const program = programs[index];
+            const detailTableBody = document.getElementById("detailTableBody");
+            detailTableBody.innerHTML = "";
+            let totalMandatory = 0, totalElective = 0;
+
+            program.details.forEach((detail) => {
+                const row = document.createElement("tr");
+                row.className = "hover:bg-orange-100";
+                row.innerHTML = `
+                <td class="p-3">${detail.category}</td>
+                <td class="p-3">${detail.mandatory}</td>
+                <td class="p-3">${detail.elective}</td>
+            `;
+                detailTableBody.appendChild(row);
+                totalMandatory += detail.mandatory;
+                totalElective += detail.elective;
+            });
+
+            const totalRow = document.createElement("tr");
+            totalRow.className = "font-bold";
+            totalRow.innerHTML = `
+            <td class="p-3">Tổng</td>
+            <td class="p-3">${totalMandatory}</td>
+            <td class="p-3">${totalElective}</td>
+        `;
+            detailTableBody.appendChild(totalRow);
+
+            const excludedCredits = program.details.find(detail => detail.category === "Kiến thức Giáo dục thế chất và Giáo dục quốc phòng và an ninh").mandatory;
+            const footerRow = document.createElement("tr");
+            footerRow.innerHTML = `
+            <td colspan="3" class="p-3 italic text-gray-600">(Không tính số tín chỉ Giáo dục thể chất và Giáo dục quốc phòng và an ninh) ${totalMandatory + totalElective - excludedCredits}</td>
+        `;
+            detailTableBody.appendChild(footerRow);
+
+            document.getElementById("viewModal").style.display = "block";
+        }
+
+        // Edit program
+        let currentEditIndex = null;
+        function editProgram(index) {
+            currentEditIndex = index;
+            const program = programs[index];
+            const editTableBody = document.getElementById("editTableBody");
+            editTableBody.innerHTML = "";
+
+            program.details.forEach((detail, i) => {
+                const row = document.createElement("tr");
+                row.className = "hover:bg-orange-100";
+                row.innerHTML = `
+                <td class="p-3">${detail.category}</td>
+                <td class="p-3"><input type="number" value="${detail.mandatory}" id="mandatory-${i}" class="p-2 border border-gray-300 rounded-lg w-full"></td>
+                <td class="p-3"><input type="number" value="${detail.elective}" id="elective-${i}" class="p-2 border border-gray-300 rounded-lg w-full"></td>
+            `;
+                editTableBody.appendChild(row);
+            });
+
+            document.getElementById("editModal").style.display = "block";
+        }
+
+        function saveEdit() {
+            const program = programs[currentEditIndex];
+            program.details.forEach((detail, i) => {
+                detail.mandatory = parseInt(document.getElementById(`mandatory-${i}`).value) || 0;
+                detail.elective = parseInt(document.getElementById(`elective-${i}`).value) || 0;
+            });
+            closeModal("editModal");
+            loadPrograms();
+        }
+
+        // Delete program
+        let currentDeleteIndex = null;
+        function openDeleteModal(index) {
+            currentDeleteIndex = index;
+            document.getElementById("deleteMajorName").textContent = `${programs[index].name}`;
+            document.getElementById("deleteModal").style.display = "block";
+        }
+
+        function confirmDelete() {
+            programs.splice(currentDeleteIndex, 1);
+            closeModal("deleteModal");
+            loadPrograms();
+        }
+
+        // Show add form
+        function showAddForm() {
+            const addTableBody = document.getElementById("addTableBody");
+            addTableBody.innerHTML = "";
+            const categories = [
+                "Khối kiến thức giáo dục đại cương",
+                "Kiến thức Giáo dục thế chất và Giáo dục quốc phòng và an ninh",
+                "Kiến thức Ngôn ngữ",
+                "Kiến thức Lý luận chính trị",
+                "Kiến thức giáo dục đại cương khác",
+                "Khối kiến thức giáo dục chuyên nghiệp",
+                "Kiến thức cơ sở của ngành",
+                "Kiến thức ngành",
+                "Kiến thức chuyên ngành (nếu có)"
+            ];
+
+            categories.forEach((category, i) => {
+                const row = document.createElement("tr");
+                row.className = "hover:bg-orange-100";
+                row.innerHTML = `
+                <td class="p-3">${category}</td>
+                <td class="p-3"><input type="number" value="0" id="add-mandatory-${i}" class="p-2 border border-gray-300 rounded-lg w-full"></td>
+                <td class="p-3"><input type="number" value="0" id="add-elective-${i}" class="p-2 border border-gray-300 rounded-lg w-full"></td>
+            `;
+                addTableBody.appendChild(row);
+            });
+        }
+
+        // Save new program
+        function saveNewProgram() {
+            if (!selectedProgram) {
+                alert("Vui lòng chọn chương trình đào tạo.");
+                return;
+            }
+
+            const newDetails = [];
+            for (let i = 0; i < 9; i++) {
+                const mandatory = parseInt(document.getElementById(`add-mandatory-${i}`).value) || 0;
+                const elective = parseInt(document.getElementById(`add-elective-${i}`).value) || 0;
+                newDetails.push({
+                    category: document.getElementById("addTableBody").children[i].cells[0].textContent,
+                    mandatory: mandatory,
+                    elective: elective
+                });
+            }
+
+            programs.push({
+                id: selectedProgram.id,
+                name: selectedProgram.name,
+                details: newDetails
+            });
+
+            closeModal("addModal");
+            selectedProgram = null;
+            document.getElementById("selectedProgramInfo").innerHTML = "";
+            loadPrograms();
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+            if (modalId === "addModal") {
+                selectedProgram = null;
+                document.getElementById("selectedProgramInfo").innerHTML = "";
+            }
+        }
+    </script>
+</body>
+
+</html>

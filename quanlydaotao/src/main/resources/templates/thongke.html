@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thống Kê - Hệ Thống Quản Lý Đào Tạo</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* Thêm style cho nút trở về trang chủ */
+        .back-home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #f97316, #fb923c);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+
+        .back-home-btn:hover {
+            background: linear-gradient(to right, #ea580c, #f97316);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .back-home-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+        }
+
+        .back-home-btn i {
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Thêm nút trở về trang chủ -->
+    <a th:href="@{/home}" class="back-home-btn">
+        <i class="fas fa-home"></i>
+        Trang Chủ
+    </a>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+                <i class="fas fa-chart-line mr-2 text-orange-600"></i>Thống Kê Tổng Quan
+            </h2>
+            <div class="flex space-x-2">
+                <select id="semesterFilter" class="bg-white border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <option value="HK1-2023-2024">Học kỳ 1 (2023-2024)</option>
+                    <option value="HK2-2023-2024">Học kỳ 2 (2023-2024)</option>
+                    <option value="HK1-2022-2023">Học kỳ 1 (2022-2023)</option>
+                </select>
+                <button id="updateStats" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md transition duration-200">
+                    <i class="fas fa-sync-alt mr-2"></i>Cập nhật
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-6 border-b border-gray-200">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                <li class="mr-2">
+                    <a href="#" class="inline-block p-4 border-b-2 border-orange-500 rounded-t-lg active text-orange-600" id="overview-tab">Tổng quan</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="programs-tab">Chương trình đào tạo</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="courses-tab">Học phần</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="teachers-tab">Giảng viên</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="teaching-tab">Giảng dạy</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tab Content: Tổng quan -->
+        <div id="overview-content" class="tab-content">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Card 1: Chương trình đào tạo -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                            <i class="fas fa-graduation-cap text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Chương trình đào tạo</p>
+                            <p class="text-2xl font-bold text-gray-800">5</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-sm">
+                            <span>Đại học: 3</span>
+                            <span>Sau đại học: 2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Học phần -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                            <i class="fas fa-book-open text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Học phần</p>
+                            <p class="text-2xl font-bold text-gray-800">78</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-sm">
+                            <span>Bắt buộc: 52</span>
+                            <span>Tự chọn: 26</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Giảng viên -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
+                            <i class="fas fa-chalkboard-teacher text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Giảng viên</p>
+                            <p class="text-2xl font-bold text-gray-800">42</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-sm">
+                            <span>Giáo sư: 5</span>
+                            <span>Tiến sĩ: 15</span>
+                            <span>Thạc sĩ: 22</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Nhóm lớp -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+                            <i class="fas fa-users text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Nhóm lớp</p>
+                            <p class="text-2xl font-bold text-gray-800">68</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-sm">
+                            <span>Lý thuyết: 42</span>
+                            <span>Thực hành: 26</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Chart 1: Phân bố tiết giảng dạy theo bộ môn -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-chart-pie mr-2 text-orange-500"></i>Phân bố tiết giảng dạy theo bộ môn
+                    </h3>
+                    <div class="h-80">
+                        <canvas id="departmentTeachingChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Tỷ lệ giảng viên theo học vị -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-chart-bar mr-2 text-orange-500"></i>Tỷ lệ giảng viên theo học vị
+                    </h3>
+                    <div class="h-80">
+                        <canvas id="teacherQualificationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-history mr-2 text-orange-500"></i>Hoạt động gần đây
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hoạt động</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Người thực hiện</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Cập nhật CTĐT ngành CNTT</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Nguyễn Văn A</td>
+                                <td class="px-6 py-4 whitespace-nowrap">15/05/2023 10:30</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Hoàn thành</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Thêm học phần Trí tuệ nhân tạo</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Trần Thị B</td>
+                                <td class="px-6 py-4 whitespace-nowrap">14/05/2023 15:45</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Hoàn thành</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Phân công giảng dạy HK1 2023-2024</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Lê Văn C</td>
+                                <td class="px-6 py-4 whitespace-nowrap">13/05/2023 09:15</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Đang xử lý</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Cập nhật thông tin giảng viên</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Phạm Thị D</td>
+                                <td class="px-6 py-4 whitespace-nowrap">12/05/2023 14:20</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Hoàn thành</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Chương trình đào tạo -->
+        <div id="programs-content" class="tab-content hidden">
+            <!-- Thống kê CTĐT -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-graduation-cap mr-2 text-orange-500"></i>Thống kê chương trình đào tạo
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã CTĐT</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên CTĐT</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số tín chỉ</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số học phần</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số SV đang học</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">CTDT01</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Công nghệ thông tin</td>
+                                <td class="px-6 py-4 whitespace-nowrap">145</td>
+                                <td class="px-6 py-4 whitespace-nowrap">52</td>
+                                <td class="px-6 py-4 whitespace-nowrap">450</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">CTDT02</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Kỹ thuật phần mềm</td>
+                                <td class="px-6 py-4 whitespace-nowrap">142</td>
+                                <td class="px-6 py-4 whitespace-nowrap">48</td>
+                                <td class="px-6 py-4 whitespace-nowrap">380</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">CTDT03</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Hệ thống thông tin</td>
+                                <td class="px-6 py-4 whitespace-nowrap">140</td>
+                                <td class="px-6 py-4 whitespace-nowrap">46</td>
+                                <td class="px-6 py-4 whitespace-nowrap">320</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">CTDT04</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Khoa học máy tính</td>
+                                <td class="px-6 py-4 whitespace-nowrap">148</td>
+                                <td class="px-6 py-4 whitespace-nowrap">54</td>
+                                <td class="px-6 py-4 whitespace-nowrap">280</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">CTDT05</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Trí tuệ nhân tạo</td>
+                                <td class="px-6 py-4 whitespace-nowrap">150</td>
+                                <td class="px-6 py-4 whitespace-nowrap">56</td>
+                                <td class="px-6 py-4 whitespace-nowrap">120</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Biểu đồ phân bố sinh viên theo CTĐT -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-chart-pie mr-2 text-orange-500"></i>Phân bố sinh viên theo CTĐT
+                </h3>
+                <div class="h-80">
+                    <canvas id="studentDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Học phần -->
+        <div id="courses-content" class="tab-content hidden">
+            <!-- Thống kê học phần theo khối kiến thức -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-book mr-2 text-orange-500"></i>Thống kê học phần theo khối kiến thức
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khối kiến thức</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số học phần</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số tín chỉ</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số nhóm</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số SV đăng ký</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Công nghệ phần mềm</td>
+                                <td class="px-6 py-4 whitespace-nowrap">15</td>
+                                <td class="px-6 py-4 whitespace-nowrap">45</td>
+                                <td class="px-6 py-4 whitespace-nowrap">30</td>
+                                <td class="px-6 py-4 whitespace-nowrap">1200</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Hệ thống thông tin</td>
+                                <td class="px-6 py-4 whitespace-nowrap">10</td>
+                                <td class="px-6 py-4 whitespace-nowrap">30</td>
+                                <td class="px-6 py-4 whitespace-nowrap">20</td>
+                                <td class="px-6 py-4 whitespace-nowrap">800</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Mạng máy tính</td>
+                                <td class="px-6 py-4 whitespace-nowrap">8</td>
+                                <td class="px-6 py-4 whitespace-nowrap">24</td>
+                                <td class="px-6 py-4 whitespace-nowrap">16</td>
+                                <td class="px-6 py-4 whitespace-nowrap">600</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Khoa học máy tính</td>
+                                <td class="px-6 py-4 whitespace-nowrap">12</td>
+                                <td class="px-6 py-4 whitespace-nowrap">36</td>
+                                <td class="px-6 py-4 whitespace-nowrap">24</td>
+                                <td class="px-6 py-4 whitespace-nowrap">900</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Trí tuệ nhân tạo</td>
+                                <td class="px-6 py-4 whitespace-nowrap">5</td>
+                                <td class="px-6 py-4 whitespace-nowrap">15</td>
+                                <td class="px-6 py-4 whitespace-nowrap">10</td>
+                                <td class="px-6 py-4 whitespace-nowrap">300</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Biểu đồ phân bố học phần theo khối kiến thức -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-chart-pie mr-2 text-orange-500"></i>Phân bố học phần theo khối kiến thức
+                </h3>
+                <div class="h-80">
+                    <canvas id="courseDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Giảng viên -->
+        <div id="teachers-content" class="tab-content hidden">
+            <!-- Thống kê giảng viên theo học vị -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-chalkboard-teacher mr-2 text-orange-500"></i>Thống kê giảng viên theo học vị
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Học vị</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số giảng viên</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số tiết giảng dạy</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Giáo sư</td>
+                                <td class="px-6 py-4 whitespace-nowrap">5</td>
+                                <td class="px-6 py-4 whitespace-nowrap">850</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Tiến sĩ</td>
+                                <td class="px-6 py-4 whitespace-nowrap">15</td>
+                                <td class="px-6 py-4 whitespace-nowrap">400</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Thạc sĩ</td>
+                                <td class="px-6 py-4 whitespace-nowrap">22</td>
+                                <td class="px-6 py-4 whitespace-nowrap">300</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Kỹ sư</td>
+                                <td class="px-6 py-4 whitespace-nowrap">10</td>
+                                <td class="px-6 py-4 whitespace-nowrap">100</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Khác</td>
+                                <td class="px-6 py-4 whitespace-nowrap">5</td>
+                                <td class="px-6 py-4 whitespace-nowrap">50</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Biểu đồ phân bố giảng viên theo học vị -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-chart-pie mr-2 text-orange-500"></i>Phân bố giảng viên theo học vị
+                </h3>
+                <div class="h-80">
+                    <canvas id="teacherDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Giảng dạy -->
+        <div id="teaching-content" class="tab-content hidden">
+            <!-- Giảng viên có nhiều tiết giảng dạy nhất -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-award mr-2 text-orange-500"></i>Giảng viên có nhiều tiết giảng dạy nhất
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã GV</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Họ tên</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bộ môn</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Học vị</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số tiết</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số nhóm</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">GV001</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Nguyễn Văn A</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Công nghệ phần mềm</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Tiến sĩ</td>
+                                <td class="px-6 py-4 whitespace-nowrap">120</td>
+                                <td class="px-6 py-4 whitespace-nowrap">5</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">GV015</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Trần Thị B</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Hệ thống thông tin</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Tiến sĩ</td>
+                                <td class="px-6 py-4 whitespace-nowrap">105</td>
+                                <td class="px-6 py-4 whitespace-nowrap">4</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">GV008</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Lê Văn C</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Mạng máy tính</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Thạc sĩ</td>
+                                <td class="px-6 py-4 whitespace-nowrap">95</td>
+                                <td class="px-6 py-4 whitespace-nowrap">4</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">GV022</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Phạm Thị D</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Công nghệ phần mềm</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Thạc sĩ</td>
+                                <td class="px-6 py-4 whitespace-nowrap">90</td>
+                                <td class="px-6 py-4 whitespace-nowrap">4</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">GV005</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Hoàng Văn E</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Hệ thống thông tin</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Giáo sư</td>
+                                <td class="px-6 py-4 whitespace-nowrap">85</td>
+                                <td class="px-6 py-4 whitespace-nowrap">3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Học phần có nhiều nhóm nhất -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-book mr-2 text-orange-500"></i>Học phần có nhiều nhóm nhất
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã HP</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên học phần</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số tín chỉ</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số nhóm</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng số SV</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số GV dạy</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">INT1234</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Lập trình cơ bản</td>
+                                <td class="px-6 py-4 whitespace-nowrap">3</td>
+                                <td class="px-6 py-4 whitespace-nowrap">8</td>
+                                <td class="px-6 py-4 whitespace-nowrap">320</td>
+                                <td class="px-6 py-4 whitespace-nowrap">4</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">INT2345</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Cơ sở dữ liệu</td>
+                                <td class="px-6 py-4 whitespace-nowrap">3</td>
+                                <td class="px-6 py-4 whitespace-nowrap">6</td>
+                                <td class="px-6 py-4 whitespace-nowrap">240</td>
+                                <td class="px-6 py-4 whitespace-nowrap">3</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">INT3456</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Lập trình web</td>
+                                <td class="px-6 py-4 whitespace-nowrap">3</td>
+                                <td class="px-6 py-4 whitespace-nowrap">5</td>
+                                <td class="px-6 py-4 whitespace-nowrap">200</td>
+                                <td class="px-6 py-4 whitespace-nowrap">3</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">INT4567</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Mạng máy tính</td>
+                                <td class="px-6 py-4 whitespace-nowrap">3</td>
+                                <td class="px-6 py-4 whitespace-nowrap">4</td>
+                                <td class="px-6 py-4 whitespace-nowrap">160</td>
+                                <td class="px-6 py-4 whitespace-nowrap">2</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">INT5678</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Công nghệ phần mềm</td>
+                                <td class="px-6 py-4 whitespace-nowrap">4</td>
+                                <td class="px-6 py-4 whitespace-nowrap">4</td>
+                                <td class="px-6 py-4 whitespace-nowrap">160</td>
+                                <td class="px-6 py-4 whitespace-nowrap">2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Xử lý chuyển đổi tab
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy tất cả các tab và nội dung tab
+            const tabs = document.querySelectorAll('[id$="-tab"]');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Thêm sự kiện click cho mỗi tab
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Xóa trạng thái active của tất cả các tab
+                    tabs.forEach(t => {
+                        t.classList.remove('active', 'text-orange-600', 'border-orange-500');
+                        t.classList.add('border-transparent');
+                    });
+                    
+                    // Thêm trạng thái active cho tab được click
+                    this.classList.add('active', 'text-orange-600', 'border-orange-500');
+                    this.classList.remove('border-transparent');
+                    
+                    // Ẩn tất cả nội dung tab
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // Hiển thị nội dung tab tương ứng
+                    const contentId = this.id.replace('-tab', '-content');
+                    document.getElementById(contentId).classList.remove('hidden');
+                    
+                    // Khởi tạo lại biểu đồ nếu cần
+                    if (contentId === 'programs-content') {
+                        initStudentDistributionChart();
+                    } else if (contentId === 'courses-content') {
+                        initCourseDistributionChart();
+                    } else if (contentId === 'teachers-content') {
+                        initTeacherDepartmentChart();
+                    } else if (contentId === 'overview-content') {
+                        initOverviewCharts();
+                    } else if (contentId === 'teaching-content') {
+                        initTeachingCharts();
+                    }
+                });
+            });
+            
+            // Khởi tạo biểu đồ mặc định khi trang được tải
+            initOverviewCharts();
+            
+            // Xử lý nút cập nhật
+            document.getElementById('updateStats').addEventListener('click', function() {
+                const semester = document.getElementById('semesterFilter').value;
+                alert(`Đang cập nhật dữ liệu cho ${semester}...`);
+                // Gọi API cập nhật dữ liệu ở đây
+                setTimeout(() => {
+                    alert('Cập nhật dữ liệu thành công!');
+                    // Cập nhật lại biểu đồ
+                    updateAllCharts();
+                }, 1000);
+            });
+        });
+        
+        // Khởi tạo biểu đồ tổng quan
+        function initOverviewCharts() {
+            // Biểu đồ phân bố tiết giảng dạy theo bộ môn
+            const departmentCtx = document.getElementById('departmentTeachingChart').getContext('2d');
+            new Chart(departmentCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Công nghệ phần mềm', 'Hệ thống thông tin', 'Mạng máy tính', 'Khoa học máy tính', 'Trí tuệ nhân tạo'],
+                    datasets: [{
+                        data: [1800, 1500, 1200, 1600, 800],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Phân bố tiết giảng dạy theo bộ môn'
+                        }
+                    }
+                }
+            });
+            
+            // Biểu đồ tỷ lệ giảng viên theo học vị
+            const qualificationCtx = document.getElementById('teacherQualificationChart').getContext('2d');
+            new Chart(qualificationCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Giáo sư', 'Tiến sĩ', 'Thạc sĩ', 'Kỹ sư'],
+                    datasets: [{
+                        label: 'Số giảng viên',
+                        data: [5, 15, 22, 0],
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Số lượng giảng viên theo học vị'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Khởi tạo biểu đồ phân bố sinh viên theo CTĐT
+        function initStudentDistributionChart() {
+            const ctx = document.getElementById('studentDistributionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Công nghệ thông tin', 'Kỹ thuật phần mềm', 'Hệ thống thông tin', 'Khoa học máy tính', 'Trí tuệ nhân tạo'],
+                    datasets: [{
+                        data: [450, 380, 320, 280, 120],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Phân bố sinh viên theo chương trình đào tạo'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Khởi tạo biểu đồ phân bố học phần theo khối kiến thức
+        function initCourseDistributionChart() {
+            const ctx = document.getElementById('courseDistributionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Công nghệ phần mềm', 'Hệ thống thông tin', 'Mạng máy tính', 'Khoa học máy tính', 'Trí tuệ nhân tạo'],
+                    datasets: [{
+                        data: [15, 10, 8, 12, 5],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Phân bố học phần theo khối kiến thức'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Khởi tạo biểu đồ phân bố giảng viên theo bộ môn
+        function initTeacherDepartmentChart() {
+            const ctx = document.getElementById('teacherDepartmentChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Công nghệ phần mềm', 'Hệ thống thông tin', 'Mạng máy tính', 'Khoa học máy tính', 'Trí tuệ nhân tạo'],
+                    datasets: [{
+                        label: 'Số giảng viên',
+                        data: [12, 10, 8, 7, 5],
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Số lượng giảng viên theo bộ môn'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Khởi tạo biểu đồ cho tab giảng dạy
+        function initTeachingCharts() {
+            // Biểu đồ phân bố giờ giảng dạy theo học kỳ
+            const ctx = document.getElementById('teachingHoursChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['HK1 2021-2022', 'HK2 2021-2022', 'HK1 2022-2023', 'HK2 2022-2023', 'HK1 2023-2024'],
+                    datasets: [{
+                        label: 'Số giờ giảng dạy',
+                        data: [3200, 3500, 3800, 4000, 4200],
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Số giờ giảng dạy theo học kỳ'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Cập nhật tất cả biểu đồ
+        function updateAllCharts() {
+            initOverviewCharts();
+            initStudentDistributionChart();
+            initCourseDistributionChart();
+            initTeacherDepartmentChart();
+            initTeachingCharts();
+        }
+    </script>
+</body>
+
+</html>
