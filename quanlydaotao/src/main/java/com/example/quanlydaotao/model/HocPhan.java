@@ -20,9 +20,8 @@ public class HocPhan {
     private KhoiKienThuc maKhoiKienThuc;
 
     @Column(name = "machuyennganh")
-    @NotNull(message = "Mã chuyên ngành không được để trống!")
-    @Min(value = 0, message = "Mã chuyên ngành không được âm!")
-    private int maChuyenNganh;
+    private String maChuyenNganh; // Có thể null hoặc rỗng
+
 
     @Column(name = "tenHocPhan")
     @NotNull(message = "Tên học phần không được để trống!")
@@ -41,7 +40,7 @@ public class HocPhan {
     // Getters & Setters
     public HocPhan() {}
 
-    public HocPhan(String maHocPhan, CTDaoTao maDaoTao,KhoiKienThuc maKhoiKienThuc, int maChuyenNganh, String tenHocPhan, int soTinChi, float heSo) {
+    public HocPhan(String maHocPhan, CTDaoTao maDaoTao,KhoiKienThuc maKhoiKienThuc, String maChuyenNganh, String tenHocPhan, int soTinChi, float heSo) {
         this.maHocPhan = maHocPhan;
         this.maDaoTao = maDaoTao;
         this.maKhoiKienThuc = maKhoiKienThuc;
@@ -64,11 +63,11 @@ public class HocPhan {
         this.maKhoiKienThuc = maKhoiKienThuc;
     }
 
-    public int getMaChuyenNganh() {
+    public String getMaChuyenNganh() {
         return maChuyenNganh;
     }
 
-    public void setMaChuyenNganh(int maChuyenNganh) {
+    public void setMaChuyenNganh(String maChuyenNganh) {
         this.maChuyenNganh = maChuyenNganh;
     }
 
