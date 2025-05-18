@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chương trình đào tạo CNTT</title>
     <style>
         * {
-            font-size: 20px;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
+            font-size: 20px;
         }
 
         body {
             background-color: #f4f7fa;
-            colorsuperior: #333;
+            color: #333;
             line-height: 1.6;
         }
 
@@ -162,32 +162,6 @@
             color: #333;
         }
 
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .detail-table th, .detail-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .detail-table th {
-            background-color: #ff8c66;
-            color: #fff;
-            text-transform: uppercase;
-        }
-
-        .detail-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .detail-table tr:hover {
-            background-color: #e6f0ff;
-        }
-
         .form-group {
             margin-bottom: 15px;
         }
@@ -227,7 +201,6 @@
             margin-left: 10px;
         }
 
-        /* Thêm style cho nút trở về trang chủ */
         .back-home-btn {
             position: fixed;
             top: 20px;
@@ -260,445 +233,494 @@
         .back-home-btn i {
             font-size: 18px;
         }
+
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .form-column {
+            flex: 1;
+            min-width: 300px;
+        }
     </style>
-    <!-- Thêm Font Awesome để sử dụng icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <!-- Thêm nút trở về trang chủ -->
-    <a th:href="@{/home}" class="back-home-btn">
-        <i class="fas fa-home"></i>
-        Trang Chủ
-    </a>
+<a th:href="@{/home}" class="back-home-btn">
+    <i class="fas fa-home"></i>
+    Trang Chủ
+</a>
 
-    <div class="container">
-        <div class="header">
-            <h1>Chương trình đào tạo ngành Công nghệ Thông tin</h1>
-        </div>
-
-        <button class="add-btn" th:if="${isAdmin}" onclick="openAddModal()">+ Thêm CTĐT Mới</button>
-
-        <table class="training-table">
-            <thead>
-            <tr>
-                <th>TT</th>
-                <th>Mã ngành</th>
-                <th>Ngành</th>
-                <th>Niên Khóa</th>
-                <th>Thao tác</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>1</td>
-                <td>7480201</td>
-                <td>Công nghệ Thông tin</td>
-                <td>2021-2025</td>
-                <td>
-                    <button class="detail-btn" onclick="showDetails('CNTT_2021')">Xem chi tiết</button>
-                    <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal('CNTT_2021')">Sửa</button>
-                    <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal('CNTT_2021')">Xóa</button>
-                </td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>7480201</td>
-                <td>Công nghệ Thông tin</td>
-                <td>2022-2026</td>
-                <td>
-                    <button class="detail-btn" onclick="showDetails('CNTT_2022')">Xem chi tiết</button>
-                    <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal('CNTT_2022')">Sửa</button>
-                    <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal('CNTT_2022')">Xóa</button>
-                </td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>7480201</td>
-                <td>Công nghệ Thông tin</td>
-                <td>2023-2027</td>
-                <td>
-                    <button class="detail-btn" onclick="showDetails('CNTT_2023')">Xem chi tiết</button>
-                    <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal('CNTT_2023')">Sửa</button>
-                    <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal('CNTT_2023')">Xóa</button>
-                </td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>7480201CLC</td>
-                <td>CNTT (Chất lượng cao)</td>
-                <td>2023-2027</td>
-                <td>
-                    <button class="detail-btn" onclick="showDetails('CNTT_CLC_2023')">Xem chi tiết</button>
-                    <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal('CNTT_CLC_2023')">Sửa</button>
-                    <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal('CNTT_CLC_2023')">Xóa</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+<div class="container">
+    <div class="header">
+        <h1>Chương trình đào tạo</h1>
     </div>
 
-    <div id="detailModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('detailModal')">×</span>
-            <h2 id="modalTitle">Thông tin chi tiết</h2>
-            <table class="detail-table">
-                <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Tiêu chí</th>
-                    <th>Thông tin</th>
-                </tr>
-                </thead>
-                <tbody id="detailTableBody">
-                </tbody>
-            </table>
+    <button class="add-btn" th:if="${isAdmin}" onclick="openModal('addModal')">+ Thêm CTĐT Mới</button>
+
+    <table class="training-table">
+        <thead>
+        <tr>
+            <th>Mã CTDT</th>
+            <th>Ngành</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<!-- Detail Modal -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('detailModal')">×</span>
+        <h2>Thông tin chi tiết</h2>
+        <div class="form-container">
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="detailMajorId">Mã CTDT:</label>
+                    <input type="text" id="detailMajorId" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailMajorName">Tên ngành:</label>
+                    <input type="text" id="detailMajorName" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailBacDaiHoc">Bậc:</label>
+                    <input type="text" id="detailBacDaiHoc" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailLoaiBang">Loại Bằng:</label>
+                    <input type="text" id="detailLoaiBang" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailLoaiHinhDaoTao">Loại Hình Đào Tạo:</label>
+                    <input type="text" id="detailLoaiHinhDaoTao" readonly>
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="detailThoiGian">Thời Gian:</label>
+                    <input type="text" id="detailThoiGian" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailTinChi">Số Tín Chỉ Tối Thiếu:</label>
+                    <input type="text" id="detailTinChi" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailKhoaQuanLy">Khoa Quản Lý:</label>
+                    <input type="text" id="detailKhoaQuanLy" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailNgonNgu">Ngôn Ngữ:</label>
+                    <input type="text" id="detailNgonNgu" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailBanHanh">Ban Hành:</label>
+                    <input type="text" id="detailBanHanh" readonly>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal for Adding New Program -->
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('addModal')">×</span>
-            <h2>Thêm Chương Trình Đào Tạo Mới</h2>
-            <div class="form-group">
-                <label for="addMajorId">Mã ngành:</label>
-                <select id="addMajorId">
-                    <option value="7480201">7480201 - Công nghệ Thông tin</option>
-                    <option value="7480201CLC">7480201CLC - CNTT (Chất lượng cao)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="addMajorName">Tên ngành:</label>
-                <input type="text" id="addMajorName">
-            </div>
-            <div class="form-group">
-                <label for="addYear">Niên khóa:</label>
-                <select id="addYear">
-                    <option value="2021-2025">2021-2025</option>
-                    <option value="2022-2026">2022-2026</option>
-                    <option value="2023-2027">2023-2027</option>
-                    <option value="2024-2028">2024-2028</option>
-                </select>
-            </div>
-            <div id="addDetailsContainer">
-                <h3>Thông tin chi tiết</h3>
+<!-- Add Modal -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('addModal')">×</span>
+        <h2>Thêm Chương Trình Đào Tạo Mới</h2>
+        <div class="form-container">
+            <div class="form-column">
                 <div class="form-group">
-                    <label for="addTrainingTime">Thời gian đào tạo:</label>
-                    <input type="text" id="addTrainingTime" value="4 năm">
+                    <label for="addMajorId">Mã CTDT:</label>
+                    <input type="text" id="addMajorId">
                 </div>
                 <div class="form-group">
-                    <label for="addCredits">Số tín chỉ:</label>
-                    <input type="text" id="addCredits">
+                    <label for="addMajorName">Tên ngành:</label>
+                    <input type="text" id="addMajorName">
                 </div>
                 <div class="form-group">
-                    <label for="addKnowledgeBlocks">Khối kiến thức:</label>
-                    <input type="text" id="addKnowledgeBlocks">
+                    <label for="addBacDaiHoc">Bậc:</label>
+                    <input type="text" id="addBacDaiHoc">
                 </div>
                 <div class="form-group">
-                    <label for="addProgrammingLanguages">Ngôn ngữ lập trình:</label>
-                    <input type="text" id="addProgrammingLanguages">
+                    <label for="addLoaiBang">Loại Bằng:</label>
+                    <input type="text" id="addLoaiBang">
                 </div>
                 <div class="form-group">
-                    <label for="addManagingDepartment">Khoa quản lý:</label>
-                    <input type="text" id="addManagingDepartment" value="Khoa Công nghệ Thông tin">
-                </div>
-                <div class="form-group">
-                    <label for="addWebsite">Website:</label>
-                    <input type="text" id="addWebsite" value="https://cntt.sgu.edu.vn/">
+                    <label for="addLoaiHinhDaoTao">Loại Hình Đào Tạo:</label>
+                    <input type="text" id="addLoaiHinhDaoTao">
                 </div>
             </div>
-            <button class="save-btn" onclick="addProgram()">Thêm</button>
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="addThoiGian">Thời Gian:</label>
+                    <input type="text" id="addThoiGian">
+                </div>
+                <div class="form-group">
+                    <label for="addTinChi">Số Tín Chỉ Tối Thiếu:</label>
+                    <input type="text" id="addTinChi">
+                </div>
+                <div class="form-group">
+                    <label for="addKhoaQuanLy">Khoa Quản Lý:</label>
+                    <input type="text" id="addKhoaQuanLy">
+                </div>
+                <div class="form-group">
+                    <label for="addNgonNgu">Ngôn Ngữ:</label>
+                    <input type="text" id="addNgonNgu">
+                </div>
+                <div class="form-group">
+                    <label for="addBanHanh">Ban Hành:</label>
+                    <input type="text" id="addBanHanh">
+                </div>
+            </div>
+        </div>
+        <div style="text-align: right;">
+            <button class="save-btn" onclick="addNewCTDaoTao()">Thêm</button>
             <button class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
         </div>
     </div>
+</div>
 
-    <!-- Modal for Editing Program -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('editModal')">×</span>
-            <h2 id="editModalTitle">Sửa Chương Trình Đào Tạo</h2>
-            <table class="detail-table">
-                <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Tiêu chí</th>
-                    <th>Thông tin</th>
-                </tr>
-                </thead>
-                <tbody id="editTableBody">
-                    <!-- Edit fields will be added here dynamically -->
-                </tbody>
-            </table>
-            <div style="text-align: right; margin-top: 20px;">
-                <button class="save-btn" onclick="saveEdit()">Lưu</button>
-                <button class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('editModal')">×</span>
+        <h2>Sửa Chương Trình Đào Tạo</h2>
+        <div class="form-container">
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="editMajorId">Mã CTDT:</label>
+                    <input type="text" id="editMajorId" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editMajorName">Tên ngành:</label>
+                    <input type="text" id="editMajorName">
+                </div>
+                <div class="form-group">
+                    <label for="editBacDaiHoc">Bậc:</label>
+                    <input type="text" id="editBacDaiHoc">
+                </div>
+                <div class="form-group">
+                    <label for="editLoaiBang">Loại Bằng:</label>
+                    <input type="text" id="editLoaiBang">
+                </div>
+                <div class="form-group">
+                    <label for="editLoaiHinhDaoTao">Loại Hình Đào Tạo:</label>
+                    <input type="text" id="editLoaiHinhDaoTao">
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="editThoiGian">Thời Gian:</label>
+                    <input type="text" id="editThoiGian">
+                </div>
+                <div class="form-group">
+                    <label for="editTinChi">Số Tín Chỉ Tối Thiếu:</label>
+                    <input type="text" id="editTinChi">
+                </div>
+                <div class="form-group">
+                    <label for="editKhoaQuanLy">Khoa Quản Lý:</label>
+                    <input type="text" id="editKhoaQuanLy">
+                </div>
+                <div class="form-group">
+                    <label for="editNgonNgu">Ngôn Ngữ:</label>
+                    <input type="text" id="editNgonNgu">
+                </div>
+                <div class="form-group">
+                    <label for="editBanHanh">Ban Hành:</label>
+                    <input type="text" id="editBanHanh">
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- Modal for Delete Confirmation -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('deleteModal')">×</span>
-            <h2>Xác Nhận Xóa</h2>
-            <div style="margin: 20px 0; text-align: center;">
-                <p>Bạn có chắc chắn muốn xóa chương trình đào tạo:</p>
-                <p style="font-weight: bold; margin-top: 10px;" id="deleteMajorName"></p>
-            </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="delete-btn" onclick="confirmDelete()">Xóa</button>
-                <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
-            </div>
+        <div style="text-align: right; margin-top: 20px;">
+            <button class="save-btn" onclick="saveEditCTDaoTao()">Lưu</button>
+            <button class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
         </div>
     </div>
+</div>
 
-    <script>
-        const majorDetails = {
-            "CNTT_2021": {
-                title: "CTĐT ngành Công nghệ Thông tin - Niên khóa 2021-2025",
-                details: [
-                    { criterion: "Tên gọi", info: "Công nghệ Thông tin" },
-                    { criterion: "Mã ngành", info: "7480201" },
-                    { criterion: "Niên khóa", info: "2021-2025" },
-                    { criterion: "Thời gian đào tạo", info: "4 năm" },
-                    { criterion: "Số tín chỉ", info: "130 tín chỉ" },
-                    { criterion: "Khối kiến thức", info: "Cơ bản: 40 TC, Chuyên ngành: 70 TC, Thực tập & Đồ án: 20 TC" },
-                    { criterion: "Ngôn ngữ lập trình", info: "Python, Java, C++" },
-                    { criterion: "Khóa quản lý", info: "Khoa Công nghệ Thông tin" },
-                    { criterion: "Website", info: "https://cntt.sgu.edu.vn/" }
-                ]
-            },
-            "CNTT_2022": {
-                title: "CTĐT ngành Công nghệ Thông tin - Niên khóa 2022-2026",
-                details: [
-                    { criterion: "Tên gọi", info: "Công nghệ Thông tin" },
-                    { criterion: "Mã ngành", info: "7480201" },
-                    { criterion: "Niên khóa", info: "2022-2026" },
-                    { criterion: "Thời gian đào tạo", info: "4 năm" },
-                    { criterion: "Số tín chỉ", info: "132 tín chỉ" },
-                    { criterion: "Khối kiến thức", info: "Cơ bản: 42 TC, Chuyên ngành: 70 TC, Thực tập & Đồ án: 20 TC" },
-                    { criterion: "Ngôn ngữ lập trình", info: "Python, Java, C#, JavaScript" },
-                    { criterion: "Khóa quản lý", info: "Khoa Công nghệ Thông tin" },
-                    { criterion: "Website", info: "https://cntt.sgu.edu.vn/" }
-                ]
-            },
-            "CNTT_2023": {
-                title: "CTĐT ngành Công nghệ Thông tin - Niên khóa 2023-2027",
-                details: [
-                    { criterion: "Tên gọi", info: "Công nghệ Thông tin" },
-                    { criterion: "Mã ngành", info: "7480201" },
-                    { criterion: "Niên khóa", info: "2023-2027" },
-                    { criterion: "Thời gian đào tạo", info: "4 năm" },
-                    { criterion: "Số tín chỉ", info: "135 tín chỉ" },
-                    { criterion: "Khối kiến thức", info: "Cơ bản: 45 TC, Chuyên ngành: 70 TC, Thực tập & Đồ án: 20 TC" },
-                    { criterion: "Ngôn ngữ lập trình", info: "Python, Java, C#, JavaScript, Kotlin" },
-                    { criterion: "Khóa quản lý", info: "Khoa Công nghệ Thông tin" },
-                    { criterion: "Website", info: "https://cntt.sgu.edu.vn/" }
-                ]
-            },
-            "CNTT_CLC_2023": {
-                title: "CTĐT ngành CNTT (Chất lượng cao) - Niên khóa 2023-2027",
-                details: [
-                    { criterion: "Tên gọi", info: "Công nghệ Thông tin (Chất lượng cao)" },
-                    { criterion: "Mã ngành", info: "7480201CLC" },
-                    { criterion: "Niên khóa", info: "2023-2027" },
-                    { criterion: "Thời gian đào tạo", info: "4 năm" },
-                    { criterion: "Số tín chỉ", info: "140 tín chỉ" },
-                    { criterion: "Khối kiến thức", info: "Cơ bản: 45 TC, Chuyên ngành: 75 TC, Thực tập & Đồ án: 20 TC" },
-                    { criterion: "Ngôn ngữ lập trình", info: "Python, Java, C#, JavaScript, Kotlin, Swift" },
-                    { criterion: "Khóa quản lý", info: "Khoa Công nghệ Thông tin" },
-                    { criterion: "Website", info: "https://cntt.sgu.edu.vn/clc" }
-                ]
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('deleteModal')">×</span>
+        <h2>Xác Nhận Xóa</h2>
+        <div style="margin: 20px 0; text-align: center;">
+            <p>Bạn có chắc chắn muốn xóa chương trình đào tạo:</p>
+            <p style="font-weight: bold; margin-top: 10px;" id="deleteMajorName"></p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="delete-btn" onclick="confirmDelete()">Xóa</button>
+            <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // API Functions
+    async function fetchAllCTDaoTao() {
+        try {
+            const response = await fetch('/api/CTDT_View');
+            if (!response.ok) throw new Error('Không thể lấy danh sách chương trình đào tạo');
+            const ctDaoTaoList = await response.json();
+            renderTable(ctDaoTaoList);
+        } catch (error) {
+            console.error('Lỗi:', error.message);
+            alert('Đã xảy ra lỗi khi tải danh sách chương trình đào tạo');
+        }
+    }
+
+    async function fetchCTDaoTaoById(mactdt) {
+        try {
+            const response = await fetch(`/api/CTDT_View/${mactdt}`);
+            if (!response.ok) {
+                if (response.status === 404) throw new Error('Không tìm thấy chương trình đào tạo');
+                throw new Error('Lỗi khi lấy thông tin chương trình đào tạo');
             }
-        };
-
-        function showDetails(major) {
-            const modal = document.getElementById("detailModal");
-            const modalTitle = document.getElementById("modalTitle");
-            const detailTableBody = document.getElementById("detailTableBody");
-
-            modalTitle.textContent = majorDetails[major].title;
-            detailTableBody.innerHTML = "";
-
-            majorDetails[major].details.forEach((item, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${item.criterion}</td>
-                    <td>${item.info}</td>
-                `;
-                detailTableBody.appendChild(row);
-            });
-
-            modal.style.display = "flex";
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi:', error.message);
+            throw error;
         }
+    }
 
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = "none";
-        }
+    async function createCTDaoTao(ctDaoTao) {
+        const response = await fetch('/api/CTDT_View', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ctDaoTao)
+        });
+        if (!response.ok) throw new Error('Không thể tạo mới chương trình đào tạo. Có thể mã đã tồn tại.');
+        return await response.json();
+    }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll(".modal");
-            modals.forEach(modal => {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            });
-        };
+    async function updateCTDaoTao(mactdt, ctDaoTao) {
+        const response = await fetch(`/api/CTDT_View/${mactdt}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ctDaoTao)
+        });
+        if (!response.ok) throw new Error(`Không thể cập nhật chương trình đào tạo có mã ${mactdt}`);
+        return await response.json();
+    }
 
-        function openAddModal() {
-            const addModal = document.getElementById("addModal");
-            addModal.style.display = "flex";
-        }
+    async function deleteCTDaoTao(mactdt) {
+        const response = await fetch(`/api/CTDT_View/${mactdt}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error(`Không thể xóa chương trình đào tạo có mã ${mactdt}`);
+        return true;
+    }
 
-        // Edit program
-        let currentEditMajor = null;
-        function openEditModal(major) {
-            currentEditMajor = major;
-            const modal = document.getElementById("editModal");
-            const editModalTitle = document.getElementById("editModalTitle");
-            const editTableBody = document.getElementById("editTableBody");
+    async function checkMaCTDTExists(mactdt) {
+        const response = await fetch(`/api/CTDT_View/exists/${mactdt}`);
+        if (!response.ok) throw new Error('Không thể kiểm tra mã chương trình đào tạo');
+        return await response.json();
+    }
 
-            editModalTitle.textContent = `Sửa Chương Trình Đào Tạo: ${majorDetails[major].title}`;
-            editTableBody.innerHTML = "";
+    // Table Rendering
+    function renderTable(ctDaoTaoList) {
+        const tableBody = document.querySelector('.training-table tbody');
+        tableBody.innerHTML = '';
 
-            majorDetails[major].details.forEach((item, index) => {
-                const row = document.createElement("tr");
-                if (item.criterion === "Mã ngành") {
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${item.criterion}</td>
-                        <td><input type="text" value="${item.info}" readonly style="background-color: #f0f0f0;"></td>
-                    `;
-                } else {
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${item.criterion}</td>
-                        <td><input type="text" value="${item.info}" data-criterion="${item.criterion}"></td>
-                    `;
-                }
-                editTableBody.appendChild(row);
-            });
+        ctDaoTaoList.forEach(ctdt => {
+            const row = document.createElement('tr');
 
-            modal.style.display = "flex";
-        }
-
-        // Save edited program
-        function saveEdit() {
-            const inputs = document.querySelectorAll("#editTableBody input:not([readonly])");
-            
-            inputs.forEach(input => {
-                const criterion = input.getAttribute("data-criterion");
-                const newValue = input.value;
-                
-                // Update the majorDetails object
-                const detailIndex = majorDetails[currentEditMajor].details.findIndex(d => d.criterion === criterion);
-                if (detailIndex !== -1) {
-                    majorDetails[currentEditMajor].details[detailIndex].info = newValue;
-                }
-            });
-
-            // Update the table row in the main table
-            const majorName = majorDetails[currentEditMajor].details.find(d => d.criterion === "Tên gọi").info;
-            const majorYear = majorDetails[currentEditMajor].details.find(d => d.criterion === "Niên khóa").info;
-            
-            const tableRows = document.querySelectorAll(".training-table tbody tr");
-            tableRows.forEach(row => {
-                const rowMajorName = row.cells[2].textContent;
-                const rowMajorYear = row.cells[3].textContent;
-                
-                if (rowMajorName.includes(majorName) && rowMajorYear === majorYear) {
-                    row.cells[2].textContent = majorName;
-                    row.cells[3].textContent = majorYear;
-                }
-            });
-
-            closeModal('editModal');
-        }
-
-        // Delete program
-        let currentDeleteMajor = null;
-        function openDeleteModal(major) {
-            currentDeleteMajor = major;
-            document.getElementById("deleteMajorName").textContent = majorDetails[major].title;
-            document.getElementById("deleteModal").style.display = "flex";
-        }
-
-        function confirmDelete() {
-            // Find the row in the table
-            const majorName = majorDetails[currentDeleteMajor].details.find(d => d.criterion === "Tên gọi").info;
-            const majorYear = majorDetails[currentDeleteMajor].details.find(d => d.criterion === "Niên khóa").info;
-            
-            const tableRows = document.querySelectorAll(".training-table tbody tr");
-            tableRows.forEach(row => {
-                const rowMajorName = row.cells[2].textContent;
-                const rowMajorYear = row.cells[3].textContent;
-                
-                if (rowMajorName.includes(majorName) && rowMajorYear === majorYear) {
-                    row.remove();
-                }
-            });
-            
-            // Remove from majorDetails object
-            delete majorDetails[currentDeleteMajor];
-            
-            // Renumber the remaining rows
-            const remainingRows = document.querySelectorAll(".training-table tbody tr");
-            remainingRows.forEach((row, index) => {
-                row.cells[0].textContent = index + 1;
-            });
-            
-            closeModal('deleteModal');
-        }
-
-        function addProgram() {
-            const addModal = document.getElementById("addModal");
-            const addMajorId = document.getElementById("addMajorId").value;
-            const addMajorName = document.getElementById("addMajorName").value;
-            const addYear = document.getElementById("addYear").value;
-            const addTrainingTime = document.getElementById("addTrainingTime").value;
-            const addCredits = document.getElementById("addCredits").value;
-            const addKnowledgeBlocks = document.getElementById("addKnowledgeBlocks").value;
-            const addProgrammingLanguages = document.getElementById("addProgrammingLanguages").value;
-            const addManagingDepartment = document.getElementById("addManagingDepartment").value;
-            const addWebsite = document.getElementById("addWebsite").value;
-
-            const newProgram = {
-                title: `CTĐT ngành ${addMajorName} - Niên khóa ${addYear}`,
-                details: [
-                    { criterion: "Tên gọi", info: addMajorName },
-                    { criterion: "Mã ngành", info: addMajorId },
-                    { criterion: "Niên khóa", info: addYear },
-                    { criterion: "Thời gian đào tạo", info: addTrainingTime },
-                    { criterion: "Số tín chỉ", info: addCredits },
-                    { criterion: "Khối kiến thức", info: addKnowledgeBlocks },
-                    { criterion: "Ngôn ngữ lập trình", info: addProgrammingLanguages },
-                    { criterion: "Khóa quản lý", info: addManagingDepartment },
-                    { criterion: "Website", info: addWebsite }
-                ]
-            };
-
-            majorDetails[`CNTT_${addYear.replace(/-/g, "")}`] = newProgram;
-
-            const tableBody = document.querySelector(".training-table tbody");
-            const newRow = document.createElement("tr");
-            newRow.innerHTML = `
-                <td>${Object.keys(majorDetails).length}</td>
-                <td>${addMajorId}</td>
-                <td>${addMajorName}</td>
-                <td>${addYear}</td>
-                <td>
-                    <button class="detail-btn" onclick="showDetails('CNTT_${addYear.replace(/-/g, "")}')">Xem chi tiết</button>
-                    <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal('CNTT_${addYear.replace(/-/g, "")}')">Sửa</button>
-                    <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal('CNTT_${addYear.replace(/-/g, "")}')">Xóa</button>
-                </td>
+            // Columns
+            row.innerHTML = `
+                <td>${ctdt.maCTDT || ''}</td>
+                <td>${ctdt.tenCTDT || ''}</td>
+                <td></td>
             `;
-            tableBody.appendChild(newRow);
 
-            closeModal("addModal");
+            // Action buttons
+            const actionCell = row.querySelector('td:last-child');
+            actionCell.appendChild(createButton('detail-btn', 'Xem chi tiết', async () => {
+                const detailData = await fetchCTDaoTaoById(ctdt.maCTDT);
+                showDetailCTDT(detailData);
+            }));
+            actionCell.appendChild(createButton('edit-btn', 'Sửa', async () => {
+                const detailData = await fetchCTDaoTaoById(ctdt.maCTDT);
+                showEditCTDT(detailData);
+            }, { marginLeft: '10px' }));
+            actionCell.appendChild(createButton('delete-btn', 'Xóa', () => {
+                showDeleteModal(ctdt);
+            }, { marginLeft: '10px' }));
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    function createButton(className, text, onClick, style = {}) {
+        const button = document.createElement('button');
+        button.className = className;
+        button.textContent = text;
+        button.addEventListener('click', onClick);
+        Object.assign(button.style, style);
+        return button;
+    }
+
+    // Modal Functions
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    function showDetailCTDT(ctdt) {
+        const fields = {
+            maCTDT: 'detailMajorId',
+            tenCTDT: 'detailMajorName',
+            bac: 'detailBacDaiHoc',
+            loaiBang: 'detailLoaiBang',
+            loaiHinhDaoTao: 'detailLoaiHinhDaoTao',
+            thoiGian: 'detailThoiGian',
+            soTinToiThieu: 'detailTinChi',
+            khoaQuanLy: 'detailKhoaQuanLy',
+            ngonNgu: 'detailNgonNgu',
+            banHanh: 'detailBanHanh'
+        };
+
+        for (const [key, id] of Object.entries(fields)) {
+            const element = document.getElementById(id);
+            if (element) element.value = ctdt[key] ?? '';
         }
-    </script>
+        openModal('detailModal');
+    }
+
+    function showEditCTDT(ctdt) {
+        const fields = {
+            maCTDT: 'editMajorId',
+            tenCTDT: 'editMajorName',
+            bac: 'editBacDaiHoc',
+            loaiBang: 'editLoaiBang',
+            loaiHinhDaoTao: 'editLoaiHinhDaoTao',
+            thoiGian: 'editThoiGian',
+            soTinToiThieu: 'editTinChi',
+            khoaQuanLy: 'editKhoaQuanLy',
+            ngonNgu: 'editNgonNgu',
+            banHanh: 'editBanHanh'
+        };
+
+        for (const [key, id] of Object.entries(fields)) {
+            const element = document.getElementById(id);
+            if (element) element.value = ctdt[key] ?? '';
+        }
+        openModal('editModal');
+    }
+
+    function showDeleteModal(ctdt) {
+        document.getElementById('deleteMajorName').textContent = ctdt.tenCTDT;
+        document.getElementById('deleteModal').dataset.maCTDT = ctdt.maCTDT;
+        openModal('deleteModal');
+    }
+
+    // Form Handling
+    async function addNewCTDaoTao() {
+        const fields = {
+            maCTDT: 'addMajorId',
+            tenCTDT: 'addMajorName',
+            bac: 'addBacDaiHoc',
+            loaiBang: 'addLoaiBang',
+            loaiHinhDaoTao: 'addLoaiHinhDaoTao',
+            thoiGian: 'addThoiGian',
+            soTinToiThieu: 'addTinChi',
+            khoaQuanLy: 'addKhoaQuanLy',
+            ngonNgu: 'addNgonNgu',
+            banHanh: 'addBanHanh'
+        };
+
+        const ctDaoTao = {};
+        for (const [key, id] of Object.entries(fields)) {
+            const value = document.getElementById(id).value.trim();
+            if (!value) {
+                alert('Vui lòng điền đầy đủ thông tin.');
+                return;
+            }
+            ctDaoTao[key] = key === 'maCTDT' || key === 'soTinToiThieu' ? parseInt(value, 10) : value;
+        }
+
+        if (!/^\d+$/.test(ctDaoTao.maCTDT)) {
+            alert('Mã CTDT phải là số nguyên.');
+            return;
+        }
+
+        try {
+            if (await checkMaCTDTExists(ctDaoTao.maCTDT)) {
+                alert('Mã CTDT đã tồn tại, vui lòng chọn mã khác.');
+                return;
+            }
+
+            await createCTDaoTao(ctDaoTao);
+            alert('Thêm chương trình đào tạo thành công!');
+            closeModal('addModal');
+            fetchAllCTDaoTao(); // Refresh table
+            for (const id of Object.values(fields)) {
+                document.getElementById(id).value = '';
+            }
+        } catch (error) {
+            alert(`Lỗi khi thêm chương trình đào tạo: ${error.message}`);
+        }
+    }
+
+    async function saveEditCTDaoTao() {
+        const fields = {
+            maCTDT: 'editMajorId',
+            tenCTDT: 'editMajorName',
+            bac: 'editBacDaiHoc',
+            loaiBang: 'editLoaiBang',
+            loaiHinhDaoTao: 'editLoaiHinhDaoTao',
+            thoiGian: 'editThoiGian',
+            soTinToiThieu: 'editTinChi',
+            khoaQuanLy: 'editKhoaQuanLy',
+            ngonNgu: 'editNgonNgu',
+            banHanh: 'editBanHanh'
+        };
+
+        const ctDaoTao = {};
+        for (const [key, id] of Object.entries(fields)) {
+            const value = document.getElementById(id).value.trim();
+            if (!value && key !== 'maCTDT') {
+                alert('Vui lòng điền đầy đủ thông tin.');
+                return;
+            }
+            ctDaoTao[key] = key === 'maCTDT' || key === 'soTinToiThieu' ? parseInt(value, 10) : value;
+        }
+
+        try {
+            await updateCTDaoTao(ctDaoTao.maCTDT, ctDaoTao);
+            alert('Cập nhật chương trình đào tạo thành công!');
+            closeModal('editModal');
+            fetchAllCTDaoTao(); // Refresh table
+        } catch (error) {
+            alert(`Lỗi khi cập nhật chương trình đào tạo: ${error.message}`);
+        }
+    }
+
+    async function confirmDelete() {
+        const maCTDT = document.getElementById('deleteModal').dataset.maCTDT;
+        try {
+            await deleteCTDaoTao(maCTDT);
+            alert('Xóa chương trình đào tạo thành công!');
+            closeModal('deleteModal');
+            fetchAllCTDaoTao(); // Refresh table
+        } catch (error) {
+            alert(`Lỗi khi xóa: ${error.message}`);
+        }
+    }
+
+    // Event Listeners
+    window.onclick = function(event) {
+        document.querySelectorAll('.modal').forEach(modal => {
+            if (event.target === modal) closeModal(modal.id);
+        });
+    };
+
+    document.addEventListener('DOMContentLoaded', fetchAllCTDaoTao);
+</script>
 </body>
 </html>

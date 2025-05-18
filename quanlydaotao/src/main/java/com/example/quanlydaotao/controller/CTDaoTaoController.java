@@ -55,4 +55,11 @@ public class CTDaoTaoController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/exists/{mactdt}")
+    public ResponseEntity<Boolean> checkMaCTDTExists(@PathVariable("mactdt") int maCTDT) {
+        boolean exists = ctDaoTaoRepo.existsById(maCTDT);
+        return ResponseEntity.ok(exists);
+    }
+
+
 }
