@@ -5,7 +5,6 @@ import com.example.quanlydaotao.repository.GiangVienRepo;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -24,7 +23,7 @@ public class GiangVienController {
 
     @GetMapping("/{magv}")
     public ResponseEntity<?> getById(@PathVariable int magv) {
-        return giangVienRepo.findById(magv)
+        return giangVienRepo.findById(String.valueOf(magv))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -46,7 +45,7 @@ public class GiangVienController {
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
 
-        Optional<GiangVien> optionalGV = giangVienRepo.findById(magv);
+        Optional<GiangVien> optionalGV = giangVienRepo.findById(String.valueOf(magv));
         if (optionalGV.isPresent()) {
             giangVien.setMaGV(magv); // đảm bảo ID đúng
             GiangVien updated = giangVienRepo.save(giangVien);
@@ -58,7 +57,7 @@ public class GiangVienController {
 
     // Xóa giảng viên
     @DeleteMapping("/{magv}")
-    public ResponseEntity<?> xoaGiangVien(@PathVariable int magv) {
+    public ResponseEntity<?> xoaGiangVien(@PathVariable String magv) {
         Optional<GiangVien> optionalGV = giangVienRepo.findById(magv);
         if (optionalGV.isPresent()) {
             giangVienRepo.deleteById(magv);
@@ -67,5 +66,4 @@ public class GiangVienController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }
