@@ -436,154 +436,175 @@
     </div>
 
     <script>
-        const isAdmin = /*[[${isAdmin}]]*/ false;
-        
-        // Mock data for lecturers in Khoa CNTT
-        let lecturers = [
-            { id: "GV001", name: "Nguyễn Văn A", dob: "1980-05-15", gender: "Nam", degree: "Tiến sĩ", specialty: "Công nghệ Phần mềm", phone: "0901234567", email: "nguyenvana@university.edu.vn" },
-            { id: "GV002", name: "Trần Thị B", dob: "1985-08-20", gender: "Nữ", degree: "Thạc sĩ", specialty: "Hệ thống Thông tin", phone: "0912345678", email: "tranthib@university.edu.vn" },
-            { id: "GV003", name: "Lê Văn C", dob: "1975-03-10", gender: "Nam", degree: "Giáo sư", specialty: "Khoa học Máy tính", phone: "0923456789", email: "levanc@university.edu.vn" }
-        ];
+            const isAdmin = /*[[${isAdmin}]]*/ false;
 
-        // Load lecturers into the table
-        function loadLecturers() {
-            const tableBody = document.getElementById("lecturerTableBody");
-            tableBody.innerHTML = "";
-            lecturers.forEach((lecturer, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
+            async function loadLecturers() {
+            const response = await fetch('/api/giangvien');
+            const lecturers = await response.json();
+            const tbody = document.getElementById('lecturerTableBody');
+            tbody.innerHTML = '';
+
+            lecturers.forEach((gv, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${lecturer.id}</td>
-                    <td>${lecturer.name}</td>
-                    <td>${lecturer.dob}</td>
-                    <td>${lecturer.gender}</td>
-                    <td>${lecturer.degree}</td>
-                    <td>${lecturer.specialty}</td>
-                    <td>${lecturer.phone}</td>
-                    <td>${lecturer.email}</td>
-                    ${isAdmin ? `
+                    <td>${gv.maGV}</td>
+                    <td>${gv.hoTen}</td>
+                    <td>${gv.ngaySinh}</td>
+                    <td>${gv.gioiTinh}</td>
+                    <td>${gv.hocVi}</td>
+                    <td>${gv.chuyenNganh}</td>
+                    <td>${gv.sdt}</td>
+                    <td>${gv.email}</td>
                     <td>
-                        <button class="edit-btn" onclick="editLecturer(${index})">Sửa</button>
-                        <button class="delete-btn" onclick="openDeleteModal(${index})">Xóa</button>
+                      <button class="edit-btn" onclick="openEditModal('${gv.maGV}', '${gv.hoTen}', '${gv.ngaySinh}', '${gv.gioiTinh}', '${gv.hocVi}', '${gv.chuyenNganh}', '${gv.sdt}', '${gv.email}')">Sửa</button>
+                      <button class="delete-btn" onclick="deleteLecturer('${gv.maGV}')">Xóa</button>
                     </td>
-                    ` : ''}
-                `;
-                tableBody.appendChild(row);
-            });
+              `;
+            tbody.appendChild(row);
+        });
         }
 
-        // Thêm chức năng tìm kiếm
-        document.getElementById("searchInput").addEventListener("input", function() {
+            window.onload = loadLecturers;
+
+            document.getElementById("searchInput").addEventListener("input", function() {
             const searchText = this.value.toLowerCase();
             const rows = document.getElementById("lecturerTableBody").getElementsByTagName("tr");
-            
+
             for (let row of rows) {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchText) ? "" : "none";
-            }
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchText) ? "" : "none";
+        }
         });
 
-        // Open add modal
-        function openAddModal() {
+            function openAddModal() {
             if (!isAdmin) return;
-            document.getElementById("newLecturerId").textContent = generateLecturerId();
+            document.getElementById("newLecturerId").value = generateLecturerId(); // Set value cho input
             document.getElementById("addForm").reset();
             document.getElementById("addModal").style.display = "block";
         }
 
-        // Generate unique lecturer ID
-        function generateLecturerId() {
-            let id;
-            do {
-                id = "GV" + Math.floor(100 + Math.random() * 900);
-            } while (lecturers.some(lecturer => lecturer.id === id));
-            return id;
-        }
+            function generateLecturerId() {
+                if (!existingLecturerIds || existingLecturerIds.length === 0) {
+                    return "001";
+                }
 
-        // Save new lecturer
-        function saveNewLecturer() {
-            if (!isAdmin) return;
-            const lecturer = {
-                id: document.getElementById("newLecturerId").textContent,
-                name: document.getElementById("lecturerName").value,
-                dob: document.getElementById("lecturerDob").value,
-                gender: document.getElementById("lecturerGender").value,
-                degree: document.getElementById("lecturerDegree").value,
-                specialty: document.getElementById("lecturerSpecialty").value,
-                phone: document.getElementById("lecturerPhone").value,
-                email: document.getElementById("lecturerEmail").value
-            };
 
-            if (!lecturer.name || !lecturer.dob || !lecturer.gender || !lecturer.degree || !lecturer.specialty || !lecturer.phone || !lecturer.email) {
-                alert("Vui lòng điền đầy đủ thông tin!");
-                return;
+                const numbers = existingLecturerIds
+                    .map(id => parseInt(id, 10))
+                    .filter(num => !isNaN(num));
+
+                if (numbers.length === 0) {
+                    return "001";
+                }
+
+                const maxNumber = Math.max(...numbers);
+                const nextNumber = maxNumber + 1;
+                const formattedNextNumber = String(nextNumber).padStart(3, '0');
+                return formattedNextNumber;
             }
 
-            lecturers.push(lecturer);
-            closeModal("addModal");
+            async function addLecturer() {
+            const data = {
+            maGV: document.getElementById('newLecturerId').value, // Gửi cả mã GV
+            hoTen: document.getElementById('tenGV').value,
+            ngaySinh: document.getElementById('ngaySinh').value,
+            gioiTinh: document.getElementById('gioiTinh').value,
+            hocVi: document.getElementById('hocVi').value,
+            chuyenNganh: document.getElementById('chuyenNganh').value,
+            sdt: document.getElementById('sdt').value,
+            email: document.getElementById('email').value
+        };
+
+            const response = await fetch('/api/giangvien', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+            if (response.ok) {
+            alert("Thêm giảng viên thành công!");
+            closeModal('addModal');
             loadLecturers();
+        } else {
+            const error = await response.json();
+            alert("Lỗi khi thêm giảng viên: " + JSON.stringify(error));
+        }
         }
 
-        // Edit lecturer
-        let currentEditIndex = null;
-        function editLecturer(index) {
-            if (!isAdmin) return;
-            currentEditIndex = index;
-            const lecturer = lecturers[index];
-            document.getElementById("editLecturerId").textContent = lecturer.id;
-            document.getElementById("editLecturerName").value = lecturer.name;
-            document.getElementById("editLecturerDob").value = lecturer.dob;
-            document.getElementById("editLecturerGender").value = lecturer.gender;
-            document.getElementById("editLecturerDegree").value = lecturer.degree;
-            document.getElementById("editLecturerSpecialty").value = lecturer.specialty;
-            document.getElementById("editLecturerPhone").value = lecturer.phone;
-            document.getElementById("editLecturerEmail").value = lecturer.email;
-            document.getElementById("editModal").style.display = "block";
-        }
+            async function updateLecturer() {
+            const maGV = document.getElementById('editMaGV').value;
+            const data = {
+            hoTen: document.getElementById('editTenGV').value,
+            ngaySinh: document.getElementById('editNgaySinh').value,
+            gioiTinh: document.getElementById('editGioiTinh').value,
+            hocVi: document.getElementById('editHocVi').value,
+            chuyenNganh: document.getElementById('editChuyenNganh').value,
+            sdt: document.getElementById('editSDT').value,
+            email: document.getElementById('editEmail').value
+        };
 
-        function saveEdit() {
-            if (!isAdmin) return;
-            const lecturer = lecturers[currentEditIndex];
-            lecturer.name = document.getElementById("editLecturerName").value;
-            lecturer.dob = document.getElementById("editLecturerDob").value;
-            lecturer.gender = document.getElementById("editLecturerGender").value;
-            lecturer.degree = document.getElementById("editLecturerDegree").value;
-            lecturer.specialty = document.getElementById("editLecturerSpecialty").value;
-            lecturer.phone = document.getElementById("editLecturerPhone").value;
-            lecturer.email = document.getElementById("editLecturerEmail").value;
+            const response = await fetch(`/api/giangvien/${maGV}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
 
-            if (!lecturer.name || !lecturer.dob || !lecturer.gender || !lecturer.degree || !lecturer.specialty || !lecturer.phone || !lecturer.email) {
-                alert("Vui lòng điền đầy đủ thông tin!");
-                return;
-            }
-
-            closeModal("editModal");
+            if (response.ok) {
+            alert("Cập nhật thành công!");
+            closeModal('editModal');
             loadLecturers();
+        } else {
+            const error = await response.json();
+            alert("Lỗi khi cập nhật giảng viên: " + JSON.stringify(error));
+        }
         }
 
-        // Delete lecturer
-        let currentDeleteIndex = null;
-        function openDeleteModal(index) {
-            if (!isAdmin) return;
-            currentDeleteIndex = index;
-            document.getElementById("deleteLecturerName").textContent = lecturers[index].name;
-            document.getElementById("deleteModal").style.display = "block";
-        }
+            async function deleteLecturer(maGV) {
+            if (confirm("Bạn có chắc muốn xóa giảng viên này không?")) {
+            const response = await fetch(`/api/giangvien/${maGV}`, {
+            method: 'DELETE'
+        });
 
-        function confirmDelete() {
-            if (!isAdmin) return;
-            lecturers.splice(currentDeleteIndex, 1);
-            closeModal("deleteModal");
+            if (response.ok) {
+            alert("Xóa thành công!");
             loadLecturers();
+        } else {
+            const error = await response.json();
+            alert("Lỗi khi xóa giảng viên: " + JSON.stringify(error));
+        }
+        }
         }
 
-        // Close modal
-        function closeModal(modalId) {
+            function openEditModal(maGV, hoTen, ngaySinh, gioiTinh, hocVi, chuyenNganh, sdt, email) {
+            if (!isAdmin) return;
+            document.getElementById('editMaGV').value = maGV;
+            document.getElementById('editTenGV').value = hoTen;
+            document.getElementById('editNgaySinh').value = ngaySinh;
+            document.getElementById('editGioiTinh').value = gioiTinh;
+            document.getElementById('editHocVi').value = hocVi;
+            document.getElementById('editChuyenNganh').value = chuyenNganh;
+            document.getElementById('editSDT').value = sdt;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editModal').style.display = "block";
+        }
+
+            function confirmDelete() {
+            const maGVToDelete = document.getElementById('deleteMaGV').textContent;
+            deleteLecturer(maGVToDelete);
+            closeModal('deleteModal');
+        }
+
+            function openDeleteModal(maGV, hoTen) {
+            if (!isAdmin) return;
+            document.getElementById('deleteLecturerName').textContent = hoTen;
+            document.getElementById('deleteMaGV').textContent = maGV; // Store maGV to delete
+            document.getElementById('deleteModal').style.display = "block";
+        }
+
+            function closeModal(modalId) {
             document.getElementById(modalId).style.display = "none";
         }
-
-        // Load lecturers on page load
-        window.onload = loadLecturers;
     </script>
 </body>
 </html>
