@@ -132,19 +132,40 @@ INSERT INTO `decuongchitiet` (`mabophan`, `tenbophan`, `mactdt`) VALUES
 
 CREATE TABLE `giangvien` (
   `magv` int(11) NOT NULL,
-  `congtackhac` varchar(255) DEFAULT NULL,
-  `hocvi` varchar(255) NOT NULL,
-  `namsinh` varchar(255) NOT NULL,
-  `tengv` varchar(255) NOT NULL,
-  `tongclc` int(11) NOT NULL
+  `hoten` VARCHAR(255) NOT NULL,
+  `ngaysinh` DATE NOT NULL,
+  `gioitinh` ENUM('Nam', 'Nữ', 'Khác') NOT NULL,
+  `hocvi` VARCHAR(100) NOT NULL,
+  `chuyennganh` VARCHAR(255) NOT NULL,
+  `sdt` VARCHAR(20) NOT NULL,
+  `email` VARCHAR(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `giangvien`
 --
 
-INSERT INTO `giangvien` (`magv`, `congtackhac`, `hocvi`, `namsinh`, `tengv`, `tongclc`) VALUES
-(1, '367', 'PGS, TS, GVCC', '1972', 'Phạm Thế Bảo', 368);
+INSERT INTO `giangvien` (`magv`, `hoten`, `ngaysinh`, `gioitinh`, `hocvi`, `chuyennganh`, `sdt`, `email`) VALUES
+('001', 'Nguyễn Văn An', '1980-05-12', 'Nam', 'TS', 'Công nghệ phần mềm', '0912345678', 'an.nguyen@abc.edu.vn'),
+('002', 'Trần Thị Bình', '1975-09-20', 'Nữ', 'ThS', 'Mạng máy tính', '0987654321', 'binh.tran@abc.edu.vn'),
+('003', 'Lê Văn Cường', '1982-03-11', 'Nam', 'TS', 'Trí tuệ nhân tạo', '0905123456', 'cuong.le@abc.edu.vn'),
+('004', 'Phạm Thị Dung', '1985-08-25', 'Nữ', 'ThS', 'Khoa học dữ liệu', '0934567890', 'dung.pham@abc.edu.vn'),
+('005', 'Đỗ Mạnh Hùng', '1979-12-30', 'Nam', 'PGS.TS', 'Hệ thống thông tin', '0975123456', 'hung.do@abc.edu.vn'),
+('006', 'Ngô Thị Hoa', '1987-04-15', 'Nữ', 'ThS', 'Kỹ thuật phần mềm', '0911223344', 'hoa.ngo@abc.edu.vn'),
+('007', 'Vũ Văn Thành', '1981-10-18', 'Nam', 'TS', 'Lập trình Web', '0909223344', 'thanh.vu@abc.edu.vn'),
+('008', 'Hoàng Thị Lan', '1990-06-07', 'Nữ', 'ThS', 'Cơ sở dữ liệu', '0944556677', 'lan.hoang@abc.edu.vn'),
+('009', 'Nguyễn Minh Tâm', '1984-02-01', 'Nam', 'TS', 'Phân tích hệ thống', '0933445566', 'tam.nguyen@abc.edu.vn'),
+('010', 'Lương Hải Yến', '1986-09-13', 'Nữ', 'TS', 'Hệ điều hành', '0966778899', 'yen.luong@abc.edu.vn'),
+('011', 'Trịnh Văn Nam', '1977-11-22', 'Nam', 'PGS.TS', 'Mạng và bảo mật', '0977334466', 'nam.trinh@abc.edu.vn'),
+('012', 'Phan Thị Thảo', '1988-01-16', 'Nữ', 'ThS', 'Công nghệ thông tin', '0911557799', 'thao.phan@abc.edu.vn'),
+('013', 'Đặng Minh Hòa', '1983-05-19', 'Nam', 'TS', 'Kỹ thuật máy tính', '0933557799', 'hoa.dang@abc.edu.vn'),
+('014', 'Trương Thị Mai', '1992-07-09', 'Nữ', 'ThS', 'Công nghệ Web', '0908664466', 'mai.truong@abc.edu.vn'),
+('015', 'Nguyễn Quốc Bảo', '1980-12-03', 'Nam', 'TS', 'Phát triển phần mềm', '0944778822', 'bao.nguyen@abc.edu.vn'),
+('016', 'Lý Thị Kim', '1989-08-27', 'Nữ', 'ThS', 'Trí tuệ nhân tạo', '0977665544', 'kim.ly@abc.edu.vn'),
+('017', 'Hồ Minh Tuấn', '1982-06-30', 'Nam', 'TS', 'Phần mềm nhúng', '0933441122', 'tuan.ho@abc.edu.vn'),
+('018', 'Đinh Thị Quyên', '1991-03-23', 'Nữ', 'ThS', 'Hệ thống thông tin quản lý', '0912443355', 'quyen.dinh@abc.edu.vn'),
+('019', 'Bùi Văn Sơn', '1985-01-10', 'Nam', 'TS', 'Cơ sở dữ liệu nâng cao', '0955667788', 'son.bui@abc.edu.vn'),
+('020', 'Tạ Thị Hằng', '1990-11-05', 'Nữ', 'ThS', 'Lập trình hướng đối tượng', '0966998877', 'hang.ta@abc.edu.vn');
 
 -- --------------------------------------------------------
 
