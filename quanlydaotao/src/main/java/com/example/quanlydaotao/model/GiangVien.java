@@ -1,45 +1,57 @@
 package com.example.quanlydaotao.model;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "giangvien")
 public class GiangVien {
     @Id
     @Column(name = "magv", nullable = false)
-    private  int maGV;
+    private int maGV;
 
-    @Column(name = "tengv")
+    @Column(name = "hoten")
     @NotNull(message = "Tên giảng viên không được để trống!")
-    private String tenGV;
+    private String hoTen;
 
-    @Column(name = "namsinh")
-    @NotNull(message = "Năm sinh không được để trống!")
-    private String namSinh;
+    @Column(name = "ngaysinh")
+    @NotNull(message = "Ngày sinh không được để trống!")
+    private LocalDate ngaySinh;
+
+    @Column(name = "gioitinh")
+    @NotNull(message = "Giới tính không được để trống!")
+    private String gioiTinh;
 
     @Column(name = "hocvi")
     @NotNull(message = "Học vị không được để trống!")
     private String hocVi;
 
-    @Column(name = "congtackhac")
-    private String congTacKhac;
+    @Column(name = "chuyennganh")
+    @NotNull(message = "Chuyên ngành không được để trống!")
+    private String chuyenNganh;
 
-    @Column(name = "tongCLC")
-    @NotNull(message = "Tổng CLC không được để trống!")
-    @Min(value = 0, message = "Tổng CLC không được âm!")
-    private  int tongCLC;
+    @Column(name = "sdt")
+    @NotNull(message = "Số điện thoại không được để trống!")
+    private String sdt;
 
-    public  GiangVien(){
+    @Column(name = "email")
+    @NotNull(message = "Email không được để trống!")
+    private String email;
+
+    // Không có các cột 'congtackhac' và 'tongCLC' trong schema bạn cung cấp
+
+    public GiangVien() {
     }
 
-    public GiangVien(int maGV, String tenGV, String namSinh, String hocVi, String congTacKhac, int tongCLC){
+    public GiangVien(int maGV, String hoTen, LocalDate ngaySinh, String gioiTinh, String hocVi, String chuyenNganh, String sdt, String email) {
         this.maGV = maGV;
-        this.tenGV = tenGV;
-        this.namSinh = namSinh;
+        this.hoTen = hoTen;
+        this.ngaySinh = ngaySinh;
+        this.gioiTinh = gioiTinh;
         this.hocVi = hocVi;
-        this.congTacKhac = congTacKhac;
-        this.tongCLC = tongCLC;
+        this.chuyenNganh = chuyenNganh;
+        this.sdt = sdt;
+        this.email = email;
     }
 
     public int getMaGV() {
@@ -50,20 +62,28 @@ public class GiangVien {
         this.maGV = maGV;
     }
 
-    public String getTenGV() {
-        return tenGV;
+    public String getHoTen() {
+        return hoTen;
     }
 
-    public void setTenGV(String tenGV) {
-        this.tenGV = tenGV;
+    public void setHoTen(String hoTen) {
+        this.hoTen = hoTen;
     }
 
-    public String getNamSinh() {
-        return namSinh;
+    public LocalDate getNgaySinh() {
+        return ngaySinh;
     }
 
-    public void setNamSinh(String namSinh) {
-        this.namSinh = namSinh;
+    public void setNgaySinh(LocalDate ngaySinh) {
+        this.ngaySinh = ngaySinh;
+    }
+
+    public String getGioiTinh() {
+        return gioiTinh;
+    }
+
+    public void setGioiTinh(String gioiTinh) {
+        this.gioiTinh = gioiTinh;
     }
 
     public String getHocVi() {
@@ -74,19 +94,27 @@ public class GiangVien {
         this.hocVi = hocVi;
     }
 
-    public String getCongTacKhac() {
-        return congTacKhac;
+    public String getChuyenNganh() {
+        return chuyenNganh;
     }
 
-    public void setCongTacKhac(String congTacKhac) {
-        this.congTacKhac = congTacKhac;
+    public void setChuyenNganh(String chuyenNganh) {
+        this.chuyenNganh = chuyenNganh;
     }
 
-    public int getTongCLC() {
-        return tongCLC;
+    public String getSdt() {
+        return sdt;
     }
 
-    public void setTongCLC(int tongCLC) {
-        this.tongCLC = tongCLC;
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
