@@ -61,5 +61,15 @@ public class CTDaoTaoController {
         return ResponseEntity.ok(exists);
     }
 
+    @GetMapping("/chua-co-khung")
+    public ResponseEntity<List<CTDaoTao>> getCTDTChuaCoKhung() {
+        List<CTDaoTao> result = ctDaoTaoRepo.findCTDTNotInCTKhungNative();
+        return result.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(result);
+    }
+    @GetMapping("/da-co-khung")
+    public ResponseEntity<List<CTDaoTao>> getCTDTCoKhung() {
+        List<CTDaoTao> result = ctDaoTaoRepo.findCTDTInCTKhungNative();
+        return result.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(result);
+    }
 
 }

@@ -700,10 +700,31 @@
             alert(`Lỗi khi cập nhật chương trình đào tạo: ${error.message}`);
         }
     }
+      //Lấy chương trình khung bằng mã ctdt
+      async function fetchCTKhungByMaCTDT(maCTDT) {
+          try {
+              const response = await fetch(`/api/khungchuongtrinh/theomaCTDT/${maCTDT}`);
+              if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+              const data = await response.json();
+              return data;
+          } catch (error) {
+              console.error("Lỗi khi gọi API CTKhung theo maCTDT:", error);
+              return null;
+          }
+      }
 
     async function confirmDelete() {
         const maCTDT = document.getElementById('deleteModal').dataset.maCTDT;
+
         try {
+            const ctKhung = await fetchCTKhungByMaCTDT(maCTDT);
+            if (ctKhung !== null && Array.isArray(ctKhung) && ctKhung.length > 0) {
+                alert("Bạn không thể xóa chương trình đào tạo này vì đã có chương trình khung.");
+                return;
+            }
+
             await deleteCTDaoTao(maCTDT);
             alert('Xóa chương trình đào tạo thành công!');
             closeModal('deleteModal');
