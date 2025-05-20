@@ -23,7 +23,7 @@ public class GiangVienController {
 
     @GetMapping("/{magv}")
     public ResponseEntity<?> getById(@PathVariable int magv) {
-        return giangVienRepo.findById(String.valueOf(magv))
+        return giangVienRepo.findById(magv)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -45,7 +45,7 @@ public class GiangVienController {
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
 
-        Optional<GiangVien> optionalGV = giangVienRepo.findById(String.valueOf(magv));
+        Optional<GiangVien> optionalGV = giangVienRepo.findById(magv);
         if (optionalGV.isPresent()) {
             giangVien.setMaGV(magv); // đảm bảo ID đúng
             GiangVien updated = giangVienRepo.save(giangVien);
@@ -57,7 +57,7 @@ public class GiangVienController {
 
     // Xóa giảng viên
     @DeleteMapping("/{magv}")
-    public ResponseEntity<?> xoaGiangVien(@PathVariable String magv) {
+    public ResponseEntity<?> xoaGiangVien(@PathVariable int magv) {
         Optional<GiangVien> optionalGV = giangVienRepo.findById(magv);
         if (optionalGV.isPresent()) {
             giangVienRepo.deleteById(magv);
