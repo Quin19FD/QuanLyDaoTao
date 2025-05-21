@@ -470,10 +470,13 @@
                     <label for="editCourseName">Tên Học Phần:</label>
                     <input type="text" id="editCourseName" required>
                 </div>
-
+                <div class="form-row">
+                    <label for="editKhoiKienThuc">Khối Kiến Thức:</label>
+                    <select id="editKhoiKienThuc"></select>
+                </div>
                 <div class="form-row" id="editSpecializationRow" >
                     <label for="editSpecializationInput">Chuyên ngành:</label>
-                    <input type="text" id="editSpecializationInput">
+                    <input type="text" id="editSpecializationInput" disabled>
                 </div>
                 <div class="form-row">
                     <label for="editTheoryCredits">Số Tiết Lý Thuyết:</label>
@@ -673,8 +676,24 @@
         viewKhoiKienThuc.innerHTML=KhoiKT[index]+'';
         document.getElementById('viewModal').style.display = 'block';
     }
+
       let selectCourseEdit = null;
-      function editCourse(course) {
+    function handleKhoiKienThucChange() {
+        const select = document.getElementById("editKhoiKienThuc");
+        const input = document.getElementById("editSpecializationInput");
+
+        const isLastOption = select.selectedIndex === select.options.length - 1;
+
+        if (isLastOption) {
+            input.disabled = false;
+        } else {
+            input.value = "";
+            input.disabled = true;
+        }
+    }
+    document.getElementById("editKhoiKienThuc").addEventListener("change", handleKhoiKienThucChange);
+
+    async function editCourse(course) {
         const editCourseId = document.getElementById('editCourseId');
         const editTrainingProgram = document.getElementById('editTrainingProgram');
         const editCourseName = document.getElementById('editCourseName');
@@ -683,6 +702,7 @@
         const editPracticeCredits = document.getElementById('editPracticeCredits');
         const editInternshipCredits = document.getElementById('editInternshipCredits');
         const editCoefficient = document.getElementById('editCoefficient');
+        const editKhoiKienThuc = document.getElementById ('editKhoiKienThuc');
 
         // Gán dữ liệu vào input để người dùng chỉnh sửa
         editCourseId.value = course?.maHocPhan?.maHocPhan || '';
@@ -694,6 +714,21 @@
         editInternshipCredits.value = course?.thucTap ?? '0';
         editCoefficient.value = course?.maHocPhan?.heSo ?? '1.0';
         selectCourseEdit = course;
+
+        const ctKhung = await fetchCTKhungByMaCTDT(course.maHocPhan.maDaoTao.maCTDT);
+        console.log("ctKhung sau khi fetch:", ctKhung);
+        const maKhung = ctKhung[0].maKhung;
+        console.log ("Ma Khung",maKhung);
+        const khoiKienThucList = await fetchKhoiKienThucByMaKhung(maKhung);
+
+       let html = '';
+        for (let i = 0; i < khoiKienThucList.length; i++) {
+            const khoi = khoiKienThucList[i];
+            const selected = (khoi.maKhoiKienThuc === course.maHocPhan.maKhoiKienThuc.maKhoiKienThuc) ? 'selected' : '';
+            html += `<option value="${khoi.maKhoiKienThuc}" ${selected}>${KhoiKT[i]}</option>`;
+        }
+        editKhoiKienThuc.innerHTML = html;
+
         document.getElementById("editModal").style.display = "block";
     }
     document.getElementById("saveEdit").addEventListener("click", async () => {
@@ -704,12 +739,12 @@
             const editPracticeCredits = document.getElementById('editPracticeCredits').value;
             const editInternshipCredits = document.getElementById('editInternshipCredits').value;
             const editCoefficient = document.getElementById('editCoefficient').value;
-
+            const  editKhoiKienThuc = document.getElementById('editKhoiKienThuc').value;
             if (!editCourseName) {
                 console.error("Tên học phần không được để trống!");
                 return;
             }
-
+            const KhoiKT = await getKhoiKienThucById(editKhoiKienThuc);
             // Log giá trị đầu vào
             console.log("editSpecializationInput:", editSpecializationInput);
 
@@ -720,6 +755,7 @@
             selectCourseEdit.lyThuyet = parseInt(editTheoryCredits) || 0;
             selectCourseEdit.thucHanh = parseInt(editPracticeCredits) || 0;
             selectCourseEdit.thucTap = parseInt(editInternshipCredits) || 0;
+            selectCourseEdit.maHocPhan.maKhoiKienThuc = KhoiKT;
 
             // Log dữ liệu sau khi cập nhật
             console.log("Dữ liệu sau khi sửa:", selectCourseEdit);
