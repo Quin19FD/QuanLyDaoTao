@@ -321,7 +321,7 @@
     <h1>QUẢN LÝ DANH MỤC HỌC PHẦN </h1>
     <div class="controls">
         <button class="add-btn" th:if="${isAdmin}" onclick="openAddModal()">+ Thêm Học Phần</button>
-        <input type="text" id="searchInput" placeholder="Tìm kiếm theo mã hoặc tên...">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm theo mã HP">
         <button class="filter-btn" onclick="filterCourses()">Lọc</button>
     </div>
 
@@ -1010,6 +1010,45 @@ async function createCustomCTHocPhan(maHocPhan, lyThuyet, thucHanh, thucTap) {
   }
 }
 
+async function fetchfindCTHocPhan(maHocPhan) {
+      try {
+            const response = await fetch(`/api/cthocphan/${maHocPhan}`);
+
+            if (!response.ok) {
+                  // Không tìm thấy hoặc lỗi server
+                  if (response.status === 404) {
+                        console.log("Không tìm thấy chi tiết học phần.");
+                        return null;
+                  }
+                  throw new Error("Lỗi khi gọi API: " + response.status);
+            }
+
+            const data = await response.json();
+            console.log("Chi tiết học phần:", data);
+            return data;
+
+      } catch (error) {
+            console.error("Lỗi:", error);
+            return null;
+      }
+}
+async function filterCourses() {
+    var searchText = document.getElementById('searchInput').value;
+
+    if (!searchText || searchText.trim() === "") {
+        alert("Vui lòng nhập mã học phần bạn muốn tìm kiếm");
+        return;
+    }
+
+    var exist = await fetchfindCTHocPhan(searchText.trim());
+
+    if (exist == null) {
+        alert("Không có thông tin về học phần này");
+        return;
+    } else {
+        viewDetails(exist);
+    }
+}
 
 
       function openDeleteModal(index) {
@@ -1020,7 +1059,7 @@ async function createCustomCTHocPhan(maHocPhan, lyThuyet, thucHanh, thucTap) {
     window.onload = function() {
         checkPermission();
         getAllCTHocPhan();
-         fetchCTDTDaCoKhung();
+        fetchCTDTDaCoKhung();
     }
 </script>
 

@@ -95,6 +95,13 @@ public class CTHocPhanController {
         CTHocPhan saved = cthocPhanRepo.save(ct);
         return ResponseEntity.ok(saved);
     }
+    @GetMapping("/{maHocPhan}")
+    public CTHocPhan getByMaHocPhan(@PathVariable String maHocPhan) {
+        Optional<CTHocPhan> optional = cthocPhanRepo.findById(maHocPhan);
+        return optional.orElse(null);
+    }
+
+
 
 
 }
