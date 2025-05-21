@@ -61,17 +61,7 @@ public class HocPhanController {
         }
     }
 
-    // @GetMapping("/hocphan")
-    // public String hocphan(Model model, HttpSession session) {
-    //     // Lấy thông tin user từ session
-    //     User user = (User) session.getAttribute("user");
-    //     boolean isAdmin = user != null && "ADMIN".equals(user.getRole());
-    //     String userRole = user != null ? user.getRole() : "";
-        
-    //     model.addAttribute("isAdmin", isAdmin);
-    //     model.addAttribute("userRole", userRole);
-    //     return "hocphan";
-    // }
+
 }
 
 

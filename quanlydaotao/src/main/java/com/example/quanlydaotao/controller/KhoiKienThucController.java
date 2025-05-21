@@ -101,4 +101,15 @@ public class KhoiKienThucController {
         khoiKienThucRepo.save(entity);
         return ResponseEntity.ok("Cập nhật Khối Kiến Thức thành công với mã = " + maKhoiKienThuc);
     }
+
+    @GetMapping("/{maKhoiKienThuc}")
+    public ResponseEntity<KhoiKienThuc> getKhoiKienThucById(@PathVariable int maKhoiKienThuc) {
+        Optional<KhoiKienThuc> optional = khoiKienThucRepo.findById(maKhoiKienThuc);
+        if (optional.isPresent()) {
+            return ResponseEntity.ok(optional.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

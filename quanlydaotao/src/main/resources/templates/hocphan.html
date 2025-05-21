@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Danh Mục Học Phần - Khoa CNTT</title>
+    <title>Quản Lý Danh Mục Học Phần</title>
     <style>
         * {
             font-size: 20px;
@@ -318,7 +318,7 @@
     Trang Chủ
 </a>
 <div class="container">
-    <h1>QUẢN LÝ DANH MỤC HỌC PHẦN - KHOA CNTT</h1>
+    <h1>QUẢN LÝ DANH MỤC HỌC PHẦN </h1>
     <div class="controls">
         <button class="add-btn" th:if="${isAdmin}" onclick="openAddModal()">+ Thêm Học Phần</button>
         <input type="text" id="searchInput" placeholder="Tìm kiếm theo mã hoặc tên...">
@@ -367,15 +367,15 @@
                 <span id="viewSpecialization"></span>
             </div>
             <div class="info-row">
-                <label>Số Tín Chỉ Lý Thuyết:</label>
+                <label>Số Tiết Lý Thuyết:</label>
                 <span id="viewTheoryCredits"></span>
             </div>
             <div class="info-row">
-                <label>Số Tín Chỉ Thực Hành:</label>
+                <label>Số Tiết Thực Hành:</label>
                 <span id="viewPracticeCredits"></span>
             </div>
             <div class="info-row">
-                <label>Số Tín Chỉ Thực Tập:</label>
+                <label>Số Tiết Thực Tập:</label>
                 <span id="viewInternshipCredits"></span>
             </div>
             <div class="info-row">
@@ -409,31 +409,35 @@
                     <input type="text" id="courseName" required>
                 </div>
                 <div class="form-row">
-                    <label for="groupSelect">Nhóm Kiến Thức:</label>
+                    <label for="groupSelect">Khối Kiến Thức:</label>
                     <select id="groupSelect" disabled></select>
                 </div>
-                <div class="form-row" id="addSpecializationRow" style="display: none;">
+                <div class="form-row" id="addSpecializationRow">
                     <label for="specializationInput">Chuyên ngành:</label>
-                    <input type="text" id="specializationInput">
+                    <input type="text" id="specializationInput" disabled>
                 </div>
                 <div class="form-row">
-                    <label for="theoryCredits">Số Tín Chỉ Lý Thuyết:</label>
+                    <label for="theoryCredits">Số Tiết Lý Thuyết:</label>
                     <input type="number" id="theoryCredits" min="0" required>
                 </div>
                 <div class="form-row">
-                    <label for="practiceCredits">Số Tín Chỉ Thực Hành:</label>
+                    <label for="practiceCredits">Số Tiết Thực Hành:</label>
                     <input type="number" id="practiceCredits" min="0" required>
                 </div>
                 <div class="form-row">
-                    <label for="internshipCredits">Số Tín Chỉ Thực Tập:</label>
+                    <label for="internshipCredits">Số Tiết Thực Tập:</label>
                     <input type="number" id="internshipCredits" min="0" required>
+                </div>
+                <div class="form-row">
+                    <label for="tinChi">Số Tín Chỉ:</label>
+                    <input type="number" id="tinChi" min="1" step="1" required>
                 </div>
                 <div class="form-row">
                     <label for="coefficient">Hệ Số:</label>
                     <input type="number" id="coefficient" min="1" step="0.1" required>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="save-btn" onclick="">Thêm</button>
+                    <button type="button" id ="saveAdd" class="save-btn" onclick="">Thêm</button>
                     <button type="button" class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
                 </div>
             </form>
@@ -452,32 +456,31 @@
                 <div class="form-row">
                     <label for="editCourseId">Mã Học Phần:</label>
 
-                    <span id="editCourseId" class="static-field" disable></span>
+                    <input type="text" id="editCourseId" disabled>
                 </div>
                 <div class="form-row">
                     <label for="editTrainingProgram">Mã CTĐT:</label>
-                    <span id="editTrainingProgram" class="static-field" disable></span>
+                    <input type="text" id="editTrainingProgram" disabled>
                 </div>
                 <div class="form-row">
                     <label for="editCourseName">Tên Học Phần:</label>
                     <input type="text" id="editCourseName" required>
                 </div>
 
-
-                <div class="form-row" id="editSpecializationRow" style="display: none;">
+                <div class="form-row" id="editSpecializationRow" >
                     <label for="editSpecializationInput">Chuyên ngành:</label>
                     <input type="text" id="editSpecializationInput">
                 </div>
                 <div class="form-row">
-                    <label for="editTheoryCredits">Số Tín Chỉ Lý Thuyết:</label>
+                    <label for="editTheoryCredits">Số Tiết Lý Thuyết:</label>
                     <input type="number" id="editTheoryCredits" min="0" required>
                 </div>
                 <div class="form-row">
-                    <label for="editPracticeCredits">Số Tín Chỉ Thực Hành:</label>
+                    <label for="editPracticeCredits">Số Tiết Thực Hành:</label>
                     <input type="number" id="editPracticeCredits" min="0" required>
                 </div>
                 <div class="form-row">
-                    <label for="editInternshipCredits">Số Tín Chỉ Thực Tập:</label>
+                    <label for="editInternshipCredits">Số TiếtThực Tập:</label>
                     <input type="number" id="editInternshipCredits" min="0" required>
                 </div>
 
@@ -486,7 +489,7 @@
                     <input type="number" id="editCoefficient" min="1" step="0.1" required>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="save-btn" onclick="saveEdit()">Lưu</button>
+                    <button type="button" id="saveEdit" class="save-btn">Lưu</button>
                     <button type="button" class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
                 </div>
             </form>
@@ -564,7 +567,6 @@
                     <button class="view-btn">Xem Chi Tiết</button>
                     ${isAdmin ? `
                         <button class="edit-btn">Sửa</button>
-                        <button class="delete-btn">Xóa</button>
                     ` : ''}
                 </td>
             `;
@@ -573,7 +575,7 @@
             row.querySelector(".view-btn").addEventListener("click", () => viewDetails(course));
             if (isAdmin) {
                 row.querySelector(".edit-btn").addEventListener("click", () => editCourse(course));
-                row.querySelector(".delete-btn").addEventListener("click", () => openDeleteModal(course));
+
             }
 
             tableBody.appendChild(row);
@@ -581,33 +583,33 @@
     }
 
 
-  // Gọi danh sách chương trình đào tạo đã có chương trình khung
-async function fetchCTDTDaCoKhung() {
-    try {
-        const response = await fetch('/api/CTDT_View/da-co-khung');
-        if (response.status === 204) {
-            console.log("Không có dữ liệu CTĐT đã có khung.");
-            return;
-        } else if (!response.ok) {
-            throw new Error(`Lỗi khi gọi API /da-co-khung: ${response.statusText}`);
+      // Gọi danh sách chương trình đào tạo đã có chương trình khung
+    async function fetchCTDTDaCoKhung() {
+        try {
+            const response = await fetch('/api/CTDT_View/da-co-khung');
+            if (response.status === 204) {
+                console.log("Không có dữ liệu CTĐT đã có khung.");
+                return;
+            } else if (!response.ok) {
+                throw new Error(`Lỗi khi gọi API /da-co-khung: ${response.statusText}`);
+            }
+
+            const programs = await response.json();
+            console.log("Danh sách CTĐT đã có khung (programs):", programs);
+
+            const component2 = document.getElementById('trainingProgram');
+
+            let html = '<option value="">-- Chọn chương trình đào tạo --</option>';
+            for (let i = 0; i < programs.length; i++) {
+                html += `<option value="${programs[i].maCTDT}">${programs[i].tenCTDT}-(${programs[i].maCTDT})</option>`;
+            }
+
+            component2.innerHTML = html;
+
+        } catch (error) {
+            console.error("Lỗi fetchCTDTDaCoKhung:", error);
         }
-
-        const programs = await response.json();
-        console.log("Danh sách CTĐT đã có khung (programs):", programs);
-
-        const component2 = document.getElementById('trainingProgram');
-
-        let html = '<option value="">-- Chọn chương trình đào tạo --</option>';
-        for (let i = 0; i < programs.length; i++) {
-            html += `<option value="${programs[i].maCTDT}">${programs[i].tenCTDT}-(${programs[i].maCTDT})</option>`;
-        }
-
-        component2.innerHTML = html;
-
-    } catch (error) {
-        console.error("Lỗi fetchCTDTDaCoKhung:", error);
     }
-}
 
 
     function closeModal(modalId) {
@@ -618,33 +620,371 @@ async function fetchCTDTDaCoKhung() {
         document.getElementById("addModal").style.display = "block";
     }
 
-function viewDetails(course) {
-    const viewCourseId = document.getElementById('viewCourseId');
-    const viewCourseName = document.getElementById('viewCourseName');
-    const viewTrainingProgram = document.getElementById('viewTrainingProgram');
-    const viewSpecialization = document.getElementById('viewSpecialization');
-    const viewTheoryCredits = document.getElementById('viewTheoryCredits');
-    const viewPracticeCredits = document.getElementById('viewPracticeCredits');
-    const viewInternshipCredits = document.getElementById('viewInternshipCredits');
-    const viewCoefficient = document.getElementById('viewCoefficient');
+    function viewDetails(course) {
+        const viewCourseId = document.getElementById('viewCourseId');
+        const viewCourseName = document.getElementById('viewCourseName');
+        const viewTrainingProgram = document.getElementById('viewTrainingProgram');
+        const viewSpecialization = document.getElementById('viewSpecialization');
+        const viewTheoryCredits = document.getElementById('viewTheoryCredits');
+        const viewPracticeCredits = document.getElementById('viewPracticeCredits');
+        const viewInternshipCredits = document.getElementById('viewInternshipCredits');
+        const viewCoefficient = document.getElementById('viewCoefficient');
 
-    // Kiểm tra dữ liệu trước khi gán
-    viewCourseId.innerHTML = course?.maHocPhan?.maHocPhan || 'N/A';
-    viewCourseName.innerHTML = course?.maHocPhan?.tenHocPhan || 'N/A';
-    viewTrainingProgram.innerHTML = course?.maHocPhan?.maDaoTao ?
-        `${course.maHocPhan.maDaoTao.maCTDT} - ${course.maHocPhan.maDaoTao.tenCTDT}` : 'N/A';
-    viewSpecialization.innerHTML = course?.maHocPhan?.maChuyenNghanh || 'Không có';
-    viewTheoryCredits.innerHTML = course?.lyThuyet ?? '0';
-    viewPracticeCredits.innerHTML = course?.thucHanh ?? '0';
-    viewInternshipCredits.innerHTML = course?.thucTap ?? '0';
-    viewCoefficient.innerHTML = course?.maHocPhan?.heSo ?? 'N/A';
+        // Kiểm tra dữ liệu trước khi gán
+        viewCourseId.innerHTML = course?.maHocPhan?.maHocPhan || 'N/A';
+        viewCourseName.innerHTML = course?.maHocPhan?.tenHocPhan || 'N/A';
+        viewTrainingProgram.innerHTML = course?.maHocPhan?.maDaoTao ?
+            `${course.maHocPhan.maDaoTao.maCTDT} - ${course.maHocPhan.maDaoTao.tenCTDT}` : 'N/A';
+        viewSpecialization.innerHTML = course?.maHocPhan?.maChuyenNghanh || 'Không có';
+        viewTheoryCredits.innerHTML = course?.lyThuyet ?? '0';
+        viewPracticeCredits.innerHTML = course?.thucHanh ?? '0';
+        viewInternshipCredits.innerHTML = course?.thucTap ?? '0';
+        viewCoefficient.innerHTML = course?.maHocPhan?.heSo ?? 'N/A';
 
-    document.getElementById('viewModal').style.display = 'block';
-}
+        document.getElementById('viewModal').style.display = 'block';
+    }
+      let selectCourseEdit = null;
+      function editCourse(course) {
+        const editCourseId = document.getElementById('editCourseId');
+        const editTrainingProgram = document.getElementById('editTrainingProgram');
+        const editCourseName = document.getElementById('editCourseName');
+        const editSpecializationInput = document.getElementById('editSpecializationInput');
+        const editTheoryCredits = document.getElementById('editTheoryCredits');
+        const editPracticeCredits = document.getElementById('editPracticeCredits');
+        const editInternshipCredits = document.getElementById('editInternshipCredits');
+        const editCoefficient = document.getElementById('editCoefficient');
 
-    function editCourse(index) {
+        // Gán dữ liệu vào input để người dùng chỉnh sửa
+        editCourseId.value = course?.maHocPhan?.maHocPhan || '';
+        editTrainingProgram.value = course?.maHocPhan?.maDaoTao?.maCTDT || '';
+        editCourseName.value = course?.maHocPhan?.tenHocPhan || '';
+        editSpecializationInput.value = course?.maHocPhan?.maChuyenNghanh || '';
+        editTheoryCredits.value = course?.lyThuyet ?? '0';
+        editPracticeCredits.value = course?.thucHanh ?? '0';
+        editInternshipCredits.value = course?.thucTap ?? '0';
+        editCoefficient.value = course?.maHocPhan?.heSo ?? '1.0';
+        selectCourseEdit = course;
         document.getElementById("editModal").style.display = "block";
     }
+    document.getElementById("saveEdit").addEventListener("click", async () => {
+        try {
+            const editCourseName = document.getElementById('editCourseName').value;
+            const editSpecializationInput = document.getElementById('editSpecializationInput').value;
+            const editTheoryCredits = document.getElementById('editTheoryCredits').value;
+            const editPracticeCredits = document.getElementById('editPracticeCredits').value;
+            const editInternshipCredits = document.getElementById('editInternshipCredits').value;
+            const editCoefficient = document.getElementById('editCoefficient').value;
+
+            if (!editCourseName) {
+                console.error("Tên học phần không được để trống!");
+                return;
+            }
+
+            // Log giá trị đầu vào
+            console.log("editSpecializationInput:", editSpecializationInput);
+
+            // Cập nhật selectCourseEdit
+            selectCourseEdit.maHocPhan.tenHocPhan = editCourseName;
+            selectCourseEdit.maHocPhan.maChuyenNganh = editSpecializationInput || "";
+            selectCourseEdit.maHocPhan.heSo = parseFloat(editCoefficient) || 1.0;
+            selectCourseEdit.lyThuyet = parseInt(editTheoryCredits) || 0;
+            selectCourseEdit.thucHanh = parseInt(editPracticeCredits) || 0;
+            selectCourseEdit.thucTap = parseInt(editInternshipCredits) || 0;
+
+            // Log dữ liệu sau khi cập nhật
+            console.log("Dữ liệu sau khi sửa:", selectCourseEdit);
+            updateHocPhan(selectCourseEdit.maHocPhanId, selectCourseEdit.maHocPhan)
+                .then(() => {
+                    // Nếu updateHocPhan thành công, tiếp tục gọi updateCTHocPhan
+                    return updateCTHocPhan(selectCourseEdit.maHocPhanId, selectCourseEdit);
+                })
+                .then(() => {
+                    // Nếu cả hai đều thành công
+                    alert("Sửa học phần thành công");
+                    selectCourseEdit=null;
+                    closeModal('editModal');
+                })
+                .catch(error => {
+                    // Nếu có lỗi ở bước nào thì sẽ vào đây và không thực hiện bước tiếp theo
+                    console.error("Lỗi khi cập nhật:", error);
+                });
+
+        } catch (error) {
+            console.error("Lỗi khi xử lý dữ liệu:", error);
+        }
+    });
+
+    function updateHocPhan(maHocPhan, hocPhan) {
+        return fetch(`/api/hocphan/${maHocPhan}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(hocPhan)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Cập nhật học phần thất bại");
+            }
+            return response.json();
+        });
+    }
+
+    function updateCTHocPhan(maHocPhan, ctHocPhan) {
+        return fetch(`/api/cthocphan/${maHocPhan}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(ctHocPhan)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Cập nhật chi tiết học phần thất bại");
+            }
+            return response.json();
+        });
+    }
+
+async function fetchCTKhungByMaCTDT(maCTDT) {
+    try {
+        const response = await fetch(`/api/khungchuongtrinh/theomaCTDT/${maCTDT}`);
+        if (response.status === 204) {
+            console.log("Không có CTKhung cho maCTDT:", maCTDT);
+            return null;
+        }
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("CTKhung response (chi tiết):", data); // Log chi tiết dữ liệu
+        return data;
+    } catch (error) {
+        console.error("Lỗi khi gọi API CTKhung theo maCTDT:", error);
+        return null;
+    }
+}
+
+            //Lấy danh sách khối kiến thức bởi mã khung
+      async function fetchKhoiKienThucByMaKhung(maKhung) {
+          try {
+              const response = await fetch(`/api/khoikienthuc/byKhung/${maKhung}`);
+              if (!response.ok) {
+                  throw new Error(`Lỗi khi gọi API: ${response.status}`);
+              }
+              const data = await response.json();
+              console.log ("Khoi kien thuc",data);
+              return data;
+          } catch (error) {
+              console.error("Lỗi khi lấy khối kiến thức theo maKhung:", error);
+              return null;
+          }
+      }
+document.getElementById("trainingProgram").addEventListener("change", async function () {
+    const selectedValue = this.value;
+    console.log("Giá trị được chọn:", selectedValue);
+
+    const selectKhoiKT = document.getElementById('groupSelect');
+    if (!selectedValue) {
+        selectKhoiKT.innerHTML = '<option value="">-- Chọn khối kiến thức --</option>';
+        selectKhoiKT.disabled = true;
+        return;
+    }
+
+    const ctKhung = await fetchCTKhungByMaCTDT(selectedValue);
+    console.log("ctKhung sau khi fetch:", ctKhung);
+    const maKhung = ctKhung[0].maKhung;
+    const khoiKienThucList = await fetchKhoiKienThucByMaKhung(maKhung);
+    if (!khoiKienThucList || khoiKienThucList.length === 0) {
+        console.error("Không tìm thấy khối kiến thức");
+        selectKhoiKT.innerHTML = '<option value="">-- Không có khối kiến thức --</option>';
+        selectKhoiKT.disabled = true;
+        return;
+    }
+
+    let KhoiKT = [
+        "Kiến thức giáo dục thể chất và Giáo dục quốc phòng và an ninh",
+        "Kiến thức ngoại ngữ",
+        "Kiến thức lý luận chính trị",
+        "Kiến thức giáo dục đại cương khác",
+        "Kiến thức cơ sở nghành",
+        "Kiến thức ngành",
+        "Kiến thức chuyên ngành"
+    ];
+
+    selectKhoiKT.innerHTML = '';
+    selectKhoiKT.disabled = false;
+
+    let html = '<option value="">-- Chọn khối kiến thức --</option>';
+    for (let i = 0; i < khoiKienThucList.length; i++) {
+        html += `<option value="${khoiKienThucList[i].maKhoiKienThuc}">${KhoiKT[i] || 'Không rõ tên'}</option>`;
+    }
+    selectKhoiKT.innerHTML = html;
+});
+
+document.getElementById("groupSelect").addEventListener("change", function () {
+    const select = this;
+    const chuyenNghanh = document.getElementById("specializationInput");
+
+    // Kiểm tra xem option được chọn có phải là option cuối cùng không
+    const isLastOption = select.selectedIndex === select.options.length - 1;
+
+    // Nếu là option cuối cùng, bỏ thuộc tính disabled của chuyennghanh
+    if (isLastOption) {
+        chuyenNghanh.disabled = false;
+    } else {
+        chuyenNghanh.disabled = true; // Nếu không phải option cuối, giữ disabled
+    }
+});
+ function createHocPhan(hocPhan) {
+    return fetch('/api/hocphan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(hocPhan)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Lỗi khi tạo học phần');
+        return response.json();
+    });
+}
+
+    //Lấy ctdt bởi mã ctdt
+    async function fetchCTDaoTaoById(mactdt) {
+        try {
+            const response = await fetch(`/api/CTDT_View/${mactdt}`);
+            if (!response.ok) {
+                if (response.status === 404) throw new Error('Không tìm thấy chương trình đào tạo');
+                throw new Error('Lỗi khi lấy thông tin chương trình đào tạo');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi:', error.message);
+            throw error;
+        }
+    }
+
+// Hàm này cần thêm return để gọi bằng await
+async function getKhoiKienThucById(maKhoiKienThuc) {
+    try {
+        const response = await fetch(`/api/khoikienthuc/${maKhoiKienThuc}`);
+        if (!response.ok) {
+            throw new Error(`Không tìm thấy Khối Kiến Thức với mã ${maKhoiKienThuc}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Lỗi khi gọi API:", error.message);
+        throw error;
+    }
+}
+document.getElementById("saveAdd").addEventListener("click", async () => {
+    const maHocPhan = document.getElementById('newCourseId').value.trim();
+    const maCTDT = document.getElementById('trainingProgram').value.trim();
+    const tenHocPhan = document.getElementById('courseName').value.trim();
+    const idKhoiKienThuc = document.getElementById('groupSelect').value.trim();
+    let chuyenNganh = document.getElementById('specializationInput').value.trim();
+    const lyThuyet = document.getElementById('theoryCredits').value.trim();
+    const thucHanh = document.getElementById('practiceCredits').value.trim();
+    const thucTap = document.getElementById('internshipCredits').value.trim();
+    const heSo = document.getElementById('coefficient').value.trim();
+    const tinChi = document.getElementById('tinChi').value.trim();
+
+    // Kiểm tra dữ liệu đầu vào
+    if (
+        !maHocPhan || !maCTDT || !idKhoiKienThuc ||
+        lyThuyet === "" || thucHanh === "" || thucTap === "" || heSo === "" || tinChi === ""
+    ) {
+        alert("Vui lòng điền đầy đủ các trường bắt buộc.");
+        return;
+    }
+
+    const lyThuyetNum = Number(lyThuyet);
+    const thucHanhNum = Number(thucHanh);
+    const thucTapNum = Number(thucTap);
+    const heSoNum = Number(heSo);
+    const tinChiNum = Number(tinChi);
+
+    if (
+        isNaN(lyThuyetNum) || lyThuyetNum < 0 ||
+        isNaN(thucHanhNum) || thucHanhNum < 0 ||
+        isNaN(thucTapNum) || thucTapNum < 0 ||
+        isNaN(heSoNum) || heSoNum < 1 ||
+        isNaN(tinChiNum) || tinChiNum < 1
+    ) {
+        alert("Vui lòng nhập giá trị hợp lệ cho các trường số.");
+        return;
+    }
+
+    try {
+        const CTDT = await fetchCTDaoTaoById(maCTDT);
+        const KhoiKT = await getKhoiKienThucById(idKhoiKienThuc);
+
+        // Tạo object HocPhan
+        const HocPhan = {
+            heSo: heSoNum,
+            maChuyenNganh: chuyenNganh || "",
+            maDaoTao: CTDT,
+            maHocPhan: maHocPhan,
+            maKhoiKienThuc: KhoiKT,
+            soTinChi: tinChiNum,
+            tenHocPhan: tenHocPhan
+        };
+
+        // Tạo object CTHocPhan
+        const objectCTHocPhan = {
+            maHocPhanId:HocPhan.maHocPhan,
+            maHocPhan:maHocPhan,
+            lyThuyet: lyThuyetNum,
+            thucHanh: thucHanhNum, // Sửa tên thuộc tính
+            thucTap: thucTapNum
+
+        };
+
+        console.log("HocPhan:", JSON.stringify(HocPhan, null, 2));
+        console.log("objectCTHocPhan:", JSON.stringify(objectCTHocPhan, null, 2));
+
+        // Gọi API tạo HocPhan trước
+        await createHocPhan(HocPhan);
+        // Gọi API tạo CTHocPhan
+        await createCustomCTHocPhan(HocPhan.maHocPhan,lyThuyetNum,  thucHanhNum,  thucTapNum);
+
+        alert('Tạo học phần thành công!');
+        closeModal('addModal');
+        getAllCTHocPhan(); // Tải lại danh sách
+    } catch (error) {
+        console.error('Lỗi:', error.message || error);
+        alert(error.message || 'Lỗi xảy ra khi tạo học phần.');
+    }
+});
+async function createCustomCTHocPhan(maHocPhan, lyThuyet, thucHanh, thucTap) {
+  const params = new URLSearchParams({
+    maHocPhan,
+    lyThuyet: lyThuyet.toString(),
+    thucHanh: thucHanh.toString(),
+    thucTap: thucTap.toString()
+  });
+
+  try {
+    const response = await fetch('/api/cthocphan/custom', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()  // Truyền dữ liệu ở đây
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
+  }
+}
+
+
 
       function openDeleteModal(index) {
         document.getElementById("deleteModal").style.display = "block";

@@ -21,25 +21,24 @@ public class CTHocPhan {
     private HocPhan maHocPhan;
 
     @Column(name = "lythuyet")
-    @NotNull(message = "Lý thuyết không được để trống!")
-    @Min(value = 0, message = "Lý thuyết không được âm!")
+    @NotNull
+    @Min(0)
     private int lyThuyet;
 
     @Column(name = "thuchanh")
-    @NotNull(message = "Thực hành không được để trống!")
-    @Min(value = 0, message = "Thực hành không được âm!")
+    @NotNull
+    @Min(0)
     private int thucHanh;
 
     @Column(name = "thuctap")
-    @NotNull(message = "Thực tập không được để trống!")
-    @Min(value = 0, message = "Thực tập không được âm!")
+    @NotNull
+    @Min(0)
     private int thucTap;
 
     public CTHocPhan() {}
 
     public CTHocPhan(HocPhan maHocPhan, int lyThuyet, int thucHanh, int thucTap) {
         this.maHocPhan = maHocPhan;
-        this.maHocPhanId = maHocPhan != null ? maHocPhan.getMaHocPhan() : null;
         this.lyThuyet = lyThuyet;
         this.thucHanh = thucHanh;
         this.thucTap = thucTap;
@@ -49,8 +48,9 @@ public class CTHocPhan {
         return maHocPhanId;
     }
 
+    // Không nên để setter này, hoặc nếu có thì không dùng
     public void setMaHocPhanId(String maHocPhanId) {
-        this.maHocPhanId = maHocPhanId;
+        // BỎ TRỐNG hoặc xoá method này
     }
 
     public HocPhan getMaHocPhan() {
@@ -59,17 +59,31 @@ public class CTHocPhan {
 
     public void setMaHocPhan(HocPhan maHocPhan) {
         this.maHocPhan = maHocPhan;
-        this.maHocPhanId = maHocPhan != null ? maHocPhan.getMaHocPhan() : null;
     }
 
-    public int getLyThuyet() { return lyThuyet; }
-    public void setLyThuyet(int lyThuyet) { this.lyThuyet = lyThuyet; }
+    public int getLyThuyet() {
+        return lyThuyet;
+    }
 
-    public int getThucHanh() { return thucHanh; }
-    public void setThucHanh(int thucHanh) { this.thucHanh = thucHanh; }
+    public void setLyThuyet(int lyThuyet) {
+        this.lyThuyet = lyThuyet;
+    }
 
-    public int getThucTap() { return thucTap; }
-    public void setThucTap(int thucTap) { this.thucTap = thucTap; }
+    public int getThucHanh() {
+        return thucHanh;
+    }
+
+    public void setThucHanh(int thucHanh) {
+        this.thucHanh = thucHanh;
+    }
+
+    public int getThucTap() {
+        return thucTap;
+    }
+
+    public void setThucTap(int thucTap) {
+        this.thucTap = thucTap;
+    }
 
     @Override
     public boolean equals(Object o) {

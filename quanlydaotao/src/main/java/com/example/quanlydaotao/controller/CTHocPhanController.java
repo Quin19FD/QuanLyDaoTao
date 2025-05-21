@@ -45,10 +45,17 @@ public class CTHocPhanController {
         if (optionalCT.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        updated.setMaHocPhan(optional.get());
-        updated.setMaHocPhanId(maHocPhan);
-        return ResponseEntity.ok(cthocPhanRepo.save(updated));
+
+        CTHocPhan existing = optionalCT.get();
+
+        // Cập nhật các trường cần thiết
+        existing.setLyThuyet(updated.getLyThuyet());
+        existing.setThucHanh(updated.getThucHanh());
+        existing.setThucTap(updated.getThucTap());
+
+        return ResponseEntity.ok(cthocPhanRepo.save(existing));
     }
+
 
     // Xóa chi tiết học phần
     @DeleteMapping("/{maHocPhan}")
@@ -60,4 +67,34 @@ public class CTHocPhanController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/custom")
+    public ResponseEntity<?> createCustomCTHocPhan(
+            @RequestParam String maHocPhan,
+            @RequestParam int lyThuyet,
+            @RequestParam int thucHanh,
+            @RequestParam int thucTap) {
+
+        Optional<HocPhan> optionalHocPhan = hocPhanRepo.findById(maHocPhan);
+        if (optionalHocPhan.isEmpty()) {
+            return ResponseEntity.badRequest().body("Không tìm thấy học phần với mã: " + maHocPhan);
+        }
+
+        if (cthocPhanRepo.existsById(maHocPhan)) {
+            return ResponseEntity.badRequest().body("Chi tiết học phần đã tồn tại cho mã: " + maHocPhan);
+        }
+
+        HocPhan hocPhan = optionalHocPhan.get();
+
+        CTHocPhan ct = new CTHocPhan();
+        ct.setMaHocPhan(hocPhan);
+        ct.setLyThuyet(lyThuyet);
+        ct.setThucHanh(thucHanh);
+        ct.setThucTap(thucTap);
+
+        CTHocPhan saved = cthocPhanRepo.save(ct);
+        return ResponseEntity.ok(saved);
+    }
+
+
 }
