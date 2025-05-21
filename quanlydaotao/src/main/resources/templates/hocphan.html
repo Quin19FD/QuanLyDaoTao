@@ -876,6 +876,26 @@ async function getKhoiKienThucById(maKhoiKienThuc) {
         throw error;
     }
 }
+    async function existsHocPhan(maHocPhan) {
+          try {
+                const response = await fetch(`/api/hocphan/${maHocPhan}`);
+                if (response.ok) {
+                      return true; // Học phần tồn tại
+                } else if (response.status === 404) {
+                      return false; // Không tìm thấy học phần
+                } else {
+                      // Trường hợp lỗi khác
+                      console.error('Lỗi server:', response.status);
+                      return false;
+                }
+          } catch (error) {
+                console.error('Lỗi mạng hoặc fetch:', error);
+                return false;
+          }
+    }
+
+
+
 document.getElementById("saveAdd").addEventListener("click", async () => {
     const maHocPhan = document.getElementById('newCourseId').value.trim();
     const maCTDT = document.getElementById('trainingProgram').value.trim();
@@ -896,6 +916,12 @@ document.getElementById("saveAdd").addEventListener("click", async () => {
         alert("Vui lòng điền đầy đủ các trường bắt buộc.");
         return;
     }
+    const exists = await existsHocPhan(maHocPhan);
+    if (exists) {
+        alert("Mã Học Phần Này Đã Tồn Tại. Vui Lòng Nhập Mã Khác");
+        return;
+    }
+
 
     const lyThuyetNum = Number(lyThuyet);
     const thucHanhNum = Number(thucHanh);

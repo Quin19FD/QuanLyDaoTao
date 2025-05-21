@@ -60,6 +60,17 @@ public class HocPhanController {
             return ResponseEntity.notFound().build();
         }
     }
+    // Tìm học phần theo mã học phần
+    @GetMapping("/{maHocPhan}")
+    public ResponseEntity<HocPhan> getByMaHocPhan(@PathVariable String maHocPhan) {
+        Optional<HocPhan> optional = hocPhanRepo.findById(maHocPhan);
+        if (optional.isPresent()) {
+            return ResponseEntity.ok(optional.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
 
 }
