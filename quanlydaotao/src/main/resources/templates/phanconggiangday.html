@@ -272,548 +272,635 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
+
 <body>
-    <!-- Thêm nút trở về trang chủ -->
-    <a th:href="@{/home}" class="back-home-btn">
-        <i class="fas fa-home"></i>
-        Trang Chủ
-    </a>
-    <div class="container">
-        <h1>QUẢN LÝ PHÂN CÔNG GIẢNG DẠY</h1>
+<!-- Thêm nút trở về trang chủ -->
+<a th:href="@{/home}" class="back-home-btn">
+    <i class="fas fa-home"></i>
+    Trang Chủ
+</a>
+<div class="container">
+    <h1>QUẢN LÝ PHÂN CÔNG GIẢNG DẠY</h1>
 
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Tìm kiếm theo mã hoặc tên giảng viên...">
-            <button onclick="searchAssignments()">Tìm kiếm</button>
-        </div>
-
-        <div class="filter-box">
-            <select id="semesterFilter" onchange="filterAssignments()">
-                <option value="">-- Lọc theo học kỳ --</option>
-                <option value="1">Học kỳ 1</option>
-                <option value="2">Học kỳ 2</option>
-            </select>
-            <select id="departmentFilter" onchange="filterAssignments()">
-                <option value="">-- Lọc theo bộ môn --</option>
-                <option value="CNPM">Công nghệ phần mềm</option>
-                <option value="HTTT">Hệ thống thông tin</option>
-                <option value="MMT">Mạng máy tính</option>
-            </select>
-        </div>
-
-        <button th:if="${isAdmin}" class="add-btn" onclick="openAddModal()">+ Thêm Phân Công Mới</button>
-
-        <table id="assignmentTable">
-            <thead>
-                <tr>
-                    <th>TT</th>
-                    <th>Mã CB</th>
-                    <th>Họ và tên GV</th>
-                    <th>Năm sinh</th>
-                    <th>Chức danh, học vị</th>
-                    <th>Tên học phần</th>
-                    <th>Mã học phần</th>
-                    <th>Số TC</th>
-                    <th>Số tiết HP</th>
-                    <th>Số lượng nhóm</th>
-                    <th>Học kì</th>
-                    <th>Tổng tiết GD</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody id="assignmentTableBody">
-                <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
-            </tbody>
-        </table>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm theo mã hoặc tên giảng viên..." onkeyup="handleSearchKeyUp(event)">
+        <button onclick="searchAssignments()">Tìm kiếm</button>
     </div>
 
-    <!-- Modal for Adding New Assignment -->
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">×</span>
-            <h2>Thêm Phân Công Mới</h2>
-            <form id="addForm">
-                <table class="form-table">
-                    <thead>
-                        <tr>
-                            <th>Tiêu chí</th>
-                            <th>Thông tin</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Mã CB</td>
-                            <td><input type="text" id="teacherId" placeholder="VD: GV01" required></td>
-                        </tr>
-                        <tr>
-                            <td>Họ tên GV</td>
-                            <td><input type="text" id="teacherName" placeholder="VD: Nguyễn Văn A" required></td>
-                        </tr>
-                        <tr>
-                            <td>Năm sinh</td>
-                            <td><input type="number" id="birthYear" min="1900" max="2025" placeholder="VD: 1980"
-                                    required></td>
-                        </tr>
-                        <tr>
-                            <td>Chức danh, học vị</td>
-                            <td><input type="text" id="degree" placeholder="VD: TS, Giảng viên chính" required></td>
-                        </tr>
-                        <tr>
-                            <td>Tên học phần</td>
-                            <td><input type="text" id="courseName" placeholder="VD: CTDL & GT" required></td>
-                        </tr>
-                        <tr>
-                            <td>Mã học phần</td>
-                            <td><input type="text" id="courseId" placeholder="VD: CS101" required></td>
-                        </tr>
-                        <tr>
-                            <td>Số TC</td>
-                            <td><input type="number" id="credits" min="1" max="10" placeholder="VD: 3" required></td>
-                        </tr>
-                        <tr>
-                            <td>Số tiết HP</td>
-                            <td><input type="number" id="hours" min="1" placeholder="VD: 45" required></td>
-                        </tr>
-                        <tr>
-                            <td>Số lượng nhóm</td>
-                            <td><input type="number" id="groups" min="1" placeholder="VD: 2" required></td>
-                        </tr>
-                        <tr>
-                            <td>Học kì</td>
-                            <td>
-                                <select id="semester" required>
-                                    <option value="" disabled selected>Chọn học kỳ</option>
-                                    <option value="1">Học kỳ 1</option>
-                                    <option value="2">Học kỳ 2</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Bộ môn</td>
-                            <td>
-                                <select id="department" required>
-                                    <option value="" disabled selected>Chọn bộ môn</option>
-                                    <option value="CNPM">Công nghệ phần mềm</option>
-                                    <option value="HTTT">Hệ thống thông tin</option>
-                                    <option value="MMT">Mạng máy tính</option>
-                                </select>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="action-buttons">
-                    <button type="submit" class="save-btn" onclick="saveNewAssignment()">Thêm</button>
-                    <button type="button" class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
+    <div class="filter-box">
+        <select id="semesterFilter" onchange="filterAssignments()">
+            <option value="">-- Lọc theo học kỳ --</option>
+            <option value="1">Học kỳ 1</option>
+            <option value="2">Học kỳ 2</option>
+        </select>
+        <select id="departmentFilter" onchange="filterAssignments()">
+            <option value="">-- Lọc theo bộ môn --</option>
+            <option value="CNPM">Công nghệ phần mềm</option>
+            <option value="HTTT">Hệ thống thông tin</option>
+            <option value="MMT">Mạng máy tính</option>
+        </select>
+    </div>
+
+    <button th:if="${isAdmin}" class="add-btn" onclick="openModal('addModal')">+ Thêm Phân Công Mới</button>
+
+    <table id="assignmentTable" class="training-table">
+        <thead>
+        <tr>
+            <th>TT</th>
+            <th>Mã CB</th>
+            <th>Họ và tên GV</th>
+            <th>Tên học phần</th>
+            <th>Số TC</th>
+            <th>Số tiết HP</th>
+            <th>Số lượng nhóm</th>
+            <th>Học kì</th>
+            <th>Tổng tiết GD</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for Viewing Details -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('detailModal')">×</span>
+        <h2>Thông tin chi tiết</h2>
+        <div class="form-container">
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="detailMaPC">Mã PC:</label>
+                    <input type="text" id="detailMaPC" readonly>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal for Editing Assignment -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('editModal')">×</span>
-            <h2>Sửa Phân Công</h2>
-            <form id="editForm">
-                <table class="form-table">
-                    <thead>
-                        <tr>
-                            <th>Tiêu chí</th>
-                            <th>Thông tin</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Mã CB</td>
-                            <td><input type="text" id="editTeacherId" readonly></td>
-                        </tr>
-                        <tr>
-                            <td>Họ tên GV</td>
-                            <td><input type="text" id="editTeacherName" readonly></td>
-                        </tr>
-                        <tr>
-                            <td>Tên học phần</td>
-                            <td><input type="text" id="editCourseName" placeholder="VD: CTDL & GT" required></td>
-                        </tr>
-                        <tr>
-                            <td>Mã học phần</td>
-                            <td><input type="text" id="editCourseId" placeholder="VD: CS101" required></td>
-                        </tr>
-                        <tr>
-                            <td>Số TC</td>
-                            <td><input type="number" id="editCredits" min="1" max="10" placeholder="VD: 3" required>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Số tiết HP</td>
-                            <td><input type="number" id="editHours" min="1" placeholder="VD: 45" required></td>
-                        </tr>
-                        <tr>
-                            <td>Số lượng nhóm</td>
-                            <td><input type="number" id="editGroups" min="1" placeholder="VD: 2" required></td>
-                        </tr>
-                        <tr>
-                            <td>Học kì</td>
-                            <td>
-                                <select id="editSemester" required>
-                                    <option value="" disabled>Chọn học kỳ</option>
-                                    <option value="1">Học kỳ 1</option>
-                                    <option value="2">Học kỳ 2</option>
-                                </select>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="action-buttons">
-                    <button type="submit" class="save-btn" onclick="saveEdit()">Lưu thay đổi</button>
-                    <button type="button" class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
+                <div class="form-group">
+                    <label for="detailTeacherId">Mã CB:</label>
+                    <input type="text" id="detailTeacherId" readonly>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal for Delete Confirmation -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('deleteModal')">×</span>
-            <h2>Xác Nhận Xóa</h2>
-            <p>Bạn có chắc chắn muốn xóa phân công này không?</p>
-            <input type="hidden" id="deleteIndex">
-            <div class="action-buttons">
-                <button class="delete-btn" onclick="confirmDelete()">Xóa</button>
-                <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
+                <div class="form-group">
+                    <label for="detailTeacherName">Họ tên GV:</label>
+                    <input type="text" id="detailTeacherName" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailBirthYear">Năm sinh:</label>
+                    <input type="text" id="detailBirthYear" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailDegree">Chức danh, học vị:</label>
+                    <input type="text" id="detailDegree" readonly>
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="detailCourseName">Tên học phần:</label>
+                    <input type="text" id="detailCourseName" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailCourseId">Mã học phần:</label>
+                    <input type="text" id="detailCourseId" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailCredits">Số TC:</label>
+                    <input type="text" id="detailCredits" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailHours">Số tiết HP:</label>
+                    <input type="text" id="detailHours" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="detailTotalHours">Tổng tiết GD:</label>
+                    <input type="text" id="detailTotalHours" readonly>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal for Viewing Details -->
-    <div id="viewModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('viewModal')">×</span>
-            <h2>Chi Tiết Phân Công</h2>
-            <div class="view-details" id="viewDetails"></div>
-            <div class="action-buttons">
-                <button class="cancel-btn" onclick="closeModal('viewModal')">Đóng</button>
+<!-- Modal for Adding New Assignment -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('addModal')">×</span>
+        <h2>Thêm Phân Công Mới</h2>
+        <form id="addPhanCongForm">
+        <div class="form-container">
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="addMaPC">Mã PC:</label>
+                    <input type="number" id="addMaPC" required min="1">
+                </div>
+                <div class="form-group">
+                    <label for="addKhoaHoc">Học kỳ:</label>
+                    <select id="addKhoaHoc" required>
+                        <option value="">-- Chọn học kỳ --</option>
+                        <option value="Học kỳ 1">Học kỳ 1</option>
+                        <option value="Học kỳ 2">Học kỳ 2</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="addHeSoHP">Hệ số HP:</label>
+                    <input type="number" step="0.1" id="addHeSoHP" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="addTongSoNhom">Tổng số nhóm:</label>
+                    <input type="number" id="addTongSoNhom" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="addSlSVMotNhom">Số SV một nhóm:</label>
+                    <input type="number" id="addSlSVMotNhom" min="1" required>
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="addMaGV">Mã giảng viên:</label>
+                    <input type="number" id="addMaGV" required min="1">
+                </div>
+                <div class="form-group">
+                    <label for="addSoTietThucTe">Số tiết thực tế:</label>
+                    <input type="number" id="addSoTietThucTe" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="addMaHocPhan">Mã học phần:</label>
+                    <input type="text" id="addMaHocPhan" required>
+                </div>
+                <div class="form-group">
+                    <label for="addMaDaoTao">Mã CTĐT:</label>
+                    <input type="text" id="addMaDaoTao" required>
+                </div>
+                <div class="form-group">
+                    <label for="addMaKhoiKT">Mã khối kiến thức:</label>
+                    <input type="text" id="addMaKhoiKT" required>
+                </div>
             </div>
         </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="save-btn" onclick="addNewPhanCong()">Thêm</button>
+                <button type="button" class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
+            </div>
+        </form>
     </div>
+</div>
+<!-- Modal for Editing Assignment -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('editModal')">×</span>
+        <h2>Sửa Phân Công</h2>
+        <div class="form-container">
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="editMaPC">Mã PC:</label>
+                    <input type="text" id="editMaPC" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editKhoaHoc">Khóa học:</label>
+                    <input type="text" id="editKhoaHoc">
+                </div>
+                <div class="form-group">
+                    <label for="editHeSoHP">Hệ số HP:</label>
+                    <input type="number" step="0.1" id="editHeSoHP" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="editTongSoNhom">Tổng số nhóm:</label>
+                    <input type="number" id="editTongSoNhom" min="1">
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="editSlSVMotNhom">Số SV một nhóm:</label>
+                    <input type="number" id="editSlSVMotNhom" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="editSoTietThucTe">Số tiết thực tế:</label>
+                    <input type="number" id="editSoTietThucTe" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="editMaHocPhan">Mã học phần:</label>
+                    <input type="text" id="editMaHocPhan" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editMaGV">Mã giảng viên:</label>
+                    <input type="text" id="editMaGV" readonly>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: right; margin-top: 20px;">
+            <button th:if="${isAdmin}" class="save-btn" onclick="saveEditPhanCong()">Lưu</button>
+            <button class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
+        </div>
+    </div>
+</div>
 
-    <script>
-        const isAdmin = /*[[${isAdmin}]]*/ false;
-        
-        // Dữ liệu mẫu
-        let assignments = [
-            {
-                id: 1,
-                teacherId: "GV01",
-                teacherName: "Nguyễn Văn A",
-                birthYear: 1980,
-                degree: "TS, Giảng viên chính",
-                courseName: "CTDL & GT",
-                courseId: "CS101",
-                credits: 3,
-                hours: 45,
-                groups: 2,
-                semester: "1",
-                totalHours: 90,
-                department: "CNPM"
-            },
-            {
-                id: 2,
-                teacherId: "GV02",
-                teacherName: "Trần Thị B",
-                birthYear: 1985,
-                degree: "ThS, Giảng viên",
-                courseName: "OOP",
-                courseId: "CS102",
-                credits: 3,
-                hours: 45,
-                groups: 2,
-                semester: "2",
-                totalHours: 90,
-                department: "CNPM"
-            },
-            {
-                id: 3,
-                teacherId: "GV03",
-                teacherName: "Lê Văn C",
-                birthYear: 1978,
-                degree: "TS, Phó trưởng khoa",
-                courseName: "Web Design",
-                courseId: "CS103",
-                credits: 3,
-                hours: 45,
-                groups: 2,
-                semester: "1",
-                totalHours: 90,
-                department: "HTTT"
-            },
-            {
-                id: 4,
-                teacherId: "GV04",
-                teacherName: "Phạm Thị D",
-                birthYear: 1990,
-                degree: "CN, Trợ giảng",
-                courseName: "Mạng máy tính",
-                courseId: "CS104",
-                credits: 2,
-                hours: 30,
-                groups: 1,
-                semester: "2",
-                totalHours: 45,
-                department: "MMT"
+<!-- Modal for Delete Confirmation -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('deleteModal')">×</span>
+        <h2>Xác Nhận Xóa</h2>
+        <div style="margin: 20px 0; text-align: center;">
+            <p>Bạn có chắc chắn muốn xóa phân công giảng dạy:</p>
+            <p style="font-weight: bold; margin-top: 10px;" id="deletePhanCongInfo"></p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button th:if="${isAdmin}" class="delete-btn" onclick="confirmDelete()">Xóa</button>
+            <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // API Functions
+// Tạm thời set isAdmin = true để tập trung vào lỗi chính
+const isAdmin = true;
+
+async function fetchAllPhanCong() {
+    try {
+        console.log("Đang tải dữ liệu phân công..."); // Log để debug
+        const response = await fetch('/api/phanconggiangday');
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || 'Không thể lấy danh sách');
+        }
+
+        const phanCongList = await response.json();
+        console.log("Dữ liệu nhận được:", phanCongList); // Log dữ liệu nhận được
+
+        renderTable(phanCongList);
+
+    } catch (error) {
+        console.error('Chi tiết lỗi:', error);
+        alert('Lỗi khi tải danh sách: ' + error.message);
+        renderTable([]);
+    }
+}
+
+    async function fetchPhanCongById(maPC) {
+        try {
+            const response = await fetch(`/api/phanconggiangday/${maPC}`);
+            if (!response.ok) {
+                if (response.status === 404) throw new Error('Không tìm thấy phân công giảng dạy');
+                throw new Error('Lỗi khi lấy thông tin phân công giảng dạy');
             }
-        ];
-
-        // Hiển thị danh sách phân công
-        function renderAssignments(data = assignments) {
-            const tableBody = document.getElementById("assignmentTableBody");
-            tableBody.innerHTML = "";
-
-            data.forEach((assignment, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${assignment.teacherId}</td>
-                <td>${assignment.teacherName}</td>
-                <td>${assignment.birthYear}</td>
-                <td>${assignment.degree}</td>
-                <td>${assignment.courseName}</td>
-                <td>${assignment.courseId}</td>
-                <td>${assignment.credits}</td>
-                <td>${assignment.hours}</td>
-                <td>${assignment.groups}</td>
-                <td>${assignment.semester}</td>
-                <td>${assignment.totalHours}</td>
-                <td>
-                    <button class="view-btn" onclick="viewAssignment(${index})">Xem</button>
-                    ${isAdmin ? `
-                    <button class="edit-btn" onclick="editAssignment(${index})">Sửa</button>
-                    <button class="delete-btn" onclick="openDeleteModal(${index})">Xóa</button>
-                    ` : ''}
-                </td>
-            `;
-                tableBody.appendChild(row);
-            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi:', error.message);
+            throw error;
         }
+    }
 
-        // Mở modal thêm mới
-        function openAddModal() {
-            if (!isAdmin) return;
-            document.getElementById("addModal").style.display = "flex";
-            document.getElementById("addForm").reset();
+    async function createPhanCong(phanCong) {
+        const response = await fetch('/api/phanconggiangday', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(phanCong)
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Không thể tạo mới phân công giảng dạy. Có thể mã đã tồn tại.');
         }
+        return await response.json();
+    }
 
-        // Mở modal sửa
-        function editAssignment(index) {
-            if (!isAdmin) return;
-            const assignment = assignments[index];
-            document.getElementById("editIndex").value = index;
-            document.getElementById("editTeacherId").value = assignment.teacherId;
-            document.getElementById("editTeacherName").value = assignment.teacherName;
-            document.getElementById("editCourseName").value = assignment.courseName;
-            document.getElementById("editCourseId").value = assignment.courseId;
-            document.getElementById("editCredits").value = assignment.credits;
-            document.getElementById("editHours").value = assignment.hours;
-            document.getElementById("editGroups").value = assignment.groups;
-            document.getElementById("editSemester").value = assignment.semester;
+    async function updatePhanCong(maPC, phanCong) {
+        const response = await fetch(`/api/phanconggiangday/${maPC}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(phanCong)
+        });
+        if (!response.ok) throw new Error(`Không thể cập nhật phân công giảng dạy có mã ${maPC}`);
+        return await response.json();
+    }
 
-            document.getElementById("editModal").style.display = "flex";
+    async function deletePhanCong(maPC) {
+        const response = await fetch(`/api/phanconggiangday/${maPC}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error(`Không thể xóa phân công giảng dạy có mã ${maPC}`);
+        return true;
+    }
+
+    async function checkMaPCExists(maPC) {
+    try {
+        const response = await fetch(`/api/phanconggiangday/exists/${maPC}`);
+        if (!response.ok) {
+            throw new Error('Không thể kiểm tra mã phân công');
         }
+        return await response.json();
+    } catch (error) {
+        console.error('Lỗi khi kiểm tra mã PC:', error);
+        throw error;
+    }
+}
 
-        // Mở modal xóa
-        function openDeleteModal(index) {
-            if (!isAdmin) return;
-            document.getElementById("deleteIndex").value = index;
-            document.getElementById("deleteModal").style.display = "flex";
-        }
+    // Table Rendering
+function renderTable(phanCongList) {
+    console.log("Đang render bảng..."); // Debug log
+    const tableBody = document.querySelector('.training-table tbody');
+    tableBody.innerHTML = '';
 
-        // Xem chi tiết
-        function viewAssignment(index) {
-            const assignment = assignments[index];
-            const viewDetails = document.getElementById("viewDetails");
+    if (!phanCongList || phanCongList.length === 0) {
+        console.log("Không có dữ liệu để hiển thị"); // Debug log
+        tableBody.innerHTML = `<tr><td colspan="10" class="text-center">Không có dữ liệu</td></tr>`;
+        return;
+    }
 
-            viewDetails.innerHTML = `
-            <p><strong>Mã CB:</strong> ${assignment.teacherId}</p>
-            <p><strong>Họ tên GV:</strong> ${assignment.teacherName}</p>
-            <p><strong>Năm sinh:</strong> ${assignment.birthYear}</p>
-            <p><strong>Chức danh, học vị:</strong> ${assignment.degree}</p>
-            <p><strong>Tên học phần:</strong> ${assignment.courseName}</p>
-            <p><strong>Mã học phần:</strong> ${assignment.courseId}</p>
-            <p><strong>Số TC:</strong> ${assignment.credits}</p>
-            <p><strong>Số tiết HP:</strong> ${assignment.hours}</p>
-            <p><strong>Số lượng nhóm:</strong> ${assignment.groups}</p>
-            <p><strong>Học kì:</strong> ${assignment.semester}</p>
-            <p><strong>Tổng tiết GD:</strong> ${assignment.totalHours}</p>
-            <p><strong>Bộ môn:</strong> ${assignment.department}</p>
+    phanCongList.forEach((pc, index) => {
+        const row = document.createElement('tr');
+
+        // Debug: Kiểm tra cấu trúc dữ liệu
+        console.log(`Phân công ${index}:`, pc);
+
+        // Tính tổng số tiết giảng dạy
+        const tongTietGD = pc.soTietThucTe * pc.tongSoNhom || 0;
+
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${pc.maGV?.maGV || ''}</td>
+            <td>${pc.maGV?.hoTen || ''}</td>
+            <td>${pc.maHocPhan?.tenHocPhan || ''}</td>
+            <td>${pc.maHocPhan?.soTinChi || ''}</td>
+            <td>${pc.soTietThucTe || ''}</td>
+            <td>${pc.tongSoNhom || ''}</td>
+            <td>${pc.khoaHoc || ''}</td>
+            <td>${tongTietGD}</td>
+            <td class="action-buttons"></td>
         `;
 
-            document.getElementById("viewModal").style.display = "flex";
+        // Thêm nút thao tác
+        const actionCell = row.querySelector('.action-buttons');
+
+        // Nút Xem chi tiết
+        actionCell.appendChild(createButton('detail-btn', 'Xem', () => {
+            showDetailPhanCong(pc);
+        }));
+
+        // Nút Sửa (chỉ hiện cho admin)
+        if (isAdmin) {
+            actionCell.appendChild(createButton('edit-btn', 'Sửa', () => {
+                showEditPhanCong(pc);
+            }, { marginLeft: '10px' }));
+
+            // Nút Xóa (chỉ hiện cho admin)
+            actionCell.appendChild(createButton('delete-btn', 'Xóa', () => {
+                showDeleteModal(pc);
+            }, { marginLeft: '10px' }));
         }
 
-        // Đóng modal
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = "none";
+        tableBody.appendChild(row);
+    });
+}
+
+function createButton(className, text, onClick, style = {}) {
+    const button = document.createElement('button');
+    button.className = className;
+    button.textContent = text;
+    button.addEventListener('click', onClick);
+    Object.assign(button.style, style);
+    return button;
+}
+
+    // Modal Functions
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+
+    function showDetailPhanCong(pc) {
+    // Tính tổng số tiết giảng dạy
+    const tongTietGD = pc.soTietThucTe * pc.tongSoNhom || 0;
+
+    // Hiển thị thông tin cơ bản
+    document.getElementById('detailMaPC').value = pc.maPC || '';
+    document.getElementById('detailTeacherId').value = pc.maGV?.maGV || '';
+    document.getElementById('detailTeacherName').value = pc.maGV?.hoTen || '';
+
+    // Hiển thị năm sinh (lấy từ ngày sinh)
+    const ngaySinh = pc.maGV?.ngaySinh ? new Date(pc.maGV.ngaySinh) : null;
+    document.getElementById('detailBirthYear').value = ngaySinh ? ngaySinh.getFullYear() : '';
+
+    // Hiển thị học vị, chức danh
+    document.getElementById('detailDegree').value = pc.maGV?.hocVi || '';
+
+    // Thông tin học phần
+    document.getElementById('detailCourseName').value = pc.maHocPhan?.tenHocPhan || '';
+    document.getElementById('detailCourseId').value = pc.maHocPhan?.maHocPhan || '';
+    document.getElementById('detailCredits').value = pc.maHocPhan?.soTinChi || '';
+    document.getElementById('detailHours').value = pc.soTietThucTe || '';
+    document.getElementById('detailTotalHours').value = tongTietGD;
+
+    openModal('detailModal');
+}
+    function showDeleteModal(pc) {
+        document.getElementById('deletePhanCongInfo').textContent = `Mã PC: ${pc.maPC} - ${pc.hoTenGV} - ${pc.tenHocPhan}`;
+        document.getElementById('deleteModal').dataset.maPC = pc.maPC;
+        openModal('deleteModal');
+    }
+
+
+   function showEditPhanCong(pc) {
+    document.getElementById('editMaPC').value = pc.maPC || '';
+    document.getElementById('editKhoaHoc').value = pc.khoaHoc || '';
+    document.getElementById('editHeSoHP').value = pc.heSoHP || '';
+    document.getElementById('editTongSoNhom').value = pc.tongSoNhom || '';
+    document.getElementById('editSlSVMotNhom').value = pc.slSVMotNhom || '';
+    document.getElementById('editSoTietThucTe').value = pc.soTietThucTe || '';
+    document.getElementById('editMaHocPhan').value = pc.maHocPhan?.maHocPhan || '';
+    document.getElementById('editMaGV').value = pc.maGV?.maGV || '';
+
+    openModal('editModal');
+}
+
+    // Form Handling
+async function addNewPhanCong() {
+    try {
+        const maPC = parseInt(document.getElementById('addMaPC').value);
+
+        // Kiểm tra mã PC
+        try {
+            const exists = await checkMaPCExists(maPC);
+            if (exists) {
+                throw new Error('Mã PC đã tồn tại');
+            }
+        } catch (error) {
+            alert(error.message);
+            return;
         }
 
-        // Xác nhận xóa
-        function confirmDelete() {
-            const index = document.getElementById("deleteIndex").value;
-            assignments.splice(index, 1);
-            closeModal("deleteModal");
-            renderAssignments();
+        // Kiểm tra học kỳ hợp lệ
+        const khoaHoc = document.getElementById('addKhoaHoc').value;
+        if (khoaHoc !== "Học kỳ 1" && khoaHoc !== "Học kỳ 2") {
+            alert("Vui lòng chọn học kỳ hợp lệ (Học kỳ 1 hoặc Học kỳ 2)");
+            return;
         }
 
-        // Lưu phân công mới
-        function saveNewAssignment() {
-            const teacherId = document.getElementById("teacherId").value.trim();
-            const teacherName = document.getElementById("teacherName").value.trim();
-            const birthYear = parseInt(document.getElementById("birthYear").value);
-            const degree = document.getElementById("degree").value.trim();
-            const courseName = document.getElementById("courseName").value.trim();
-            const courseId = document.getElementById("courseId").value.trim();
-            const credits = parseInt(document.getElementById("credits").value);
-            const hours = parseInt(document.getElementById("hours").value);
-            const groups = parseInt(document.getElementById("groups").value);
-            const semester = document.getElementById("semester").value;
-            const department = document.getElementById("department").value;
-
-            // Validation
-            if (!teacherId || !teacherName || !degree || !courseName || !courseId || !semester || !department) {
-                alert("Vui lòng điền đầy đủ các trường bắt buộc!");
-                return;
+        const phanCong = {
+            maPC: maPC,
+            khoaHoc: khoaHoc,
+            heSoHP: parseFloat(document.getElementById('addHeSoHP').value),
+            tongSoNhom: parseInt(document.getElementById('addTongSoNhom').value),
+            slSVMotNhom: parseInt(document.getElementById('addSlSVMotNhom').value),
+            maGV: {
+                maGV: parseInt(document.getElementById('addMaGV').value)
+            },
+            soTietThucTe: parseInt(document.getElementById('addSoTietThucTe').value),
+            maHocPhan: {
+                maHocPhan: document.getElementById('addMaHocPhan').value.trim()
             }
-            if (isNaN(birthYear) || birthYear < 1900 || birthYear > 2025) {
-                alert("Năm sinh phải từ 1900 đến 2025!");
-                return;
-            }
-            if (isNaN(credits) || credits < 1 || credits > 10) {
-                alert("Số tín chỉ phải từ 1 đến 10!");
-                return;
-            }
-            if (isNaN(hours) || hours < 1) {
-                alert("Số tiết học phần phải lớn hơn 0!");
-                return;
-            }
-            if (isNaN(groups) || groups < 1) {
-                alert("Số lượng nhóm phải lớn hơn 0!");
-                return;
-            }
-
-            // Tính tổng số tiết giảng dạy
-            const totalHours = hours * groups;
-
-            const newAssignment = {
-                id: assignments.length + 1,
-                teacherId,
-                teacherName,
-                birthYear,
-                degree,
-                courseName,
-                courseId,
-                credits,
-                hours,
-                groups,
-                semester,
-                totalHours,
-                department
-            };
-
-            assignments.push(newAssignment);
-            closeModal("addModal");
-            renderAssignments();
-        }
-
-        // Lưu chỉnh sửa
-        function saveEdit() {
-            const index = document.getElementById("editIndex").value;
-            const assignment = assignments[index];
-
-            const courseName = document.getElementById("editCourseName").value.trim();
-            const courseId = document.getElementById("editCourseId").value.trim();
-            const credits = parseInt(document.getElementById("editCredits").value);
-            const hours = parseInt(document.getElementById("editHours").value);
-            const groups = parseInt(document.getElementById("editGroups").value);
-            const semester = document.getElementById("editSemester").value;
-
-            // Validation
-            if (!courseName || !courseId || !semester) {
-                alert("Vui lòng điền đầy đủ các trường bắt buộc!");
-                return;
-            }
-            if (isNaN(credits) || credits < 1 || credits > 10) {
-                alert("Số tín chỉ phải từ 1 đến 10!");
-                return;
-            }
-            if (isNaN(hours) || hours < 1) {
-                alert("Số tiết học phần phải lớn hơn 0!");
-                return;
-            }
-            if (isNaN(groups) || groups < 1) {
-                alert("Số lượng nhóm phải lớn hơn 0!");
-                return;
-            }
-
-            assignment.courseName = courseName;
-            assignment.courseId = courseId;
-            assignment.credits = credits;
-            assignment.hours = hours;
-            assignment.groups = groups;
-            assignment.semester = semester;
-            assignment.totalHours = hours * groups;
-
-            closeModal("editModal");
-            renderAssignments();
-        }
-
-        // Tìm kiếm phân công
-        function searchAssignments() {
-            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-
-            if (!searchTerm) {
-                renderAssignments();
-                return;
-            }
-
-            const filteredAssignments = assignments.filter(assignment =>
-                assignment.teacherId.toLowerCase().includes(searchTerm) ||
-                assignment.teacherName.toLowerCase().includes(searchTerm) ||
-                assignment.courseName.toLowerCase().includes(searchTerm) ||
-                assignment.courseId.toLowerCase().includes(searchTerm)
-            );
-
-            renderAssignments(filteredAssignments);
-        }
-
-        // Lọc phân công
-        function filterAssignments() {
-            const semesterFilter = document.getElementById("semesterFilter").value;
-            const departmentFilter = document.getElementById("departmentFilter").value;
-
-            let filteredAssignments = assignments;
-
-            if (semesterFilter) {
-                filteredAssignments = filteredAssignments.filter(a => a.semester === semesterFilter);
-            }
-
-            if (departmentFilter) {
-                filteredAssignments = filteredAssignments.filter(a => a.department === departmentFilter);
-            }
-
-            renderAssignments(filteredAssignments);
-        }
-
-        // Khởi tạo trang
-        window.onload = function () {
-            renderAssignments();
-
-            // Thêm sự kiện Enter cho ô tìm kiếm
-            document.getElementById("searchInput").addEventListener("keyup", function (event) {
-                if (event.key === "Enter") {
-                    searchAssignments();
-                }
-            });
         };
-    </script>
+
+        // Validate dữ liệu
+        if (phanCong.tongSoNhom <= 0 || phanCong.slSVMotNhom <= 0 || phanCong.soTietThucTe <= 0) {
+            alert("Số nhóm, số SV và số tiết phải lớn hơn 0");
+            return;
+        }
+
+        const response = await fetch('/api/phanconggiangday', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(phanCong)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Lỗi khi thêm phân công');
+        }
+
+       alert('Thêm phân công giảng dạy thành công!');
+        closeModal('addModal');
+        fetchAllPhanCong();
+
+        // Reset form - CÁCH MỚI
+        document.getElementById('addPhanCongForm').reset();
+    } catch (error) {
+        console.error('Lỗi khi thêm phân công:', error);
+        alert('Lỗi khi thêm phân công: ' + error.message);
+    }
+}
+    async function saveEditPhanCong() {
+    const maPC = document.getElementById('editMaPC').value;
+    const phanCong = {
+        khoaHoc: document.getElementById('editKhoaHoc').value.trim(),
+        heSoHP: parseFloat(document.getElementById('editHeSoHP').value),
+        tongSoNhom: parseInt(document.getElementById('editTongSoNhom').value),
+        slSVMotNhom: parseInt(document.getElementById('editSlSVMotNhom').value),
+        soTietThucTe: parseInt(document.getElementById('editSoTietThucTe').value),
+        maGV: {
+            maGV: parseInt(document.getElementById('editMaGV').value)
+        },
+        maHocPhan: {
+            maHocPhan: document.getElementById('editMaHocPhan').value.trim()
+        }
+    };
+        if (!phanCong.khoaHoc || isNaN(phanCong.heSoHP) || isNaN(phanCong.tongSoNhom) ||
+        isNaN(phanCong.slSVMotNhom) || isNaN(phanCong.soTietThucTe)) {
+        alert('Vui lòng điền đầy đủ thông tin hợp lệ');
+        return;
+    }
+
+    try {
+        await updatePhanCong(maPC, phanCong);
+        alert('Cập nhật phân công giảng dạy thành công!');
+        closeModal('editModal');
+        fetchAllPhanCong(); // Refresh table
+    } catch (error) {
+        alert(`Lỗi khi cập nhật phân công giảng dạy: ${error.message}`);
+    }
+}
+
+    async function confirmDelete() {
+        const maPC = document.getElementById('deleteModal').dataset.maPC;
+        try {
+            await deletePhanCong(maPC);
+            alert('Xóa phân công giảng dạy thành công!');
+            closeModal('deleteModal');
+            fetchAllPhanCong(); // Refresh table
+        } catch (error) {
+            alert(`Lỗi khi xóa: ${error.message}`);
+        }
+    }
+
+    // Tìm kiếm phân công
+   async function searchAssignments() {
+    const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (!searchTerm) {
+        fetchAllPhanCong();
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/phanconggiangday');
+        if (!response.ok) throw new Error('Không thể lấy danh sách phân công giảng dạy');
+        const allPhanCong = await response.json();
+
+        const filtered = allPhanCong.filter(pc => {
+            const maGV = pc.maGV?.maGV?.toString() || '';
+            const hoTenGV = pc.maGV?.hoTen?.toLowerCase() || '';
+            const maHocPhan = pc.maHocPhan?.maHocPhan?.toLowerCase() || '';
+            const tenHocPhan = pc.maHocPhan?.tenHocPhan?.toLowerCase() || '';
+
+            return maGV.includes(searchTerm) ||
+                   hoTenGV.includes(searchTerm) ||
+                   maHocPhan.includes(searchTerm) ||
+                   tenHocPhan.includes(searchTerm);
+        });
+
+        renderTable(filtered);
+    } catch (error) {
+        console.error('Lỗi:', error.message);
+        alert('Đã xảy ra lỗi khi tìm kiếm phân công giảng dạy');
+    }
+}
+
+    // Lọc phân công
+    async function filterAssignments() {
+        const semester = document.getElementById('semesterFilter').value;
+        const department = document.getElementById('departmentFilter').value;
+
+        try {
+            const response = await fetch('/api/phanconggiangday');
+            if (!response.ok) throw new Error('Không thể lấy danh sách phân công giảng dạy');
+            const allPhanCong = await response.json();
+
+            let filtered = allPhanCong;
+            if (semester) {
+                filtered = filtered.filter(pc => pc.hocKy === semester);
+            }
+            if (department) {
+                filtered = filtered.filter(pc => pc.boMon === department);
+            }
+
+            renderTable(filtered);
+        } catch (error) {
+            console.error('Lỗi:', error.message);
+            alert('Đã xảy ra lỗi khi lọc phân công giảng dạy');
+        }
+    }
+
+    // Thêm sự kiện Enter cho ô tìm kiếm
+    function handleSearchKeyUp(event) {
+        if (event.key === 'Enter') {
+            searchAssignments();
+        }
+    }
+
+
+    function getNestedValue(obj, path) {
+        return path.split('.').reduce((o, p) => o?.[p], obj);
+    }
+    // Event Listeners
+    window.onclick = function(event) {
+        document.querySelectorAll('.modal').forEach(modal => {
+            if (event.target === modal) closeModal(modal.id);
+        });
+    };
+
+    document.addEventListener('DOMContentLoaded', fetchAllPhanCong);
+</script>
 </body>
 
 </html>
