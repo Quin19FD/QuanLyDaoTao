@@ -363,6 +363,10 @@
                 <span id="viewTrainingProgram"></span>
             </div>
             <div class="info-row">
+                <label>Khối Kiến Thức:</label>
+                <span id="viewKhoiKienThuc"></span>
+            </div>
+            <div class="info-row">
                 <label>Chuyên ngành:</label>
                 <span id="viewSpecialization"></span>
             </div>
@@ -519,6 +523,16 @@
     const isUser = /*[[${isUser}]]*/ false;
     const userRole = /*[[${userRole}]]*/ '';
 
+    let KhoiKT = [
+        "Kiến thức giáo dục thể chất và Giáo dục quốc phòng và an ninh",
+        "Kiến thức ngoại ngữ",
+        "Kiến thức lý luận chính trị",
+        "Kiến thức giáo dục đại cương khác",
+        "Kiến thức cơ sở nghành",
+        "Kiến thức ngành",
+        "Kiến thức chuyên ngành"
+    ];
+
     function checkPermission() {
         const adminButtons = document.querySelectorAll('.add-btn, .edit-btn, .delete-btn');
         adminButtons.forEach(button => {
@@ -620,7 +634,7 @@
         document.getElementById("addModal").style.display = "block";
     }
 
-    function viewDetails(course) {
+    async function viewDetails(course) {
         const viewCourseId = document.getElementById('viewCourseId');
         const viewCourseName = document.getElementById('viewCourseName');
         const viewTrainingProgram = document.getElementById('viewTrainingProgram');
@@ -629,6 +643,8 @@
         const viewPracticeCredits = document.getElementById('viewPracticeCredits');
         const viewInternshipCredits = document.getElementById('viewInternshipCredits');
         const viewCoefficient = document.getElementById('viewCoefficient');
+        const viewKhoiKienThuc = document.getElementById ('viewKhoiKienThuc');
+
 
         // Kiểm tra dữ liệu trước khi gán
         viewCourseId.innerHTML = course?.maHocPhan?.maHocPhan || 'N/A';
@@ -641,6 +657,20 @@
         viewInternshipCredits.innerHTML = course?.thucTap ?? '0';
         viewCoefficient.innerHTML = course?.maHocPhan?.heSo ?? 'N/A';
 
+        const ctKhung = await fetchCTKhungByMaCTDT(course.maHocPhan.maDaoTao.maCTDT);
+        console.log("ctKhung sau khi fetch:", ctKhung);
+        const maKhung = ctKhung[0].maKhung;
+        console.log ("Ma Khung",maKhung);
+        const khoiKienThucList = await fetchKhoiKienThucByMaKhung(maKhung);
+        let index;
+        for (let i=0; i<khoiKienThucList.length; i++){
+            if (khoiKienThucList[i].maKhoiKienThuc==course.maHocPhan.maKhoiKienThuc.maKhoiKienThuc){
+                index=i;
+                break;
+            }
+        }
+        console.log ("ViTriKhoiKienThuc",index );
+        viewKhoiKienThuc.innerHTML=KhoiKT[index]+'';
         document.getElementById('viewModal').style.display = 'block';
     }
       let selectCourseEdit = null;
@@ -802,15 +832,7 @@ document.getElementById("trainingProgram").addEventListener("change", async func
         return;
     }
 
-    let KhoiKT = [
-        "Kiến thức giáo dục thể chất và Giáo dục quốc phòng và an ninh",
-        "Kiến thức ngoại ngữ",
-        "Kiến thức lý luận chính trị",
-        "Kiến thức giáo dục đại cương khác",
-        "Kiến thức cơ sở nghành",
-        "Kiến thức ngành",
-        "Kiến thức chuyên ngành"
-    ];
+
 
     selectKhoiKT.innerHTML = '';
     selectKhoiKT.disabled = false;
