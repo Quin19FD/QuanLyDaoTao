@@ -170,6 +170,7 @@
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            font-size: 16px;
         }
 
         .form-table th {
@@ -273,12 +274,6 @@
     <h1>KẾ HOẠCH MỞ NHÓM LỚP</h1>
 
     <div class="filter-section">
-        <select id="hocKyFilter">
-            <option value="">-- Chọn học kỳ --</option>
-            <option value="HK1-2023-2024">Học kỳ 1 (2023-2024)</option>
-            <option value="HK2-2023-2024">Học kỳ 2 (2023-2024)</option>
-            <option value="HK1-2024-2025">Học kỳ 1 (2024-2025)</option>
-        </select>
         <select id="hocPhanFilter">
             <option value="">-- Chọn học phần --</option>
         </select>
@@ -287,7 +282,7 @@
         <button class="reset-btn" onclick="resetFilters()">Đặt lại</button>
     </div>
 
-    <button class="add-btn" onclick="openAddModal()">+ Thêm Nhóm Lớp Mới</button>
+    <button th:if="${isAdmin}" class="add-btn" onclick="openAddModal()">+ Thêm Nhóm Lớp Mới</button>
 
     <table id="groupTable">
         <thead>
@@ -301,7 +296,7 @@
             <th>Sĩ số tối đa</th>
             <th>Thời gian</th>
             <th>Địa điểm</th>
-            <th>Thao tác</th>
+            <th th:if="${isAdmin}">Thao tác</th>
         </tr>
         </thead>
         <tbody id="groupTableBody">
@@ -380,7 +375,7 @@
     </div>
 </div>
 
-<div id="editModal" class="modal">
+<div id="editModal" class="modal" th:if="${isAdmin}">
     <div class="modal-content">
         <span class="close" onclick="closeModal('editModal')">×</span>
         <h2>Sửa Thông Tin Nhóm Lớp</h2>
@@ -451,7 +446,7 @@
     </div>
 </div>
 
-<div id="deleteModal" class="modal">
+<div id="deleteModal" class="modal" th:if="${isAdmin}">
     <div class="modal-content">
         <span class="close" onclick="closeModal('deleteModal')">×</span>
         <h2>Xác Nhận Xóa</h2>
@@ -466,45 +461,40 @@
     </div>
 </div>
 
-<script>
-    const isAdmin = true; // Đã sửa: Giả định isAdmin là true để tránh lỗi cú pháp
+<script th:inline="javascript">
+    const isAdmin = /*[[${isAdmin}]]*/ false;
+    const BASE_URL = 'http://localhost:8080';
 
     let courses = [];
     let teachers = [];
-    let groups = []; // Danh sách nhóm lớp (sẽ được fetch từ backend)
-    let phanCongs = []; // Danh sách phân công giảng dạy
+    let groups = [];
+    let phanCongs = [];
 
-    // Hàm định dạng thời gian hiển thị
     function formatTime(thu, tietBatDau, soTiet) {
         if (!thu || !tietBatDau || !soTiet) {
             return "Chưa xếp";
         }
-        return `${thu} (Tiết ${tietBatDau}-${tietBatDau + soTiet - 1})`;
+        return `${thu} (Tiết ${parseInt(tietBatDau)}-${parseInt(tietBatDau) + parseInt(soTiet) - 1})`;
     }
 
-    // Lấy dữ liệu học phần từ backend
     async function fetchCourses() {
         try {
-            const response = await fetch('/api/hocphan');
+            const response = await fetch(`${BASE_URL}/api/hocphan`);
             if (response.ok) {
                 courses = await response.json();
-                console.log("Học phần fetched:", courses);
                 populateCourseDropdowns();
             } else {
-                console.error("Không thể tải dữ liệu học phần:", response.status);
+                console.error("Không thể tải dữliệu học phần:", response.status);
             }
         } catch (error) {
             console.error("Lỗi mạng khi tải dữ liệu học phần:", error);
         }
     }
 
-    // Lấy dữ liệu giảng viên từ backend
     async function fetchTeachers() {
         try {
-            const response = await fetch('/api/giangvien');
-            if (response.ok) {
-                teachers = await response.json();
-                console.log("Giảng viên fetched:", teachers);
+            const response = await fetch(`${BASE_URL}/api/giangvien`);
+            if (response.ok) {teachers = await response.json();
             } else {
                 console.error("Không thể tải dữ liệu giảng viên:", response.status);
             }
@@ -513,14 +503,12 @@
         }
     }
 
-    // Lấy dữ liệu phân công giảng dạy từ backend
     async function fetchPhanCongs() {
         try {
-            const response = await fetch('/api/phanconggiangday');
+            const response = await fetch(`${BASE_URL}/api/phanconggiangday`);
             if (response.ok) {
                 phanCongs = await response.json();
-                console.log("Phân công giảng dạy fetched:", phanCongs);
-                populateTeacherDropdowns(); // Populate teacher dropdowns after phanCongs are fetched
+                populateTeacherDropdowns();
             } else {
                 console.error("Không thể tải dữ liệu phân công giảng dạy:", response.status);
             }
@@ -529,7 +517,6 @@
         }
     }
 
-    // Khởi tạo dropdown học phần
     function populateCourseDropdowns() {
         const courseSelects = document.querySelectorAll("#addCourseId, #editCourseId, #hocPhanFilter");
         courseSelects.forEach(select => {
@@ -543,29 +530,28 @@
         });
     }
 
-    // Khởi tạo dropdown giảng viên (sử dụng maPC làm value)
     function populateTeacherDropdowns() {
         const teacherSelects = document.querySelectorAll("#addTeacherId, #editTeacherId");
         teacherSelects.forEach(select => {
             select.innerHTML = `<option value="">-- Chọn giảng viên --</option>`;
-            // Iterate through phanCongs to get maPC and corresponding teacher name
             phanCongs.forEach(pc => {
                 const teacher = teachers.find(t => t.maGV === pc.maGV.maGV);
                 if (teacher) {
                     const opt = document.createElement("option");
-                    opt.value = pc.maPC; // Value is maPC
-                    opt.textContent = teacher.hoTen; // Text is teacher's name
+                    opt.value = pc.maPC;
+                    opt.textContent = teacher.hoTen;
                     select.appendChild(opt);
                 }
             });
         });
     }
 
-    // Mở modal thêm mới
     function openAddModal() {
-        // if (!isAdmin) return; // Bỏ kiểm tra isAdmin ở đây vì đã đặt là true
+        if (!isAdmin) {
+            alert("Bạn không có quyền thêm nhóm lớp.");
+            return;
+        }
         document.getElementById("addModal").style.display = "flex";
-        // Reset form thêm mới khi mở
         document.getElementById("addGroupId").value = "";
         document.getElementById("addCourseId").value = "";
         document.getElementById("addTeacherId").value = "";
@@ -574,41 +560,42 @@
         document.getElementById("addTietBatDau").value = "";
         document.getElementById("addSoTiet").value = "";
         document.getElementById("addLocation").value = "";
-        document.getElementById("addSemester").value = "HK1-2023-2024"; // Giá trị mặc định (nếu cần)
+        document.getElementById("addSemester").value = "HK1-2023-2024";
     }
 
     let currentEditIndex = -1;
-    let currentGroupsData = []; // Lưu trữ dữ liệu nhóm lớp hiện tại
+    let currentGroupsData = [];
 
-    // Mở modal sửa
     function openEditModal(index) {
-        // if (!isAdmin) return; // Bỏ kiểm tra isAdmin ở đây
+        if (!isAdmin) {
+            alert("Bạn không có quyền sửa nhóm lớp.");
+            return;
+        }
         currentEditIndex = index;
         const group = currentGroupsData[index];
         document.getElementById("editModal").style.display = "flex";
         document.getElementById("editGroupId").value = group.maNhom;
         document.getElementById("editCourseId").value = group.maHocPhan.maHocPhan;
-        document.getElementById("editTeacherId").value = group.maPC.maPC; // Set value to maPC of the group's maPC object
+        document.getElementById("editTeacherId").value = group.maPC.maPC;
         document.getElementById("editMaxStudents").value = group.soLuongToiDa;
         document.getElementById("editThuDi").value = group.thuDi || "";
         document.getElementById("editTietBatDau").value = group.tietBatDau || "";
         document.getElementById("editSoTiet").value = group.soTiet || "";
         document.getElementById("editLocation").value = group.diaChi || "";
-        // Set giá trị học kỳ nếu có trường tương ứng trong dữ liệu nhóm lớp
-        // document.getElementById("editSemester").value = group.hocKy; // Cần thêm trường hocKy vào model NhomLop nếu muốn sử dụng
     }
 
-    // Đóng modal
     function closeModal(id) {
         document.getElementById(id).style.display = "none";
     }
 
-    // Thêm nhóm lớp mới
     async function addGroup() {
-        // if (!isAdmin) return; // Bỏ kiểm tra isAdmin ở đây
+        if (!isAdmin) {
+            alert("Bạn không có quyền thêm nhóm lớp.");
+            return;
+        }
         const groupId = parseInt(document.getElementById("addGroupId").value);
         const courseId = document.getElementById("addCourseId").value;
-        const teacherPCId = parseInt(document.getElementById("addTeacherId").value); // Lấy maPC từ dropdown
+        const teacherPCId = parseInt(document.getElementById("addTeacherId").value);
         const semester = document.getElementById("addSemester").value;
         const maxStudents = parseInt(document.getElementById("addMaxStudents").value);
         const thuDi = document.getElementById("addThuDi").value;
@@ -623,20 +610,17 @@
 
         const newGroup = {
             maNhom: groupId,
-            maHocPhan: { maHocPhan: courseId }, // Gửi đối tượng HocPhan với chỉ mã
-            maPC: { maPC: teacherPCId }, // Gửi đối tượng PhanCongGiangDay với chỉ mã PC
+            maHocPhan: { maHocPhan: courseId },
+            maPC: { maPC: teacherPCId },
             soLuongToiDa: maxStudents,
             diaChi: location,
             thuDi: thuDi,
             tietBatDau: tietBatDau,
             soTiet: soTiet
-            // Thêm thông tin học kỳ nếu cần: hocKy: semester
         };
 
-        console.log("Dữ liệu gửi đi (thêm):", newGroup);
-
         try {
-            const response = await fetch('/api/nhomlop', {
+            const response = await fetch(`${BASE_URL}/api/nhomlop`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -645,7 +629,7 @@
             });
             if (response.ok) {
                 alert("Thêm nhóm lớp thành công!");
-                fetchGroups(); // Gọi lại để cập nhật bảng
+                fetchGroups();
                 closeModal("addModal");
             } else {
                 const error = await response.json();
@@ -658,20 +642,21 @@
         }
     }
 
-    // Lưu chỉnh sửa
     async function saveEdit() {
-        // if (!isAdmin) return; // Bỏ kiểm tra isAdmin ở đây
+        if (!isAdmin) {
+            return;
+        }
         if (currentEditIndex === -1) return;
         const group = currentGroupsData[currentEditIndex];
         const groupId = group.maNhom;
+        console.log("GroupID khi save:", groupId);
         const courseId = document.getElementById("editCourseId").value;
-        const teacherPCId = parseInt(document.getElementById("editTeacherId").value); // Lấy maPC từ dropdown
+        const teacherPCId = parseInt(document.getElementById("editTeacherId").value);
         const maxSize = parseInt(document.getElementById("editMaxStudents").value);
         const thuDi = document.getElementById("editThuDi").value;
         const tietBatDau = parseInt(document.getElementById("editTietBatDau").value);
         const soTiet = parseInt(document.getElementById("editSoTiet").value);
         const location = document.getElementById("editLocation").value;
-        // const semester = document.getElementById("editSemester").value; // Nếu cần
 
         if (isNaN(maxSize) || isNaN(tietBatDau) || isNaN(soTiet) || !location) {
             alert("Vui lòng điền đầy đủ thông tin.");
@@ -679,22 +664,19 @@
         }
 
         const updatedGroup = {
-            maNhom: groupId, // Giữ nguyên mã nhóm khi cập nhật
-            maHocPhan: { maHocPhan: courseId }, // Gửi đối tượng HocPhan với chỉ mã
-            maPC: { maPC: teacherPCId }, // Gửi đối tượng PhanCongGiangDay với chỉ mã PC
+            maNhom: groupId,
+            maHocPhan: { maHocPhan: courseId },
+            maPC: { maPC: teacherPCId },
             soLuongToiDa: maxSize,
             diaChi: location,
             thuDi: thuDi,
             tietBatDau: tietBatDau,
             soTiet: soTiet
-            // Thêm thông tin học kỳ nếu cần: hocKy: semester
         };
 
-        console.log("Dữ liệu gửi đi (sửa):", updatedGroup);
-        console.log("Đang gửi yêu cầu PUT đến:", `/api/nhomlop/${groupId}`); // Log URL cụ thể
-
         try {
-            const response = await fetch(`/api/nhomlop/${groupId}`, { // Đảm bảo groupId được truyền đúng
+            console.log(groupId);
+            const response = await fetch(`${BASE_URL}/api/nhomlop/${groupId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -703,7 +685,7 @@
             });
             if (response.ok) {
                 alert("Cập nhật nhóm lớp thành công!");
-                fetchGroups(); // Gọi lại để cập nhật bảng
+                fetchGroups();
                 closeModal("editModal");
                 currentEditIndex = -1;
             } else {
@@ -719,34 +701,44 @@
 
     let currentDeleteId = -1;
 
-    // Mở modal xác nhận xóa
     function openDeleteModal(maNhom, groupInfo) {
-        // if (!isAdmin) return; // Bỏ kiểm tra isAdmin ở đây
+        if (!isAdmin) {
+            return;
+        }
         currentDeleteId = maNhom;
         document.getElementById("deleteModal").style.display = "flex";
-        // Cần đảm bảo groupInfo.maHocPhan.tenHocPhan tồn tại
         const courseNameForDelete = groupInfo.maHocPhan && groupInfo.maHocPhan.tenHocPhan ? groupInfo.maHocPhan.tenHocPhan : "Không xác định";
         document.getElementById("deleteGroupInfo").textContent = `Mã nhóm: ${groupInfo.maNhom}, Học phần: ${courseNameForDelete}`;
     }
 
-    // Xác nhận xóa nhóm lớp
     async function confirmDelete() {
-        // if (!isAdmin) return; // Bỏ kiểm tra isAdmin ở đây
+        if (!isAdmin) {
+            alert("Bạn không có quyền xóa nhóm lớp.");
+            return;
+        }
         if (currentDeleteId === -1) return;
-        console.log("Đang xóa nhóm lớp với ID:", currentDeleteId);
         try {
-            const response = await fetch(`/api/nhomlop/${currentDeleteId}`, { // Đảm bảo currentDeleteId được truyền đúng
+            const response = await fetch(`${BASE_URL}/api/nhomlop/${currentDeleteId}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
-                alert("Xóa nhóm lớp thành công!");
-                fetchGroups(); // Gọi lại để cập nhật bảng
+                const message = await response.text(); // Lấy response dưới dạng text
+                alert(message);
+                fetchGroups();
                 closeModal("deleteModal");
                 currentDeleteId = -1;
-            } else {
-                const error = await response.json();
-                console.error("Lỗi xóa nhóm lớp:", error);
-                alert(`Lỗi xóa nhóm lớp: ${JSON.stringify(error.message || error.error)}`);
+            }  else {
+                console.log("Response status khi lỗi xóa:", response.status);
+                const errorText = await response.text();
+                console.log("Response text khi lỗi xóa:", errorText);
+                try {
+                    const error = JSON.parse(errorText);
+                    console.error("Lỗi xóa nhóm lớp:", error);
+                    alert(`Lỗi xóa nhóm lớp: ${JSON.stringify(error.message || error.error)}`);
+                } catch (e) {
+                    console.error("Lỗi xóa nhóm lớp (non-JSON):", errorText);
+                    alert(`Lỗi xóa nhóm lớp: ${errorText}`);
+                }
             }
         } catch (error) {
             console.error("Lỗi mạng khi xóa nhóm lớp:", error);
@@ -754,7 +746,6 @@
         }
     }
 
-    // Hiển thị danh sách nhóm lớp
     function renderTable(data) {
         const tbody = document.getElementById("groupTableBody");
         tbody.innerHTML = "";
@@ -762,15 +753,11 @@
 
         data.forEach((g, index) => {
             const course = courses.find(c => c.maHocPhan === g.maHocPhan.maHocPhan);
-
-            // Tìm phanCong dựa trên maPC của nhóm lớp
             const phanCong = phanCongs.find(pc => pc.maPC === g.maPC.maPC);
-
             let teacher;
-            if (phanCong && phanCong.maGV) { // Đảm bảo phanCong và maGV tồn tại
+            if (phanCong && phanCong.maGV) {
                 teacher = teachers.find(t => t.maGV === phanCong.maGV.maGV);
             }
-
             const courseName = course ? course.tenHocPhan : "Không xác định";
             const teacherName = teacher ? teacher.hoTen : "Không xác định";
             const credits = course ? course.soTinChi : "";
@@ -786,22 +773,22 @@
                 <td>${g.soLuongToiDa}</td>
                 <td>${timeDisplay}</td>
                 <td>${g.diaChi || 'Chưa rõ'}</td>
+                ${isAdmin ? `
                 <td>
                     <button class="edit-btn" onclick="openEditModal(${index})">Sửa</button>
                     <button class="delete-btn" onclick="openDeleteModal(${g.maNhom}, ${JSON.stringify(g)})">Xóa</button>
                 </td>
+                ` : ''}
             </tr>`;
             tbody.insertAdjacentHTML("beforeend", row);
         });
     }
 
-    // Lấy dữ liệu nhóm lớp từ backend
     async function fetchGroups() {
         try {
-            const response = await fetch('/api/nhomlop');
+            const response = await fetch(`${BASE_URL}/api/nhomlop`);
             if (response.ok) {
                 groups = await response.json();
-                console.log("Groups fetched:", groups);
                 renderTable(groups);
             } else {
                 console.error("Không thể tải dữ liệu nhóm lớp:", response.status);
@@ -813,16 +800,12 @@
         }
     }
 
-    // Lọc dữ liệu theo học kỳ và học phần (cần điều chỉnh nếu backend hỗ trợ lọc)
     async function filterGroups() {
-        const semesterFilter = document.getElementById("hocKyFilter").value;
         const courseFilter = document.getElementById("hocPhanFilter").value;
         const keyword = document.getElementById("searchInput").value;
 
-        let apiUrl = '/api/nhomlop/filter?';
-        if (semesterFilter) {
-            apiUrl += `hocky=${semesterFilter}&`;
-        }
+        let apiUrl = `${BASE_URL}/api/nhomlop/filter?`;
+
         if (courseFilter) {
             apiUrl += `mahocphan=${courseFilter}&`;
         }
@@ -830,17 +813,14 @@
             apiUrl += `keyword=${keyword}&`;
         }
 
-        // Loại bỏ dấu '&' cuối cùng nếu có tham số
         if (apiUrl.endsWith('&')) {
             apiUrl = apiUrl.slice(0, -1);
         }
-        console.log("URL lọc:", apiUrl);
 
         try {
             const response = await fetch(apiUrl);
             if (response.ok) {
                 const filteredGroups = await response.json();
-                console.log("Dữ liệu lọc:", filteredGroups);
                 renderTable(filteredGroups);
             } else {
                 console.error("Lỗi khi lọc dữ liệu:", response.status);
@@ -852,23 +832,27 @@
         }
     }
 
-    // Reset bộ lọc
     function resetFilters() {
-        document.getElementById("hocKyFilter").value = "";
         document.getElementById("hocPhanFilter").value = "";
         document.getElementById("searchInput").value = "";
-        fetchGroups(); // Hiển thị lại toàn bộ dữ liệu
+        fetchGroups();
     }
 
-    // Chạy khi trang load
     window.onload = function () {
-        // Fetch tất cả dữ liệu cần thiết song song
         Promise.all([
             fetchCourses(),
             fetchTeachers(),
-            fetchPhanCongs() // Đảm bảo phanCongs được fetch trước khi populateTeacherDropdowns
+            fetchPhanCongs()
         ]).then(() => {
-            fetchGroups(); // Sau khi tất cả dữ liệu tham chiếu được tải, tải groups và render bảng
+            fetchGroups();
+            // Sau khi tải xong học phần, populate bộ lọc học phần
+            const hocPhanFilter = document.getElementById("hocPhanFilter");
+            courses.forEach(course => {
+                const option = document.createElement("option");
+                option.value = course.maHocPhan;
+                option.textContent = `${course.maHocPhan} - ${course.tenHocPhan}`;
+                hocPhanFilter.appendChild(option);
+            });
         }).catch(error => {
             console.error("Lỗi khi tải dữ liệu khởi tạo:", error);
             alert("Không thể tải dữ liệu ban đầu. Vui lòng thử lại.");
@@ -876,4 +860,5 @@
     };
 </script>
 </body>
+
 </html>
