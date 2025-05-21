@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/nhomlop")
@@ -26,6 +27,47 @@ public class NhomLopController {
         return nhomLopRepo.findById(maNhom)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<?> filterNhomLop(
+            @RequestParam(value = "mahocphan", required = false) String maHocPhan,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        List<NhomLop> filteredNhomLops = nhomLopRepo.findAll();
+
+        if (maHocPhan != null && !maHocPhan.isEmpty()) {
+            filteredNhomLops = filteredNhomLops.stream()
+                    .filter(nl -> nl.getMaHocPhan().getMaHocPhan().equals(maHocPhan))
+                    .collect(Collectors.toList());
+        }
+
+        if (keyword != null && !keyword.isEmpty()) {
+            String lowerKeyword = keyword.toLowerCase();
+            filteredNhomLops = filteredNhomLops.stream()
+                    .filter(nl ->
+                            String.valueOf(nl.getMaNhom()).toLowerCase().contains(lowerKeyword) ||
+                                    (nl.getMaHocPhan() != null && nl.getMaHocPhan().getMaHocPhan().toLowerCase().contains(lowerKeyword)) ||
+                                    (nl.getMaHocPhan() != null && nl.getMaHocPhan().getTenHocPhan().toLowerCase().contains(lowerKeyword)) ||
+                                    (nl.getMaPC() != null && nl.getMaPC().getMaGV() != null && nl.getMaPC().getMaGV().getHoTen().toLowerCase().contains(lowerKeyword)) ||
+                                    String.valueOf(nl.getSoLuongToiDa()).contains(keyword) ||
+                                    (nl.getDiaChi() != null && nl.getDiaChi().toLowerCase().contains(lowerKeyword)) ||
+                                    formatTime(nl.getThuDi(), nl.getTietBatDau(), nl.getSoTiet()).toLowerCase().contains(lowerKeyword) // Cần hàm formatTime ở backend
+                    )
+                    .collect(Collectors.toList());
+        }
+
+        if (filteredNhomLops.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(filteredNhomLops);
+    }
+
+    // Cần một hàm formatTime tương tự như ở frontend
+    private String formatTime(String thu, Integer tietBatDau, Integer soTiet) {
+        if (thu == null || thu.isEmpty() || tietBatDau == null || soTiet == null) {
+            return "Chưa xếp";
+        }
+        return String.format("%s (Tiết %d-%d)", thu, tietBatDau, tietBatDau + soTiet - 1);
     }
 
     @PostMapping
@@ -48,12 +90,12 @@ public class NhomLopController {
         }
     }
 
-    @PutMapping("/{manhom}")
-    public ResponseEntity<?> capNhatNhomLop(@PathVariable int maNhom, @Valid @RequestBody NhomLop nhomLopMoi, BindingResult result) {
+    @PutMapping("/{nhomId}")
+    public ResponseEntity<?> capNhatNhomLop(@PathVariable int nhomId, @Valid @RequestBody NhomLop nhomLopMoi, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
-        Optional<NhomLop> optionalNhomLop = nhomLopRepo.findById(maNhom);
+        Optional<NhomLop> optionalNhomLop = nhomLopRepo.findById(nhomId);
         if (optionalNhomLop.isPresent()) {
             NhomLop nhomLopCu = optionalNhomLop.get();
             nhomLopCu.setMaHocPhan(nhomLopMoi.getMaHocPhan());
