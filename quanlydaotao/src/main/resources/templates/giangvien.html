@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -178,8 +178,8 @@
             flex: 1;
         }
 
-        .form-row input, 
-        .form-row select, 
+        .form-row input,
+        .form-row select,
         .form-row .static-field {
             flex: 2;
             padding: 10px;
@@ -200,6 +200,43 @@
             justify-content: flex-end;
             gap: 10px;
             padding-top: 20px;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-upload-button {
+            background-color: #5cb85c; /* Màu xanh lá cây */
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-upload-button:hover {
+            background-color: #4cae4c;
+        }
+
+        .file-upload-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        #file-name-display {
+            margin-left: 10px;
+            font-size: 16px;
+            color: #555;
         }
 
         .save-btn {
@@ -265,6 +302,13 @@
         <div class="controls">
             <input type="text" id="searchInput" placeholder="Tìm kiếm giảng viên..." style="padding: 8px; margin-right: 10px; width: 300px;">
             <button th:if="${isAdmin}" class="add-btn" onclick="openAddModal()">+ Thêm Giảng Viên</button>
+            <div class="file-upload-wrapper" th:if="${isAdmin}">
+                <button class="file-upload-button">Chọn file</button>
+                <input type="file" id="importFile" accept=".xlsx, .xls" class="file-upload-input" onchange="updateFileNameDisplay()">
+            </div>
+            <span id="file-name-display" th:if="${isAdmin}"></span>
+            <button th:if="${isAdmin}" class="add-btn" onclick="importLecturers()" style="margin-left: 20px;">Import Excel</button>
+            <button th:if="${isAdmin}" class="add-btn" onclick="exportLecturers()" style="margin-left: 10px;">Export Excel</button>
         </div>
 
         <table id="lecturerTable">
@@ -436,8 +480,12 @@
         </div>
     </div>
 
+    <div th:text="'Is Admin: ' + ${isAdmin}"></div>
+
     <script>
         const isAdmin = /*[[${isAdmin}]]*/ true;
+
+        console.log("Giá trị isAdmin:", isAdmin);
 
         async function loadLecturers() {
             const response = await fetch('/api/giangvien');
@@ -447,24 +495,32 @@
 
             lecturers.forEach((gv, index) => {
                 const row = document.createElement('tr');
+                let actionsHTML = '';
+                if (isAdmin) {
+                    actionsHTML = `
+                <td>
+                    <button class="edit-btn" onclick="openEditModal('${gv.maGV}', '${gv.hoTen}', '${gv.ngaySinh}', '${gv.gioiTinh}', '${gv.hocVi}', '${gv.chuyenNganh}', '${gv.sdt}', '${gv.email}')">Sửa</button>
+                    <button class="delete-btn" onclick="openDeleteModal('${gv.maGV}', '${gv.hoTen}')">Xóa</button>
+                </td>
+            `;
+                }
+
                 row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${gv.maGV}</td>
-                    <td>${gv.hoTen}</td>
-                    <td>${gv.ngaySinh}</td>
-                    <td>${gv.gioiTinh}</td>
-                    <td>${gv.hocVi}</td>
-                    <td>${gv.chuyenNganh}</td>
-                    <td>${gv.sdt}</td>
-                    <td>${gv.email}</td>
-                    <td>
-                      <button class="edit-btn" onclick="openEditModal('${gv.maGV}', '${gv.hoTen}', '${gv.ngaySinh}', '${gv.gioiTinh}', '${gv.hocVi}', '${gv.chuyenNganh}', '${gv.sdt}', '${gv.email}')">Sửa</button>
-                      <button class="delete-btn" onclick="openDeleteModal('${gv.maGV}', '${gv.hoTen}')">Xóa</button>
-                    </td>
-              `;
+            <td>${index + 1}</td>
+            <td>${gv.maGV}</td>
+            <td>${gv.hoTen}</td>
+            <td>${gv.ngaySinh}</td>
+            <td>${gv.gioiTinh}</td>
+            <td>${gv.hocVi}</td>
+            <td>${gv.chuyenNganh}</td>
+            <td>${gv.sdt}</td>
+            <td>${gv.email}</td>
+            ${actionsHTML}
+        `;
                 tbody.appendChild(row);
             });
         }
+
 
         window.onload = loadLecturers;
 
@@ -483,7 +539,7 @@
             const response = await fetch('/api/giangvien');
             const lecturers = await response.json();
             const existingIds = lecturers.map(gv => gv.maGV);
-            document.getElementById("newLecturerId").textContent = generateLecturerId(existingIds); // Sử dụng textContent vì là span
+            document.getElementById("newLecturerId").textContent = generateLecturerId(existingIds);
             document.getElementById("addForm").reset();
             document.getElementById("addModal").style.display = "block";
         }
@@ -508,6 +564,7 @@
         }
 
         async function saveNewLecturer() {
+            if (!isAdmin) return;
             const data = {
                 maGV: document.getElementById('newLecturerId').textContent,
                 hoTen: document.getElementById('lecturerName').value,
@@ -550,6 +607,7 @@
 
 
         async function saveEdit() {
+            if (!isAdmin) return;
             const maGV = document.getElementById('editLecturerId').textContent;
             const data = {
                 hoTen: document.getElementById('editLecturerName').value,
@@ -578,7 +636,7 @@
         }
 
         async function deleteLecturer(maGV) {
-
+            if (!isAdmin) return;
             const response = await fetch(`/api/giangvien/${maGV}`, {
                 method: 'DELETE'
             });
@@ -587,15 +645,26 @@
                 alert("Xóa thành công!");
                 loadLecturers();
             } else {
-                const error = await response.json();
-                alert("Lỗi khi xóa giảng viên: " + JSON.stringify(error));
+                try {
+                    const error = await response.json();
+                    if (error && error.message && error.message.includes("foreign key constraint fails")) {
+                        alert("Giảng viên này đang được phân công giảng dạy, không thể xóa.");
+                    } else {
+                        alert("Lỗi khi xóa giảng viên: " + JSON.stringify(error));
+                    }
+                } catch (e) {
+                    const errorText = await response.text();
+                    if (errorText.includes("foreign key constraint fails")) {
+                        alert("Giảng viên này đang được phân công giảng dạy, không thể xóa.");
+                    } else {
+                        alert("Lỗi không xác định khi xóa: " + errorText);
+                    }
+                }
             }
-
         }
 
-
-
         function confirmDelete() {
+            if (!isAdmin) return;
             const maGVToDelete = document.getElementById('deleteMaGV').textContent;
             deleteLecturer(maGVToDelete);
             closeModal('deleteModal');
@@ -604,14 +673,83 @@
         function openDeleteModal(maGV, hoTen) {
             if (!isAdmin) return;
             const deleteNameElement = document.getElementById('deleteLecturerName');
-            console.log("deleteNameElement:", deleteNameElement); // Add this line
             deleteNameElement.textContent = hoTen;
-            document.getElementById('deleteMaGV').textContent = maGV; // Store maGV to delete
+            document.getElementById('deleteMaGV').textContent = maGV;
             document.getElementById('deleteModal').style.display = "block";
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = "none";
+        }
+
+        async function importLecturers() {
+            if (!isAdmin) {
+                alert("Bạn không có quyền import giảng viên.");
+                return;
+            }
+
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Vui lòng chọn một file Excel để import.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/giangvien/import', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const message = await response.text();
+                    alert(message);
+                    loadLecturers();
+                } else {
+                    const error = await response.text();
+                    alert("Lỗi import: " + error);
+                }
+            } catch (error) {
+                console.error("Lỗi mạng khi import:", error);
+                alert("Lỗi mạng khi import file.");
+            }
+        }
+
+        async function exportLecturers() {
+            try {
+                const response = await fetch('/api/giangvien/export');
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'giangviens.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    alert("Export Excel thành công!");
+                } else {
+                    const error = await response.text();
+                    alert("Lỗi khi export: " + error);
+                }
+            } catch (error) {
+                console.error("Lỗi mạng khi export:", error);
+                alert("Lỗi mạng khi export file.");
+            }
+        }
+
+        function updateFileNameDisplay() {
+            const fileInput = document.getElementById('importFile');
+            const fileNameDisplay = document.getElementById('file-name-display');
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
         }
     </script>
 
