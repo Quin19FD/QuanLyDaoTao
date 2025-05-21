@@ -1,10 +1,12 @@
 package com.example.quanlydaotao.model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "phanconggiangday")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PhanCongGiangDay {
     @Id
     @Column(name = "mapc", nullable = false)
@@ -29,8 +31,9 @@ public class PhanCongGiangDay {
     @Min(value = 0, message = "Tổng số nhóm không được âm!")
     private int slSVMotNhom;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "magv", referencedColumnName = "magv", nullable = false)
+    @JsonIgnoreProperties({"ngaySinh", "gioiTinh", "hocVi", "chuyenNganh", "sdt", "email"})
     @NotNull(message = "Mã giảng viên không được để trống!")
     private GiangVien maGV;
 
@@ -39,8 +42,9 @@ public class PhanCongGiangDay {
     @Min(value = 0, message = "Số tiết thực tế không được âm!")
     private int soTietThucTe;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mahocphan", referencedColumnName = "mahocphan", nullable = false)
+    @JsonIgnoreProperties({"maDaoTao", "maKhoiKienThuc", "maChuyenNganh", "heSo"})
     private HocPhan maHocPhan;
 
     public PhanCongGiangDay(){
