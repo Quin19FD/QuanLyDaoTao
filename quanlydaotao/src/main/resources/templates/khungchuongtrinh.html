@@ -780,7 +780,6 @@
             console.log("✅ Dữ liệu sau khi cập nhật từ input:");
             console.log("newMaKhung:", newMaKhungGlobal);
             console.log("list_newKhoiKienThuc:", list_newKhoiKienThucGlobal);
-
             try {
                 // Add CTKhung first
                 const ctKhungResult = await addCTKhung(newMaKhungGlobal.mactdt, newMaKhungGlobal.makhung);
@@ -791,31 +790,27 @@
                 }
                 console.log("Thêm CTKhung thành công:", ctKhungResult.message);
 
-                // Add all KhoiKienThuc entries
-                const khoiKienThucPromises = list_newKhoiKienThucGlobal.map(item =>
-                    addKhoiKienThuc(
+                // Add all KhoiKienThuc entries tuần tự
+                for (const item of list_newKhoiKienThucGlobal) {
+                    console.log(`Đang thêm khối kiến thức mã ${item.makhoikienthuc}...`);
+                    const result = await addKhoiKienThuc(
                         item.makhoikienthuc,
                         item.makhung,
                         item.tinbatbuoc,
                         item.tintuchon
-                    )
-                );
+                    );
 
-                const khoiKienThucResults = await Promise.all(khoiKienThucPromises);
+                    if (!result.success) {
+                        console.error("Lỗi khi thêm khối kiến thức:", result.message);
+                        alert(`Lỗi khi thêm khối kiến thức: ${result.message}`);
+                        closeModal(addModal);
+                        return; // Dừng luôn khi gặp lỗi
+                    }
 
-                // Check if all KhoiKienThuc calls were successful
-                const allSuccessful = khoiKienThucResults.every(result => result.success);
-                if (allSuccessful) {
-                    alert("Tạo chương trình khung và khối kiến thức thành công!");
-                } else {
-                    const errorMessages = khoiKienThucResults
-                        .filter(result => !result.success)
-                        .map(result => result.message)
-                        .join("; ");
-                    console.error("Lỗi khi thêm một hoặc nhiều khối kiến thức:", errorMessages);
-                    alert(`Tạo chương trình khung thành công, nhưng lỗi khi thêm khối kiến thức: ${errorMessages}`);
-                    closeModal(addModal);
+                    console.log("Thêm khối kiến thức thành công:", result.message);
                 }
+
+                alert("Tạo chương trình khung và khối kiến thức thành công!");
 
                 // Reset inputs and global variables
                 allInputs.forEach(input => {
@@ -828,6 +823,7 @@
                 console.error("Lỗi trong quá trình thêm chương trình khung hoặc khối kiến thức:", error);
                 alert(`Lỗi: ${error.message}`);
             }
+
         });
 
     // Load programs on page load
