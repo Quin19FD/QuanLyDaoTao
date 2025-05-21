@@ -1,4 +1,3 @@
-
 package com.example.quanlydaotao.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -28,15 +27,27 @@ public class NhomLop {
     @NotNull(message = "Địa chỉ không được để trống!")
     private String diaChi;
 
+    @Column(name = "thudi")
+    private String thuDi;
+
+    @Column(name = "tietbatdau")
+    private Integer tietBatDau;
+
+    @Column(name = "sotiet")
+    private Integer soTiet;
+
     public NhomLop(){
     }
 
-    public NhomLop(int maNhom, HocPhan maHocPhan, PhanCongGiangDay maPC, int slToiDa, String diaChi){
+    public NhomLop(int maNhom, HocPhan maHocPhan, PhanCongGiangDay maPC, int soLuongToiDa, String diaChi, String thuDi, Integer tietBatDau, Integer soTiet) {
         this.maNhom = maNhom;
         this.maHocPhan = maHocPhan;
         this.maPC = maPC;
-        this.soLuongToiDa = slToiDa;
+        this.soLuongToiDa = soLuongToiDa;
         this.diaChi = diaChi;
+        this.thuDi = thuDi;
+        this.tietBatDau = tietBatDau;
+        this.soTiet = soTiet;
     }
 
     public int getMaNhom() {
@@ -77,5 +88,29 @@ public class NhomLop {
 
     public void setDiaChi(String diaChi) {
         this.diaChi = diaChi;
+    }
+
+    public String getThuDi() {
+        return thuDi;
+    }
+
+    public void setThuDi(String thuDi) {
+        this.thuDi = thuDi;
+    }
+
+    public Integer getTietBatDau() {
+        return tietBatDau;
+    }
+
+    public void setTietBatDau(Integer tietBatDau) {
+        this.tietBatDau = tietBatDau;
+    }
+
+    public Integer getSoTiet() {
+        return soTiet;
+    }
+
+    public void setSoTiet(Integer soTiet) {
+        this.soTiet = soTiet;
     }
 }
