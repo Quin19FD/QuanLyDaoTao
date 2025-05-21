@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8" />
@@ -12,12 +12,12 @@
             background-color: #f5f5f5;
             margin: 0;
             padding: 20px;
-            font-size: 20px;
+            font-size: 16px; /* Giảm kích thước font chữ mặc định */
         }
 
         .container {
-            max-width: 90%;
-            margin: 0 auto;
+            max-width: 95%; /* Tăng chiều rộng container */
+            margin: 20px auto; /* Thêm margin trên và dưới */
             background-color: #fff;
             padding: 20px;
             border-radius: 10px;
@@ -27,29 +27,41 @@
         h1 {
             text-align: center;
             color: #ff8c66;
-            font-size: 30px;
+            font-size: 28px; /* Giảm kích thước heading */
             margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 22px; /* Kích thước heading cho tên học phần */
+            margin-top: 30px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 10px; /* Giảm margin trên bảng */
             background-color: white;
+            margin-bottom: 20px; /* Thêm margin dưới mỗi bảng */
         }
 
         th,
         td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px; /* Giảm padding trong ô */
             vertical-align: top;
             text-align: left;
+            font-size: 14px; /* Giảm kích thước font chữ trong bảng */
         }
 
         th {
             background-color: #ff8c66;
             color: white;
             text-align: center;
+            font-size: 15px; /* Giảm kích thước font chữ header bảng */
         }
 
         tr:hover {
@@ -57,21 +69,21 @@
         }
 
         button {
-            font-size: 16px;
-            padding: 8px 15px;
+            font-size: 14px; /* Giảm kích thước font chữ nút */
+            padding: 6px 10px; /* Giảm padding nút */
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 0 5px;
+            margin: 0 3px; /* Giảm margin nút */
             transition: all 0.3s ease;
         }
 
         .add-btn {
             background-color: #ff8c66;
             color: white;
-            margin-bottom: 20px;
-            font-size: 18px;
-            padding: 10px 20px;
+            margin-bottom: 15px; /* Giảm margin dưới nút thêm mới */
+            font-size: 16px; /* Giảm kích thước font chữ nút thêm mới */
+            padding: 8px 15px; /* Giảm padding nút thêm mới */
         }
 
         .edit-btn {
@@ -96,11 +108,11 @@
 
         button:hover {
             opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px); /* Giảm độ nảy khi hover */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Giảm bóng đổ khi hover */
         }
 
-        /* Modal styles */
+        /* Modal styles - giữ nguyên hoặc điều chỉnh nhỏ nếu cần */
         .modal {
             display: none;
             position: fixed;
@@ -119,8 +131,8 @@
             margin: 5% auto;
             padding: 20px;
             border-radius: 10px;
-            width: 70%;
-            max-width: 800px;
+            width: 80%; /* Tăng chiều rộng modal */
+            max-width: 900px; /* Tăng max-width modal */
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             position: relative;
         }
@@ -130,7 +142,7 @@
             top: 10px;
             right: 15px;
             color: #aaa;
-            font-size: 28px;
+            font-size: 22px; /* Giảm kích thước nút đóng modal */
             font-weight: bold;
             cursor: pointer;
         }
@@ -142,14 +154,15 @@
         .form-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px; /* Giảm margin trên form table */
         }
 
         .form-table th,
         .form-table td {
-            padding: 12px;
+            padding: 10px; /* Giảm padding trong form table */
             text-align: left;
             border-bottom: 1px solid #ddd;
+            font-size: 14px; /* Giảm kích thước font chữ trong form */
         }
 
         .form-table th {
@@ -164,16 +177,16 @@
             background-color: #fff7f2;
         }
 
-        .form-table input {
-            width: 100%;
+        .form-table input, .form-table select {
+            width: calc(100% - 16px); /* Điều chỉnh chiều rộng input */
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px; /* Giảm kích thước font chữ input */
             box-sizing: border-box;
         }
 
-        .form-table input:focus {
+        .form-table input:focus, .form-table select:focus {
             border-color: #ff8c66;
             outline: none;
             box-shadow: 0 0 5px rgba(255, 140, 102, 0.3);
@@ -181,15 +194,15 @@
 
         .action-buttons {
             text-align: right;
-            margin-top: 20px;
+            margin-top: 15px; /* Giảm margin trên nút hành động modal */
         }
 
-        /* Thêm style cho nút trở về trang chủ */
+        /* Thêm style cho nút trở về trang chủ - giữ nguyên */
         .back-home-btn {
             position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
+            top: 15px; /* Giảm khoảng cách từ trên */
+            left: 15px; /* Giảm khoảng cách từ trái */
+            padding: 8px 15px; /* Giảm padding nút trang chủ */
             background-color: #ff8c66;
             color: white;
             border: none;
@@ -201,11 +214,12 @@
             align-items: center;
             gap: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-size: 14px; /* Giảm kích thước font chữ nút trang chủ */
         }
 
         .back-home-btn:hover {
             background-color: #e67e5a;
-            transform: translateY(-2px);
+            transform: translateY(-1px); /* Giảm độ nảy */
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
@@ -215,354 +229,608 @@
         }
 
         .back-home-btn i {
-            font-size: 18px;
+            font-size: 16px; /* Giảm kích thước icon trang chủ */
         }
     </style>
-    <!-- Thêm Font Awesome để sử dụng icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-
 <body>
-    <!-- Thêm nút trở về trang chủ -->
-    <a th:href="@{/home}" class="back-home-btn">
-        <i class="fas fa-home"></i>
-        Trang Chủ
-    </a>
-    <div class="container">
-        <h1>ĐỀ CƯƠNG CHI TIẾT</h1>
+<a th:href="@{/home}" class="back-home-btn">
+    <i class="fas fa-home"></i>
+    Trang Chủ
+</a>
+<div class="container">
+    <h1>QUẢN LÝ ĐÁNH GIÁ HỌC PHẦN</h1>
 
-        <button class="add-btn" th:if="${isAdmin}" onclick="openAddModal()">+ Thêm Mới</button>
+    <button class="add-btn" th:if="${isAdmin}" onclick="openAddModal()">+ Thêm Mới</button>
 
-        <table id="data-table">
-            <thead>
-                <tr>
-                    <th>Bộ phận<br>được đánh giá</th>
-                    <th>Điểm<br>đánh giá bộ phận</th>
-                    <th>Trọng số</th>
-                    <th>Hình thức<br>đánh giá</th>
-                    <th th:if="${isAdmin}">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><em>1. Đánh giá quá trình</em></td>
-                    <td><em>Điểm quá trình (1.1 + 1.2)</em></td>
-                    <td>0.4</td>
-                    <td></td>
-                    <td>
-                        <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal(0)">Sửa</button>
-                        <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal(0)">Xóa</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>1.1. Ý thức học tập</td>
-                    <td>Điểm chuyên cần, thái độ học tập</td>
-                    <td>0.1</td>
-                    <td></td>
-                    <td>
-                        <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal(1)">Sửa</button>
-                        <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal(1)">Xóa</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td rowspan="5">1.2. Hồ sơ học tập</td>
-                    <td>1.2.1 Điểm bài tập (ở nhà/trên lớp/bài tập lớn)</td>
-                    <td>0.1</td>
-                    <td></td>
-                    <td>
-                        <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal(2)">Sửa</button>
-                        <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal(2)">Xóa</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>1.2.2 Điểm thuyết trình, thực hành, thảo luận</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal(3)">Sửa</button>
-                        <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal(3)">Xóa</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>1.2.3 Điểm làm việc nhóm</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal(4)">Sửa</button>
-                        <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal(4)">Xóa</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>1.2.4 Điểm kiểm tra giữa kỳ</td>
-                    <td>0.2</td>
-                    <td></td>
-                    <td>
-                        <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal(5)">Sửa</button>
-                        <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal(5)">Xóa</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>1.2.5</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal(6)">Sửa</button>
-                        <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal(6)">Xóa</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><em>2. Đánh giá cuối kỳ</em></td>
-                    <td><em>Điểm cuối kỳ (≥ 0.5)</em></td>
-                    <td>0.5</td>
-                    <td>Thi tự luận</td>
-                    <td>
-                        <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal(7)">Sửa</button>
-                        <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal(7)">Xóa</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div id="evaluation-sections">
     </div>
+</div>
 
-    <!-- Modal for Adding -->
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('addModal')">×</span>
-            <h2>Thêm Mục Đánh Giá Mới</h2>
-            <form id="addForm" onsubmit="return false;">
-                <table class="form-table">
-                    <thead>
-                        <tr>
-                            <th>Tiêu chí</th>
-                            <th>Thông tin</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Bộ phận đánh giá</td>
-                            <td><input type="text" id="addEvalPart" placeholder="VD: 1.2.5 Bài kiểm tra" required></td>
-                        </tr>
-                        <tr>
-                            <td>Điểm đánh giá bộ phận</td>
-                            <td><input type="text" id="addEvalDetail" placeholder="VD: Điểm bài kiểm tra" required></td>
-                        </tr>
-                        <tr>
-                            <td>Trọng số</td>
-                            <td><input type="number" id="addWeight" step="0.1" min="0" max="1" required></td>
-                        </tr>
-                        <tr>
-                            <td>Hình thức đánh giá</td>
-                            <td><input type="text" id="addMethod" placeholder="VD: Thi tự luận"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="action-buttons">
-                    <button type="submit" class="save-btn" onclick="addEvaluation()">Thêm</button>
-                    <button type="button" class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal for Editing -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('editModal')">×</span>
-            <h2>Sửa Mục Đánh Giá</h2>
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('addModal')">×</span>
+        <h2>Thêm Mục Đánh Giá Mới</h2>
+        <form id="addForm" onsubmit="return false;">
             <table class="form-table">
                 <thead>
-                    <tr>
-                        <th>Tiêu chí</th>
-                        <th>Thông tin</th>
-                    </tr>
+                <tr>
+                    <th>Tiêu chí</th>
+                    <th>Thông tin</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Bộ phận đánh giá</td>
-                        <td><input type="text" id="editEvalPart" required></td>
-                    </tr>
-                    <tr>
-                        <td>Điểm đánh giá bộ phận</td>
-                        <td><input type="text" id="editEvalDetail" required></td>
-                    </tr>
-                    <tr>
-                        <td>Trọng số</td>
-                        <td><input type="number" id="editWeight" step="0.1" min="0" max="1"></td>
-                    </tr>
-                    <tr>
-                        <td>Hình thức đánh giá</td>
-                        <td><input type="text" id="editMethod"></td>
-                    </tr>
+                <tr>
+                    <td>Học phần</td>
+                    <td>
+                        <select id="addSubject">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Bộ phận đánh giá</td>
+                    <td><input type="text" id="addEvalPart" placeholder="VD: 1.2.5 Bài kiểm tra" required></td>
+                </tr>
+                <tr>
+                    <td>Điểm đánh giá bộ phận</td>
+                    <td><input type="text" id="addEvalDetail" placeholder="VD: Điểm bài kiểm tra" required></td>
+                </tr>
+                <tr>
+                    <td>Trọng số</td>
+                    <td><input type="number" id="addWeight" step="0.1" min="0" max="1" required></td>
+                </tr>
+                <tr>
+                    <td>Hình thức đánh giá</td>
+                    <td><input type="text" id="addMethod" placeholder="VD: Thi tự luận"></td>
+                </tr>
                 </tbody>
             </table>
             <div class="action-buttons">
-                <button class="save-btn" onclick="saveEdit()">Lưu</button>
-                <button class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
+                <button type="submit" class="save-btn" onclick="addEvaluation()">Thêm</button>
+                <button type="button" class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
             </div>
+        </form>
+    </div>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('editModal')">×</span>
+        <h2>Sửa Mục Đánh Giá</h2>
+        <table class="form-table">
+            <thead>
+            <tr>
+                <th>Tiêu chí</th>
+                <th>Thông tin</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Học phần</td>
+                <td><span id="editSubjectName"></span><input type="hidden" id="editSubjectId"></td>
+            </tr>
+            <tr>
+                <td>Bộ phận đánh giá</td>
+                <td><input type="text" id="editEvalPart" required></td>
+            </tr>
+            <tr>
+                <td>Điểm đánh giá bộ phận</td>
+                <td><input type="text" id="editEvalDetail" required></td>
+            </tr>
+            <tr>
+                <td>Trọng số</td>
+                <td><input type="number" id="editWeight" step="0.1" min="0" max="1"></td>
+            </tr>
+            <tr>
+                <td>Hình thức đánh giá</td>
+                <td><input type="text" id="editMethod"></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="action-buttons">
+            <button class="save-btn" onclick="saveEdit()">Lưu</button>
+            <button class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
         </div>
     </div>
+</div>
 
-    <!-- Modal for Delete Confirmation -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('deleteModal')">×</span>
-            <h2>Xác Nhận Xóa</h2>
-            <div style="margin: 20px 0; text-align: center;">
-                <p>Bạn có chắc chắn muốn xóa mục đánh giá này không?</p>
-                <p style="font-weight: bold; margin-top: 10px;" id="deleteItemName"></p>
-            </div>
-            <div class="action-buttons" style="text-align: center;">
-                <button class="delete-btn" onclick="confirmDelete()">Xóa</button>
-                <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
-            </div>
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('deleteModal')">×</span>
+        <h2>Xác Nhận Xóa</h2>
+        <div style="margin: 20px 0; text-align: center;">
+            <p>Bạn có chắc chắn muốn xóa mục đánh giá này của học phần <span id="deleteSubjectName"></span>?</p>
+            <p style="font-weight: bold; margin-top: 10px;" id="deleteItemName"></p>
+        </div>
+        <div class="action-buttons" style="text-align: center;">
+            <button class="delete-btn" onclick="confirmDelete()">Xóa</button>
+            <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
         </div>
     </div>
+</div>
 
-    <script th:inline="javascript">
-        let currentEditIndex = null;
-        let currentDeleteIndex = null;
+<script th:inline="javascript">
+    let currentEditItem = null;
+    let currentDeleteItem = null;
 
-        // Lấy thông tin quyền từ server
-        const isAdmin = /*[[${isAdmin}]]*/ false;
-        
-        // Ẩn/hiện các nút chức năng dựa vào quyền
-        function checkPermission() {
-            const adminButtons = document.querySelectorAll('.add-btn, .edit-btn, .delete-btn');
-            adminButtons.forEach(button => {
-                button.style.display = isAdmin ? 'inline-block' : 'none';
+    // Dữ liệu mẫu (thay thế bằng dữ liệu thực tế của bạn)
+    const evaluationData = [
+        {
+            subjectId: "8613101",
+            subjectName: "Triết học Mác – Lênin",
+            evaluations: [
+                { id: 1, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 2, part: "1.1. Ý thức học tập", detail: "Điểm chuyên cần, thái độ học tập", weight: 0.1, method: "" },
+                { id: 3, part: "1.2. Hồ sơ học tập", detail: "1.2.1 Điểm bài tập (ở nhà/trên lớp/bài tập lớn)", weight: 0.1, method: "" },
+                { id: 4, part: "1.2. Hồ sơ học tập", detail: "1.2.2 Điểm thuyết trình, thực hành, thảo luận", weight: 0.1, method: "" },
+                { id: 5, part: "1.2. Hồ sơ học tập", detail: "1.2.3 Điểm làm việc nhóm", weight: 0.1, method: "" },
+                { id: 6, part: "1.2. Hồ sơ học tập", detail: "1.2.4 Điểm kiểm tra giữa kỳ", weight: 0.2, method: "" },
+                { id: 8, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ (≥ 0.5)", weight: 0.6, method: "Thi tự luận" }
+            ]
+        },
+        {
+            subjectId: "8613102",
+            subjectName: "Kinh tế chính trị Mác – Lênin",
+            evaluations: [
+                { id: 9, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 10, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 11, part: "1.2. Kiểm tra", detail: "Kiểm tra giữa kỳ", weight: 0.2, method: "" },
+                { id: 12, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi tự luận" }
+            ]
+        },
+        {
+            subjectId: "8613103",
+            subjectName: "Chủ nghĩa xã hội khoa học",
+            evaluations: [
+                { id: 13, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 14, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 15, part: "1.2. Thảo luận", detail: "Thảo luận trên lớp", weight: 0.2, method: "" },
+                { id: 16, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi tự luận" }
+            ]
+        },
+        {
+            subjectId: "8613104",
+            subjectName: "Tư tưởng Hồ Chí Minh",
+            evaluations: [
+                { id: 17, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 18, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 19, part: "1.2. Thuyết trình", detail: "Thuyết trình trên lớp", weight: 0.2, method: "" },
+                { id: 20, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi tự luận" }
+            ]
+        },
+        {
+            subjectId: "8613105",
+            subjectName: "Lịch sử Đảng Cộng sản Việt Nam",
+            evaluations: [
+                { id: 21, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 22, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 23, part: "1.2. Kiểm tra", detail: "Kiểm tra giữa kỳ", weight: 0.2, method: "" },
+                { id: 24, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi tự luận" }
+            ]
+        },
+        {
+            subjectId: "8664001",
+            subjectName: "Tiếng Anh 1",
+            evaluations: [
+                { id: 25, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2 + 1.3)", weight: 0.6, method: "" },
+                { id: 26, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.1, method: "" },
+                { id: 27, part: "1.2. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.3, method: "" },
+                { id: 28, part: "1.3. Kiểm tra", detail: "Kiểm tra thường xuyên", weight: 0.2, method: "" },
+                { id: 29, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.4, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "8664002",
+            subjectName: "Tiếng Anh 2",
+            evaluations: [
+                { id: 30, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2 + 1.3)", weight: 0.6, method: "" },
+                { id: 31, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.1, method: "" },
+                { id: 32, part: "1.2. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.3, method: "" },
+                { id: 33, part: "1.3. Kiểm tra", detail: "Kiểm tra thường xuyên", weight: 0.2, method: "" },
+                { id: 34, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.4, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "8664003",
+            subjectName: "Tiếng Anh 3",
+            evaluations: [
+                { id: 35, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2 + 1.3)", weight: 0.6, method: "" },
+                { id: 36, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.1, method: "" },
+                { id: 37, part: "1.2. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.3, method: "" },
+                { id: 38, part: "1.3. Kiểm tra", detail: "Kiểm tra thường xuyên", weight: 0.2, method: "" },
+                { id: 39, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.4, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "8655006",
+            subjectName: "Pháp luật đại cương",
+            evaluations: [
+                { id: 40, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 41, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 42, part: "1.2. Thảo luận", detail: "Thảo luận trên lớp", weight: 0.2, method: "" },
+                { id: 43, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "8645008",
+            subjectName: "Xác suất thống kê",
+            evaluations: [
+                { id: 44, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 45, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 46, part: "1.2. Kiểm tra", detail: "Kiểm tra giữa kỳ", weight: 0.2, method: "" },
+                { id: 47, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "8644005",
+            subjectName: "Giải tích 1",
+            evaluations: [
+                { id: 48, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 49, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 50, part: "1.2. Kiểm tra", detail: "Kiểm tra giữa kỳ", weight: 0.2, method: "" },
+                { id: 51, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "8644006",
+            subjectName: "Giải tích 2",
+            evaluations: [
+                { id: 52, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 53, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 54, part: "1.2. Kiểm tra", detail: "Kiểm tra giữa kỳ", weight: 0.2, method: "" },
+                { id: 55, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "8644007",
+            subjectName: "Đại số tuyến tính",
+            evaluations: [
+                { id: 56, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 57, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 58, part: "1.2. Kiểm tra", detail: "Kiểm tra giữa kỳ", weight: 0.2, method: "" },
+                { id: 59, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "8622101",
+            subjectName: "Giáo dục thể chất (I)",
+            evaluations: [
+                { id: 60, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.6, method: "" },
+                { id: 61, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.3, method: "" },
+                { id: 62, part: "1.2. Thực hành", detail: "Thực hành các bài tập", weight: 0.3, method: "" },
+                { id: 63, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.4, method: "Kiểm tra" }
+            ]
+        },
+        {
+            subjectId: "8622406",
+            subjectName: "Giáo dục quốc phòng và an ninh I",
+            evaluations: [
+                { id: 64, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.6, method: "" },
+                { id: 65, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.3, method: "" },
+                { id: 66, part: "1.2. Thảo luận", detail: "Thảo luận trên lớp", weight: 0.3, method: "" },
+                { id: 67, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.4, method: "Kiểm tra" }
+            ]
+        },
+        {
+            subjectId: "8622407",
+            subjectName: "Giáo dục quốc phòng và an ninh II",
+            evaluations: [
+                { id: 68, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.6, method: "" },
+                { id: 69, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.3, method: "" },
+                { id: 70, part: "1.2. Thực hành", detail: "Thực hành các kỹ năng", weight: 0.3, method: "" },
+                { id: 71, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.4, method: "Kiểm tra" }
+            ]
+        },
+        {
+            subjectId: "8622408",
+            subjectName: "Giáo dục quốc phòng và an ninh III",
+            evaluations: [
+                { id: 72, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.6, method: "" },
+                { id: 73, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.3, method: "" },
+                { id: 74, part: "1.2. Thao tác", detail: "Thao tác kỹ thuật", weight: 0.3, method: "" },
+                { id: 75, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.4, method: "Kiểm tra" }
+            ]
+        },
+        {
+            subjectId: "8622409",
+            subjectName: "Giáo dục quốc phòng và an ninh IV",
+            evaluations: [
+                { id: 76, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.6, method: "" },
+                { id: 77, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.3, method: "" },
+                { id: 78, part: "1.2. Thực hành", detail: "Thực hành tổng hợp", weight: 0.3, method: "" },
+                { id: 79, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.4, method: "Kiểm tra" }
+            ]
+        },
+        {
+            subjectId: "CNTT1001",
+            subjectName: "Lập trình cơ bản",
+            evaluations: [
+                { id: 80, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 81, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 82, part: "1.2. Kiểm tra", detail: "Kiểm tra giữa kỳ", weight: 0.2, method: "" },
+                { id: 83, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thực hành" }
+            ]
+        },
+        {
+            subjectId: "CNTT1002",
+            subjectName: "Cấu trúc dữ liệu và giải thuật",
+            evaluations: [
+                { id: 84, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 85, part: "1.1. Bài tập", detail: "Bài tập về nhà", weight: 0.2, method: "" },
+                { id: 86, part: "1.2. Thực hành", detail: "Thực hành trên lớp", weight: 0.2, method: "" },
+                { id: 87, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "CNTT1003",
+            subjectName: "Kiến trúc máy tính",
+            evaluations: [
+                { id: 88, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 89, part: "1.1. Bài tập", detail: "Bài tập trên lớp", weight: 0.2, method: "" },
+                { id: 90, part: "1.2. Thực hành", detail: "Thực hành trên lớp", weight: 0.2, method: "" },
+                { id: 91, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "CNTT2001",
+            subjectName: "Lập trình hướng đối tượng",
+            evaluations: [
+                { id: 92, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 93, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 94, part: "1.2. Project", detail: "Project nhóm", weight: 0.2, method: "" },
+                { id: 95, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thực hành" }
+            ]
+        },
+        {
+            subjectId: "CNTT2002",
+            subjectName: "Cơ sở dữ liệu",
+            evaluations: [
+                { id: 96, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 97, part: "1.1. Bài tập", detail: "Bài tập trên lớp", weight: 0.2, method: "" },
+                { id: 98, part: "1.2. Thực hành", detail: "Thực hành SQL", weight: 0.2, method: "" },
+                { id: 99, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "CNTT2003",
+            subjectName: "Mạng máy tính",
+            evaluations: [
+                { id: 100, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2 + 1.3)", weight: 0.4, method: "" },
+                { id: 101, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.1, method: "" },
+                { id: 102, part: "1.2. Bài tập", detail: "Bài tập nhóm", weight: 0.2, method: "" },
+                { id: 103, part: "1.3. Thực hành", detail: "Cấu hình thiết bị", weight: 0.1, method: "" },
+                { id: 104, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "CNTT3001",
+            subjectName: "Phát triển phần mềm",
+            evaluations: [
+                { id: 105, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 106, part: "1.1. Bài tập", detail: "Bài tập cá nhân", weight: 0.2, method: "" },
+                { id: 107, part: "1.2. Project", detail: "Project nhóm", weight: 0.2, method: "" },
+                { id: 108, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Demo sản phẩm" }
+            ]
+        },
+        {
+            subjectId: "CNTT3002",
+            subjectName: "Quản trị hệ thống thông tin",
+            evaluations: [
+                { id: 109, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2)", weight: 0.4, method: "" },
+                { id: 110, part: "1.1. Bài tập", detail: "Bài tập trên lớp, bài tập về nhà", weight: 0.2, method: "" },
+                { id: 111, part: "1.2. Thảo luận", detail: "Thảo luận trên lớp", weight: 0.2, method: "" },
+                { id: 112, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        },
+        {
+            subjectId: "CNTT3003",
+            subjectName: "Quản trị mạng",
+            evaluations: [
+                { id: 113, part: "Đánh giá quá trình", detail: "Điểm quá trình (1.1 + 1.2 + 1.3)", weight: 0.4, method: "" },
+                { id: 114, part: "1.1. Chuyên cần", detail: "Điểm danh", weight: 0.1, method: "" },
+                { id: 115, part: "1.2. Bài tập", detail: "Bài tập nhóm", weight: 0.2, method: "" },
+                { id: 116, part: "1.3. Thực hành", detail: "Cấu hình thiết bị", weight: 0.1, method: "" },
+                { id: 117, part: "Đánh giá cuối kỳ", detail: "Điểm cuối kỳ", weight: 0.6, method: "Thi viết" }
+            ]
+        }
+    ];
+
+
+    // Lấy danh sách tất cả các học phần (cho dropdown thêm mới)
+    const allSubjects = evaluationData.map(item => ({ id: item.subjectId, name: item.subjectName }));
+
+    // Lấy thông tin quyền từ server
+    const isAdmin = /*[[${isAdmin}]]*/ false;
+
+    const evaluationSectionsDiv = document.getElementById('evaluation-sections');
+
+    function renderEvaluations() {
+        evaluationSectionsDiv.innerHTML = ''; // Clear existing content
+        evaluationData.forEach(subjectData => {
+            const subjectTitle = document.createElement('h2');
+            subjectTitle.textContent = subjectData.subjectName;
+            evaluationSectionsDiv.appendChild(subjectTitle);
+
+            const table = document.createElement('table');
+            table.id = `subject-table-${subjectData.subjectId}`;
+            table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Bộ phận<br>được đánh giá</th>
+                            <th>Điểm<br>đánh giá bộ phận</th>
+                            <th>Trọng số</th>
+                            <th>Hình thức<br>đánh giá</th>
+                            ${isAdmin ? '<th>Thao tác</th>' : ''}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                `;
+            evaluationSectionsDiv.appendChild(table);
+            const tbody = table.querySelector('tbody');
+
+            subjectData.evaluations.forEach((evaluation, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                        <td>${evaluation.part}</td>
+                        <td>${evaluation.detail}</td>
+                        <td>${evaluation.weight !== null ? evaluation.weight : ''}</td>
+                        <td>${evaluation.method}</td>
+                        ${isAdmin ? `
+                            <td>
+                                <button class="edit-btn" onclick="openEditModal('${subjectData.subjectId}', ${evaluation.id})">Sửa</button>
+                                <button class="delete-btn" onclick="openDeleteModal('${subjectData.subjectId}', ${evaluation.id}, '${evaluation.part}')">Xóa</button>
+                            </td>
+                        ` : ''}
+                    `;
             });
-        }
+        });
+    }
 
-        // Gọi hàm kiểm tra quyền khi trang load
-        window.onload = function() {
-            checkPermission();
-        }
+    function populateAddSubjectDropdown() {
+        const addSubjectSelect = document.getElementById('addSubject');
+        addSubjectSelect.innerHTML = '<option value="">-- Chọn học phần --</option>';
+        allSubjects.forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject.id;
+            option.textContent = subject.name;
+            addSubjectSelect.appendChild(option);
+        });
+    }
 
-        // Open add modal
-        function openAddModal() {
-            document.getElementById("addEvalPart").value = "";
-            document.getElementById("addEvalDetail").value = "";
-            document.getElementById("addWeight").value = "";
-            document.getElementById("addMethod").value = "";
-            document.getElementById("addModal").style.display = "flex";
-        }
+    // Open add modal
+    function openAddModal() {
+        populateAddSubjectDropdown();
+        document.getElementById("addSubject").value = "";
+        document.getElementById("addEvalPart").value = "";
+        document.getElementById("addEvalDetail").value = "";
+        document.getElementById("addWeight").value = "";
+        document.getElementById("addMethod").value = "";
+        document.getElementById("addModal").style.display = "flex";
+    }
 
-        // Open edit modal
-        function openEditModal(index) {
-            currentEditIndex = index;
-            const rows = document.querySelectorAll("#data-table tbody tr");
-            const row = rows[index];
-            const cells = row.querySelectorAll("td");
+    // Open edit modal
+    function openEditModal(subjectId, evaluationId) {
+        currentEditItem = { subjectId: subjectId, evaluationId: evaluationId };
+        const subjectData = evaluationData.find(s => s.subjectId === subjectId);
+        const evaluation = subjectData ? subjectData.evaluations.find(e => e.id === evaluationId) : null;
 
-            document.getElementById("editEvalPart").value = cells[0].innerText;
-            document.getElementById("editEvalDetail").value = cells[1].innerText;
-            document.getElementById("editWeight").value = cells[2].innerText;
-            document.getElementById("editMethod").value = cells[3].innerText;
-
+        if (evaluation) {
+            document.getElementById("editSubjectName").textContent = subjectData.subjectName;
+            document.getElementById("editSubjectId").value = subjectId;
+            document.getElementById("editEvalPart").value = evaluation.part;
+            document.getElementById("editEvalDetail").value = evaluation.detail;
+            document.getElementById("editWeight").value = evaluation.weight !== null ? evaluation.weight : '';
+            document.getElementById("editMethod").value = evaluation.method;
             document.getElementById("editModal").style.display = "flex";
         }
+    }
 
-        // Open delete modal
-        function openDeleteModal(index) {
-            currentDeleteIndex = index;
-            const rows = document.querySelectorAll("#data-table tbody tr");
-            const row = rows[index];
-            const cells = row.querySelectorAll("td");
+    // Open delete modal
+    function openDeleteModal(subjectId, evaluationId, itemName) {
+        currentDeleteItem = { subjectId: subjectId, evaluationId: evaluationId };
+        const subjectData = evaluationData.find(s => s.subjectId === subjectId);
+        document.getElementById("deleteSubjectName").textContent = subjectData.subjectName;
+        document.getElementById("deleteItemName").textContent = itemName;
+        document.getElementById("deleteModal").style.display = "flex";
+    }
 
-            document.getElementById("deleteItemName").textContent = cells[0].innerText;
-            document.getElementById("deleteModal").style.display = "flex";
-        }
+    // Close modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
 
-        // Close modal
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = "none";
-        }
+    // Add new evaluation
+    function addEvaluation() {
+        try {
+            const subjectId = document.getElementById("addSubject").value;
+            const evalPart = document.getElementById("addEvalPart").value.trim();
+            const evalDetail = document.getElementById("addEvalDetail").value.trim();
+            const weight = document.getElementById("addWeight").value.trim();
+            const method = document.getElementById("addMethod").value.trim();
 
-        // Add new evaluation
-        function addEvaluation() {
-            try {
-                const evalPart = document.getElementById("addEvalPart").value.trim();
-                const evalDetail = document.getElementById("addEvalDetail").value.trim();
-                const weight = document.getElementById("addWeight").value.trim();
-                const method = document.getElementById("addMethod").value.trim();
-
-                if (!evalPart || !evalDetail) {
-                    alert("Vui lòng điền đầy đủ Bộ phận đánh giá và Điểm đánh giá bộ phận!");
-                    return;
-                }
-
-                if (weight && isNaN(weight) || weight < 0 || weight > 1) {
-                    alert("Trọng số phải là một số từ 0 đến 1!");
-                    return;
-                }
-
-                const tableBody = document.querySelector("#data-table tbody");
-                const newRow = document.createElement("tr");
-                newRow.innerHTML = `
-                <td>${evalPart}</td>
-                <td>${evalDetail}</td>
-                <td>${weight}</td>
-                <td>${method}</td>
-                <td>
-                    <button class="edit-btn" th:if="${isAdmin}" onclick="openEditModal(${tableBody.children.length})">Sửa</button>
-                    <button class="delete-btn" th:if="${isAdmin}" onclick="openDeleteModal(${tableBody.children.length})">Xóa</button>
-                </td>
-            `;
-                tableBody.appendChild(newRow);
-
-                closeModal("addModal");
-            } catch (error) {
-                console.error('Lỗi khi thêm đánh giá:', error);
-                alert('Có lỗi xảy ra khi thêm đánh giá. Vui lòng thử lại.');
+            if (!subjectId) {
+                alert("Vui lòng chọn học phần!");
+                return;
             }
-        }
-
-        // Save edit
-        function saveEdit() {
-            const evalPart = document.getElementById("editEvalPart").value.trim();
-            const evalDetail = document.getElementById("editEvalDetail").value.trim();
-            const weight = document.getElementById("editWeight").value.trim();
-            const method = document.getElementById("editMethod").value.trim();
-
             if (!evalPart || !evalDetail) {
                 alert("Vui lòng điền đầy đủ Bộ phận đánh giá và Điểm đánh giá bộ phận!");
                 return;
             }
-
             if (weight && isNaN(weight) || weight < 0 || weight > 1) {
                 alert("Trọng số phải là một số từ 0 đến 1!");
                 return;
             }
 
-            const rows = document.querySelectorAll("#data-table tbody tr");
-            const row = rows[currentEditIndex];
-            const cells = row.querySelectorAll("td");
-
-            cells[0].innerText = evalPart;
-            cells[1].innerText = evalDetail;
-            cells[2].innerText = weight;
-            cells[3].innerText = method;
-
-            closeModal("editModal");
+            const subjectData = evaluationData.find(s => s.subjectId === subjectId);
+            if (subjectData) {
+                const newId = subjectData.evaluations.length > 0 ? Math.max(...subjectData.evaluations.map(e => e.id)) + 1 : 1;
+                subjectData.evaluations.push({
+                    id: newId,
+                    part: evalPart,
+                    detail: evalDetail,
+                    weight: weight ? parseFloat(weight) : null,
+                    method: method
+                });
+                renderEvaluations();
+                closeModal("addModal");
+            } else {
+                alert("Không tìm thấy học phần!");
+            }
+        } catch (error) {
+            console.error('Lỗi khi thêm đánh giá:', error);
+            alert('Có lỗi xảy ra khi thêm đánh giá. Vui lòng thử lại.');
         }
+    }
 
-        // Confirm delete
-        function confirmDelete() {
-            const rows = document.querySelectorAll("#data-table tbody tr");
-            rows[currentDeleteIndex].remove();
-            closeModal("deleteModal");
-        }
+    // Save edit
+    function saveEdit() {
+        if (currentEditItem) {
+            const { subjectId, evaluationId } = currentEditItem;
+            const subjectData = evaluationData.find(s => s.subjectId === subjectId);
+            const evaluation = subjectData ? subjectData.evaluations.find(e => e.id === evaluationId) : null;
 
-        // Close modals when clicking outside
-        window.onclick = function (event) {
-            const modals = document.getElementsByClassName("modal");
-            for (let i = 0; i < modals.length; i++) {
-                if (event.target == modals[i]) {
-                    modals[i].style.display = "none";
-                }
+            if (evaluation) {
+                evaluation.part = document.getElementById("editEvalPart").value.trim();
+                evaluation.detail = document.getElementById("editEvalDetail").value.trim();
+                const weight = document.getElementById("editWeight").value.trim();
+                evaluation.weight = weight ? parseFloat(weight) : null;
+                evaluation.method = document.getElementById("editMethod").value.trim();
+                renderEvaluations();
+                closeModal("editModal");
+                currentEditItem = null;
             }
         }
-    </script>
+    }
+
+    // Confirm delete
+    function confirmDelete() {
+        if (currentDeleteItem) {
+            const { subjectId, evaluationId } = currentDeleteItem;
+            const subjectData = evaluationData.find(s => s.subjectId === subjectId);
+            if (subjectData) {
+                subjectData.evaluations = subjectData.evaluations.filter(e => e.id !== evaluationId);
+                renderEvaluations();
+                closeModal("deleteModal");
+                currentDeleteItem = null;
+            }
+        }
+    }
+
+    // Initial rendering
+    renderEvaluations();
+
+    // Close modals when clicking outside
+    window.onclick = function (event) {
+        const modals = document.getElementsByClassName("modal");
+        for (let i = 0; i < modals.length; i++) {
+            if (event.target == modals[i]) {
+                modals[i].style.display = "none";
+            }
+        }
+    }
+</script>
 </body>
 
 </html>

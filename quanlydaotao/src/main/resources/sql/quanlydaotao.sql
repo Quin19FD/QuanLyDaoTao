@@ -92,10 +92,10 @@ INSERT INTO `ctkhung` (`makhung`, `mactdt`) VALUES
 --
 
 CREATE TABLE `danhgiabophan` (
-  `madiemdanhgia` int(11) NOT NULL,
-  `hinhthucdanhgia` varchar(255) NOT NULL,
-  `trongso` float NOT NULL,
-  `mabophan` varchar(255) NOT NULL
+ `madiemdanhgia` int(11) NOT NULL,
+ `hinhthucdanhgia` varchar(255) NOT NULL,
+ `trongso` float NOT NULL,
+ `mabophan` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -103,7 +103,30 @@ CREATE TABLE `danhgiabophan` (
 --
 
 INSERT INTO `danhgiabophan` (`madiemdanhgia`, `hinhthucdanhgia`, `trongso`, `mabophan`) VALUES
-(1, '', 0.4, '1');
+    (1, 'Điểm quá trình (1.1 + 1.2)', 0.4, 'DGQT');
+
+-- Ý thức học tập (mabophan = 'YTH_BP' từ bảng decuongchitiet)
+INSERT INTO `danhgiabophan` (`madiemdanhgia`, `hinhthucdanhgia`, `trongso`, `mabophan`) VALUES
+    (2, 'Điểm chuyên cần, thái độ học tập', 0.1, 'YTH_BP');
+
+-- Hồ sơ học tập (mabophan = 'HSTS_BP' từ bảng decuongchitiet)
+INSERT INTO `danhgiabophan` (`madiemdanhgia`, `hinhthucdanhgia`, `trongso`, `mabophan`) VALUES
+   (3,'Điểm bài tập (ở nhà/trên lớp/bài tập lớn)', 0.1, 'HSTS_BP'),
+   (4, 'Điểm thuyết trình, thực hành, thảo luận', NULL, 'HSTS_BP'),
+   (5, 'Điểm làm việc nhóm', NULL, 'HSTS_BP'),
+   (6, 'Điểm kiểm tra giữa kỳ', 0.2, 'HSTS_BP');
+
+
+-- Đánh giá cuối kỳ (mabophan = 'DGCK_BP' từ bảng decuongchitiet)
+INSERT INTO `danhgiabophan` (`madiemdanhgia`, `hinhthucdanhgia`, `trongso`, `mabophan`) VALUES
+   (7, 'Điểm cuối kỳ (≥ 0.5)', 0.5, 'DGCK_BP'),
+   (8, 'Thi tự luận', NULL, 'DGCK_BP');
+
+-- Đánh giá quá trình chi tiết (mabophan = 'DGQT_CT' từ bảng decuongchitiet)
+INSERT INTO `danhgiabophan` (`madiemdanhgia`, `hinhthucdanhgia`, `trongso`, `mabophan`) VALUES
+   (9, 'Điểm thành phần 1', 0.2, 'DGQT_CT'),
+   (10, 'Điểm thành phần 2', 0.2, 'DGQT_CT');
+
 
 -- --------------------------------------------------------
 
@@ -111,18 +134,22 @@ INSERT INTO `danhgiabophan` (`madiemdanhgia`, `hinhthucdanhgia`, `trongso`, `mab
 -- Cấu trúc bảng cho bảng `decuongchitiet`
 --
 
+
 CREATE TABLE `decuongchitiet` (
   `mabophan` varchar(255) NOT NULL,
   `tenbophan` varchar(255) NOT NULL,
   `mactdt` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 --
 -- Đang đổ dữ liệu cho bảng `decuongchitiet`
 --
 
 INSERT INTO `decuongchitiet` (`mabophan`, `tenbophan`, `mactdt`) VALUES
-('1', 'Đánh giá quá trình', 1);
+     ('DGQT', 'Đánh giá quá trình', 1),
+     ('DGCK_BP', 'Đánh giá cuối kỳ', 1),
+     ('DGQT_CT', 'Đánh giá quá trình chi tiết', 1),
+     ('HSTS_BP', 'Hồ sơ học tập', 1),
+     ('YTH_BP', 'Ý thức học tập', 1);
 
 -- --------------------------------------------------------
 
