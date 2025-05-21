@@ -387,7 +387,7 @@
 <!-- Edit Modal -->
 <div id="editModal" class="modal">
     <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('editModal')">×</span>
+        <span class="close-btn"  onclick="closeModal('editModal')">×</span>
         <h2>Sửa Chương Trình Đào Tạo</h2>
         <div class="form-container">
             <div class="form-column">
@@ -541,13 +541,17 @@
                 const detailData = await fetchCTDaoTaoById(ctdt.maCTDT);
                 showDetailCTDT(detailData);
             }));
-            actionCell.appendChild(createButton('edit-btn', 'Sửa', async () => {
-                const detailData = await fetchCTDaoTaoById(ctdt.maCTDT);
-                showEditCTDT(detailData);
-            }, { marginLeft: '10px' }));
-            actionCell.appendChild(createButton('delete-btn', 'Xóa', () => {
-                showDeleteModal(ctdt);
-            }, { marginLeft: '10px' }));
+
+            // Chỉ hiển thị nút sửa và xóa cho admin
+            if (document.querySelector('.add-btn')) {  // Kiểm tra nếu có nút thêm mới (chỉ admin mới có)
+                actionCell.appendChild(createButton('edit-btn', 'Sửa', async () => {
+                    const detailData = await fetchCTDaoTaoById(ctdt.maCTDT);
+                    showEditCTDT(detailData);
+                }, { marginLeft: '10px' }));
+                actionCell.appendChild(createButton('delete-btn', 'Xóa', () => {
+                    showDeleteModal(ctdt);
+                }, { marginLeft: '10px' }));
+            }
 
             tableBody.appendChild(row);
         });
