@@ -1,34 +1,38 @@
 package com.example.quanlydaotao.model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "kehoachdayhoc")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class KeHoachDayHoc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "makehoach")
     private int maKeHoach;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mahocphan", referencedColumnName = "mahocphan", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private HocPhan maHocPhan;
 
-    @ManyToOne
-    @JoinColumn(name = "mapc", referencedColumnName = "mapc", nullable = false)
-    private PhanCongGiangDay maPC;
-
+    // Các trường khác không cần @JsonIgnoreProperties vì không load trong repository
     @Column(name = "hockythuchien")
     @NotNull(message = "Học kỳ thực hiện không được để trống!")
     private String hocKyThucHien;
 
-    @OneToOne
-    @JoinColumn(name = "mahocphantruoc", referencedColumnName = "mahocphan", nullable = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mahocphantruoc", referencedColumnName = "mahocphan")
     private HocPhan maHocPhanTruoc;
 
-    @ManyToOne
-    @JoinColumn(name = "mactdt", referencedColumnName = "mactdt", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mapc", nullable = true)
+    private PhanCongGiangDay maPC;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mactdt", nullable = true)
     private CTDaoTao mactdt;
 
     public KeHoachDayHoc(){
