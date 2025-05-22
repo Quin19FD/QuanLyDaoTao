@@ -340,9 +340,10 @@
                 <td>Học kỳ</td>
                 <td>
                     <select id="addSemester">
-                        <option value="HK1-2023-2024">Học kỳ 1 (2023-2024)</option>
-                        <option value="HK2-2023-2024">Học kỳ 2 (2023-2024)</option>
-                        <option value="HK1-2024-2025">Học kỳ 1 (2024-2025)</option>
+                        <option value="">-- Chọn học kỳ --</option>
+                        <option value="1">Học kỳ 1</option>
+                        <option value="2">Học kỳ 2</option>
+                        <option value="he">Học kỳ hè</option>
                     </select>
                 </td>
             </tr>
@@ -411,9 +412,10 @@
                 <td>Học kỳ</td>
                 <td>
                     <select id="editSemester">
-                        <option value="HK1-2023-2024">Học kỳ 1 (2023-2024)</option>
-                        <option value="HK2-2023-2024">Học kỳ 2 (2023-2024)</option>
-                        <option value="HK1-2024-2025">Học kỳ 1 (2024-2025)</option>
+                        <option value="">-- Chọn học kỳ --</option>
+                        <option value="1">Học kỳ 1</option>
+                        <option value="2">Học kỳ 2</option>
+                        <option value="he">Học kỳ hè</option>
                     </select>
                 </td>
             </tr>
@@ -538,7 +540,7 @@
                 const teacher = teachers.find(t => t.maGV === pc.maGV.maGV);
                 if (teacher) {
                     const opt = document.createElement("option");
-                    opt.value = pc.maPC;
+                    opt.value = pc.maGV;
                     opt.textContent = teacher.hoTen;
                     select.appendChild(opt);
                 }
@@ -560,7 +562,13 @@
         document.getElementById("addTietBatDau").value = "";
         document.getElementById("addSoTiet").value = "";
         document.getElementById("addLocation").value = "";
-        document.getElementById("addSemester").value = "HK1-2023-2024";
+        const addSemesterSelect = document.getElementById("addSemester");
+        addSemesterSelect.innerHTML = `
+            <option value="">-- Chọn học kỳ --</option>
+            <option value="1">Học kỳ 1</option>
+            <option value="2">Học kỳ 2</option>
+            <option value="he">Học kỳ hè</option>
+        `;
     }
 
     let currentEditIndex = -1;
@@ -582,6 +590,14 @@
         document.getElementById("editTietBatDau").value = group.tietBatDau || "";
         document.getElementById("editSoTiet").value = group.soTiet || "";
         document.getElementById("editLocation").value = group.diaChi || "";
+
+        const editSemesterSelect = document.getElementById("editSemester");
+        editSemesterSelect.innerHTML = `
+            <option value="">-- Chọn học kỳ --</option>
+            <option value="1" ${group.hocKy === '1' ? 'selected' : ''}>Học kỳ 1</option>
+            <option value="2" ${group.hocKy === '2' ? 'selected' : ''}>Học kỳ 2</option>
+            <option value="he" ${group.hocKy === 'he' ? 'selected' : ''}>Học kỳ hè</option>
+        `;
     }
 
     function closeModal(id) {
@@ -603,7 +619,7 @@
         const soTiet = parseInt(document.getElementById("addSoTiet").value);
         const location = document.getElementById("addLocation").value;
 
-        if (isNaN(groupId) || !courseId || isNaN(teacherPCId) || isNaN(maxStudents) || isNaN(tietBatDau) || isNaN(soTiet) || !location) {
+        if (isNaN(groupId) || !courseId || isNaN(teacherPCId) || !semester || isNaN(maxStudents) || isNaN(tietBatDau) || isNaN(soTiet) || !location) {
             alert("Vui lòng điền đầy đủ thông tin.");
             return;
         }
@@ -611,7 +627,8 @@
         const newGroup = {
             maNhom: groupId,
             maHocPhan: { maHocPhan: courseId },
-            maPC: { maPC: teacherPCId },
+            maGV: { maGV: teacherPCId },
+            hocKy: semester,
             soLuongToiDa: maxStudents,
             diaChi: location,
             thuDi: thuDi,
@@ -649,7 +666,6 @@
         if (currentEditIndex === -1) return;
         const group = currentGroupsData[currentEditIndex];
         const groupId = group.maNhom;
-        console.log("GroupID khi save:", groupId);
         const courseId = document.getElementById("editCourseId").value;
         const teacherPCId = parseInt(document.getElementById("editTeacherId").value);
         const maxSize = parseInt(document.getElementById("editMaxStudents").value);
@@ -657,8 +673,9 @@
         const tietBatDau = parseInt(document.getElementById("editTietBatDau").value);
         const soTiet = parseInt(document.getElementById("editSoTiet").value);
         const location = document.getElementById("editLocation").value;
+        const semester = document.getElementById("editSemester").value;
 
-        if (isNaN(maxSize) || isNaN(tietBatDau) || isNaN(soTiet) || !location) {
+        if (isNaN(maxSize) || isNaN(tietBatDau) || isNaN(soTiet) || !location || !semester) {
             alert("Vui lòng điền đầy đủ thông tin.");
             return;
         }
@@ -667,6 +684,7 @@
             maNhom: groupId,
             maHocPhan: { maHocPhan: courseId },
             maPC: { maPC: teacherPCId },
+            hocKy: semester,
             soLuongToiDa: maxSize,
             diaChi: location,
             thuDi: thuDi,
@@ -675,7 +693,6 @@
         };
 
         try {
-            console.log(groupId);
             const response = await fetch(`${BASE_URL}/api/nhomlop/${groupId}`, {
                 method: 'PUT',
                 headers: {
