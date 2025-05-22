@@ -253,12 +253,8 @@
         })
         .then(message => {
             alert(message);
-            const index = students.findIndex(s => s.userName === username);
-            if (index !== -1) {
-                students[index].trangThai = "Khóa";
-                students[index].trangThaiValue = 0;
-                renderStudentTable();
-            }
+            // Tải lại danh sách tài khoản để đảm bảo dữ liệu chính xác
+            fetchStudents();
         })
         .catch(() => alert("Khóa tài khoản thất bại"));
     }
@@ -274,12 +270,8 @@
         })
         .then(message => {
             alert(message);
-            const index = students.findIndex(s => s.userName === username);
-            if (index !== -1) {
-                students[index].trangThai = "Hoạt động";
-                students[index].trangThaiValue = 1;
-                renderStudentTable();
-            }
+            // Tải lại danh sách tài khoản để đảm bảo dữ liệu chính xác
+            fetchStudents();
         })
         .catch(() => alert("Mở khóa tài khoản thất bại"));
     }
@@ -287,7 +279,6 @@
     // Gọi API để lấy danh sách tất cả tài khoản
     async function fetchStudents() {
         try {
-            console.log('Bắt đầu gọi API lấy danh sách tài khoản...');
             const response = await fetch('/api/taikhoan', {
                 method: 'GET',
                 headers: {
@@ -300,24 +291,12 @@
             }
 
             const data = await response.json();
-            console.log('Dữ liệu nhận được từ API:', data);
-
-            if (!Array.isArray(data)) {
-                console.error('Dữ liệu trả về không phải mảng:', data);
-                return;
-            }
-
-            // Cập nhật mảng students và usernameSet
+            
+            // Kiểm tra và xử lý trạng thái tài khoản
             students = data.map(taiKhoan => ({
-                userName: taiKhoan.userName,
-                password: taiKhoan.password,
-                tenUser: taiKhoan.tenUser,
-                email: taiKhoan.email,
-                sdt: taiKhoan.sdt,
-                vaiTro: taiKhoan.vaiTro,
-                namSinh: taiKhoan.namSinh,
+                ...taiKhoan,
                 trangThai: taiKhoan.trangThai === 1 ? 'Hoạt động' : 'Khóa',
-                trangThaiValue: taiKhoan.trangThai
+                trangThaiValue: taiKhoan.trangThai || 0 // Đảm bảo có giá trị mặc định
             }));
 
             usernameSet.clear();
@@ -442,7 +421,7 @@
             sdt,
             vaiTro,
             namSinh: parseInt(namSinh),
-            trangThai: document.getElementById('manual-username').disabled ? students.find(s => s.userName === userName).trangThaiValue : 1
+            trangThai: 1 // Luôn set trạng thái mới là 1 (hoạt động)
         };
 
         const existingStudentIndex = students.findIndex(s => s.userName === userName);

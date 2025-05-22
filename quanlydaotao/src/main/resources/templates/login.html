@@ -22,17 +22,15 @@
             <button type="submit" class="btn-login">Đăng Nhập</button>
         </form>
 
-        <div th:if="${param.error}" class="error-message">
-            Tên đăng nhập hoặc mật khẩu không đúng!
+        <div th:if="${param.error}" class="alert alert-danger">
+            <span th:text="${param.error}"></span>
         </div>
 
         <div th:if="${param.logout}" class="success-message">
             Bạn đã đăng xuất thành công!
         </div>
 
-        <div class="register-link">
-            Chưa có tài khoản? <a th:href="@{/register}">Đăng ký ngay</a>
-        </div>
+       
     </div>
 </body>
 

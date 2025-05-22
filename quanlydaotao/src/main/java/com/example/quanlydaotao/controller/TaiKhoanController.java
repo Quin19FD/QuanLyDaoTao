@@ -2,6 +2,7 @@ package com.example.quanlydaotao.controller;
 
 import com.example.quanlydaotao.model.TaiKhoan;
 import com.example.quanlydaotao.repository.TaiKhoanRepo;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,40 +33,44 @@ public class TaiKhoanController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Đăng ký tài khoản
-    @PostMapping("/register")
-    public ResponseEntity<?> dangKy(@Valid @RequestBody TaiKhoan taiKhoan, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
+    // // Đăng ký tài khoản
+    // @PostMapping("/register")
+    // public ResponseEntity<?> dangKy(@Valid @RequestBody TaiKhoan taiKhoan, BindingResult result) {
+    //     if (result.hasErrors()) {
+    //         return ResponseEntity.badRequest().body(result.getAllErrors());
+    //     }
 
-        if (taiKhoanRepo.findByUserName(taiKhoan.getUserName()).isPresent()) {
-            return ResponseEntity.badRequest().body("Tên đăng nhập đã tồn tại!");
-        }
+    //     if (taiKhoanRepo.findByUserName(taiKhoan.getUserName()).isPresent()) {
+    //         return ResponseEntity.badRequest().body("Tên đăng nhập đã tồn tại!");
+    //     }
 
-        taiKhoan.setTrangThai(1); // Mặc định là đang hoạt động
-        return ResponseEntity.ok(taiKhoanRepo.save(taiKhoan));
-    }
+    //     taiKhoan.setTrangThai(1); // Mặc định là đang hoạt động
+    //     return ResponseEntity.ok(taiKhoanRepo.save(taiKhoan));
+    // }
 
-    // Đăng nhập
+     // Đăng nhập
     @PostMapping("/login")
     public ResponseEntity<?> dangNhap(@RequestBody TaiKhoan loginInfo) {
-        Optional<TaiKhoan> optional = taiKhoanRepo.findByUserNameAndPassword(
-                loginInfo.getUserName(), loginInfo.getPassword());
+        Optional<TaiKhoan> optional = taiKhoanRepo.findByUserName(loginInfo.getUserName());
 
         if (optional.isEmpty()) {
-            return ResponseEntity.badRequest().body("Sai tên đăng nhập hoặc mật khẩu!");
+            return ResponseEntity.badRequest().body("Tài khoản không tồn tại!");
         }
 
         TaiKhoan taiKhoan = optional.get();
-
-        if (taiKhoan.getTrangThai() == 0) {
+        
+        // Check trạng thái tài khoản trước khi kiểm tra mật khẩu
+        if (taiKhoan.getTrangThai() == null || taiKhoan.getTrangThai() != 1) {
             return ResponseEntity.status(403).body("Tài khoản đã bị khóa!");
+        }
+
+        // Check mật khẩu
+        if (!taiKhoan.getPassword().equals(loginInfo.getPassword())) {
+            return ResponseEntity.badRequest().body("Sai mật khẩu!");
         }
 
         return ResponseEntity.ok(taiKhoan);
     }
-
     // Cập nhật thông tin tài khoản
     @PutMapping("/{username}")
     public ResponseEntity<?> updateThongTin(@PathVariable String username, @Valid @RequestBody TaiKhoan updated, BindingResult result) {
@@ -103,19 +108,23 @@ public class TaiKhoanController {
     }
 
     // Khóa tài khoản
+    @Transactional
     @PutMapping("/lock/{username}")
     public ResponseEntity<?> khoaTaiKhoan(@PathVariable String username) {
         Optional<TaiKhoan> optional = taiKhoanRepo.findByUserName(username);
         if (optional.isPresent()) {
             TaiKhoan tk = optional.get();
-            tk.setTrangThai(0); // 0 = khóa
-            taiKhoanRepo.save(tk);
-            return ResponseEntity.ok("Tài khoản đã bị khóa: " + username);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 
+            if (tk.getTrangThai() != null && tk.getTrangThai() == 0) {
+                return ResponseEntity.badRequest().body("Tài khoản đã bị khóa!");
+            }
+
+            tk.setTrangThai(0);
+            taiKhoanRepo.save(tk);
+            return ResponseEntity.ok("Đã khóa tài khoản: " + username);
+        }
+        return ResponseEntity.notFound().build();
+    }
     // Mở khóa tài khoản
     @PutMapping("/unlock/{username}")
     public ResponseEntity<?> moTaiKhoan(@PathVariable String username) {

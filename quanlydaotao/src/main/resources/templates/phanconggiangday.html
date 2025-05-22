@@ -507,33 +507,54 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    const isAdmin = /*[[${isAdmin}]]*/ false;
+    console.log("Giá trị isAdmin từ server:", isAdmin);
 
-    // API Functions
-// Tạm thời set isAdmin = true để tập trung vào lỗi chính
-const isAdmin = true;
-
-async function fetchAllPhanCong() {
-    try {
-        console.log("Đang tải dữ liệu phân công..."); // Log để debug
-        const response = await fetch('/api/phanconggiangday');
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || 'Không thể lấy danh sách');
+    // Thêm hàm kiểm tra quyền admin
+    async function checkAdminStatus() {
+        try {
+            const response = await fetch('/check-admin');
+            const isAdminFromServer = await response.json();
+            console.log("Kiểm tra quyền admin từ server:", isAdminFromServer);
+            if (isAdminFromServer) {
+                // Nếu là admin, hiển thị lại các nút thao tác
+                document.querySelectorAll('[th\\:if="${isAdmin}"]').forEach(element => {
+                    element.style.display = '';
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi khi kiểm tra quyền admin:", error);
         }
-
-        const phanCongList = await response.json();
-        console.log("Dữ liệu nhận được:", phanCongList); // Log dữ liệu nhận được
-
-        renderTable(phanCongList);
-
-    } catch (error) {
-        console.error('Chi tiết lỗi:', error);
-        alert('Lỗi khi tải danh sách: ' + error.message);
-        renderTable([]);
     }
-}
+
+    // Gọi hàm kiểm tra khi trang được tải
+    window.onload = function() {
+        checkAdminStatus();
+        fetchAllPhanCong();
+    };
+
+    async function fetchAllPhanCong() {
+        try {
+            console.log("Đang tải dữ liệu phân công..."); // Log để debug
+            const response = await fetch('/api/phanconggiangday');
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Không thể lấy danh sách');
+            }
+
+            const phanCongList = await response.json();
+            console.log("Dữ liệu nhận được:", phanCongList); // Log dữ liệu nhận được
+
+            renderTable(phanCongList);
+
+        } catch (error) {
+            console.error('Chi tiết lỗi:', error);
+            alert('Lỗi khi tải danh sách: ' + error.message);
+            renderTable([]);
+        }
+    }
 
     async function fetchPhanCongById(maPC) {
         try {
@@ -581,84 +602,70 @@ async function fetchAllPhanCong() {
     }
 
     async function checkMaPCExists(maPC) {
-    try {
-        const response = await fetch(`/api/phanconggiangday/exists/${maPC}`);
-        if (!response.ok) {
-            throw new Error('Không thể kiểm tra mã phân công');
+        try {
+            const response = await fetch(`/api/phanconggiangday/exists/${maPC}`);
+            if (!response.ok) {
+                throw new Error('Không thể kiểm tra mã phân công');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi khi kiểm tra mã PC:', error);
+            throw error;
         }
-        return await response.json();
-    } catch (error) {
-        console.error('Lỗi khi kiểm tra mã PC:', error);
-        throw error;
     }
-}
 
     // Table Rendering
-function renderTable(phanCongList) {
-    console.log("Đang render bảng..."); // Debug log
-    const tableBody = document.querySelector('.training-table tbody');
-    tableBody.innerHTML = '';
+    function renderTable(phanCongList) {
+        console.log("Đang render bảng..."); // Debug log
+        const tableBody = document.querySelector('.training-table tbody');
+        tableBody.innerHTML = '';
 
-    if (!phanCongList || phanCongList.length === 0) {
-        console.log("Không có dữ liệu để hiển thị"); // Debug log
-        tableBody.innerHTML = `<tr><td colspan="10" class="text-center">Không có dữ liệu</td></tr>`;
-        return;
-    }
-
-    phanCongList.forEach((pc, index) => {
-        const row = document.createElement('tr');
-
-        // Debug: Kiểm tra cấu trúc dữ liệu
-        console.log(`Phân công ${index}:`, pc);
-
-        // Tính tổng số tiết giảng dạy
-        const tongTietGD = pc.soTietThucTe * pc.tongSoNhom || 0;
-
-        row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${pc.maGV?.maGV || ''}</td>
-            <td>${pc.maGV?.hoTen || ''}</td>
-            <td>${pc.maHocPhan?.tenHocPhan || ''}</td>
-            <td>${pc.maHocPhan?.soTinChi || ''}</td>
-            <td>${pc.soTietThucTe || ''}</td>
-            <td>${pc.tongSoNhom || ''}</td>
-            <td>${pc.khoaHoc || ''}</td>
-            <td>${tongTietGD}</td>
-            <td class="action-buttons"></td>
-        `;
-
-        // Thêm nút thao tác
-        const actionCell = row.querySelector('.action-buttons');
-
-        // Nút Xem chi tiết
-        actionCell.appendChild(createButton('detail-btn', 'Xem', () => {
-            showDetailPhanCong(pc);
-        }));
-
-        // Nút Sửa (chỉ hiện cho admin)
-        if (isAdmin) {
-            actionCell.appendChild(createButton('edit-btn', 'Sửa', () => {
-                showEditPhanCong(pc);
-            }, { marginLeft: '10px' }));
-
-            // Nút Xóa (chỉ hiện cho admin)
-            actionCell.appendChild(createButton('delete-btn', 'Xóa', () => {
-                showDeleteModal(pc);
-            }, { marginLeft: '10px' }));
+        if (!phanCongList || phanCongList.length === 0) {
+            console.log("Không có dữ liệu để hiển thị"); // Debug log
+            tableBody.innerHTML = `<tr><td colspan="10" class="text-center">Không có dữ liệu</td></tr>`;
+            return;
         }
 
-        tableBody.appendChild(row);
-    });
-}
+        phanCongList.forEach((pc, index) => {
+            const row = document.createElement('tr');
 
-function createButton(className, text, onClick, style = {}) {
-    const button = document.createElement('button');
-    button.className = className;
-    button.textContent = text;
-    button.addEventListener('click', onClick);
-    Object.assign(button.style, style);
-    return button;
-}
+            // Debug: Kiểm tra cấu trúc dữ liệu
+            console.log(`Phân công ${index}:`, pc);
+
+            // Tính tổng số tiết giảng dạy
+            const tongTietGD = pc.soTietThucTe * pc.tongSoNhom || 0;
+
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${pc.maGV?.maGV || ''}</td>
+                <td>${pc.maGV?.hoTen || ''}</td>
+                <td>${pc.maHocPhan?.tenHocPhan || ''}</td>
+                <td>${pc.maHocPhan?.soTinChi || ''}</td>
+                <td>${pc.soTietThucTe || ''}</td>
+                <td>${pc.tongSoNhom || ''}</td>
+                <td>${pc.khoaHoc || ''}</td>
+                <td>${tongTietGD}</td>
+                <td class="action-buttons">
+                    <button class="view-btn" onclick="showDetailPhanCong(${JSON.stringify(pc)})">Xem</button>
+                    ${isAdmin ? `
+                        <button class="edit-btn" onclick="showEditPhanCong(${JSON.stringify(pc)})">Sửa</button>
+                        <button class="delete-btn" onclick="showDeleteModal(${JSON.stringify(pc)})">Xóa</button>
+                    ` : ''}
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    function createButton(className, text, onClick, style = {}) {
+        const button = document.createElement('button');
+        button.className = className;
+        button.textContent = text;
+        button.addEventListener('click', onClick);
+        Object.assign(button.style, style);
+        return button;
+    }
 
     // Modal Functions
     function openModal(modalId) {
@@ -671,30 +678,30 @@ function createButton(className, text, onClick, style = {}) {
 
 
     function showDetailPhanCong(pc) {
-    // Tính tổng số tiết giảng dạy
-    const tongTietGD = pc.soTietThucTe * pc.tongSoNhom || 0;
+        // Tính tổng số tiết giảng dạy
+        const tongTietGD = pc.soTietThucTe * pc.tongSoNhom || 0;
 
-    // Hiển thị thông tin cơ bản
-    document.getElementById('detailMaPC').value = pc.maPC || '';
-    document.getElementById('detailTeacherId').value = pc.maGV?.maGV || '';
-    document.getElementById('detailTeacherName').value = pc.maGV?.hoTen || '';
+        // Hiển thị thông tin cơ bản
+        document.getElementById('detailMaPC').value = pc.maPC || '';
+        document.getElementById('detailTeacherId').value = pc.maGV?.maGV || '';
+        document.getElementById('detailTeacherName').value = pc.maGV?.hoTen || '';
 
-    // Hiển thị năm sinh (lấy từ ngày sinh)
-    const ngaySinh = pc.maGV?.ngaySinh ? new Date(pc.maGV.ngaySinh) : null;
-    document.getElementById('detailBirthYear').value = ngaySinh ? ngaySinh.getFullYear() : '';
+        // Hiển thị năm sinh (lấy từ ngày sinh)
+        const ngaySinh = pc.maGV?.ngaySinh ? new Date(pc.maGV.ngaySinh) : null;
+        document.getElementById('detailBirthYear').value = ngaySinh ? ngaySinh.getFullYear() : '';
 
-    // Hiển thị học vị, chức danh
-    document.getElementById('detailDegree').value = pc.maGV?.hocVi || '';
+        // Hiển thị học vị, chức danh
+        document.getElementById('detailDegree').value = pc.maGV?.hocVi || '';
 
-    // Thông tin học phần
-    document.getElementById('detailCourseName').value = pc.maHocPhan?.tenHocPhan || '';
-    document.getElementById('detailCourseId').value = pc.maHocPhan?.maHocPhan || '';
-    document.getElementById('detailCredits').value = pc.maHocPhan?.soTinChi || '';
-    document.getElementById('detailHours').value = pc.soTietThucTe || '';
-    document.getElementById('detailTotalHours').value = tongTietGD;
+        // Thông tin học phần
+        document.getElementById('detailCourseName').value = pc.maHocPhan?.tenHocPhan || '';
+        document.getElementById('detailCourseId').value = pc.maHocPhan?.maHocPhan || '';
+        document.getElementById('detailCredits').value = pc.maHocPhan?.soTinChi || '';
+        document.getElementById('detailHours').value = pc.soTietThucTe || '';
+        document.getElementById('detailTotalHours').value = tongTietGD;
 
-    openModal('detailModal');
-}
+        openModal('detailModal');
+    }
     function showDeleteModal(pc) {
         document.getElementById('deletePhanCongInfo').textContent = `Mã PC: ${pc.maPC} - ${pc.hoTenGV} - ${pc.tenHocPhan}`;
         document.getElementById('deleteModal').dataset.maPC = pc.maPC;
@@ -702,115 +709,115 @@ function createButton(className, text, onClick, style = {}) {
     }
 
 
-   function showEditPhanCong(pc) {
-    document.getElementById('editMaPC').value = pc.maPC || '';
-    document.getElementById('editKhoaHoc').value = pc.khoaHoc || '';
-    document.getElementById('editHeSoHP').value = pc.heSoHP || '';
-    document.getElementById('editTongSoNhom').value = pc.tongSoNhom || '';
-    document.getElementById('editSlSVMotNhom').value = pc.slSVMotNhom || '';
-    document.getElementById('editSoTietThucTe').value = pc.soTietThucTe || '';
-    document.getElementById('editMaHocPhan').value = pc.maHocPhan?.maHocPhan || '';
-    document.getElementById('editMaGV').value = pc.maGV?.maGV || '';
+    function showEditPhanCong(pc) {
+        document.getElementById('editMaPC').value = pc.maPC || '';
+        document.getElementById('editKhoaHoc').value = pc.khoaHoc || '';
+        document.getElementById('editHeSoHP').value = pc.heSoHP || '';
+        document.getElementById('editTongSoNhom').value = pc.tongSoNhom || '';
+        document.getElementById('editSlSVMotNhom').value = pc.slSVMotNhom || '';
+        document.getElementById('editSoTietThucTe').value = pc.soTietThucTe || '';
+        document.getElementById('editMaHocPhan').value = pc.maHocPhan?.maHocPhan || '';
+        document.getElementById('editMaGV').value = pc.maGV?.maGV || '';
 
-    openModal('editModal');
-}
+        openModal('editModal');
+    }
 
     // Form Handling
-async function addNewPhanCong() {
-    try {
-        const maPC = parseInt(document.getElementById('addMaPC').value);
-
-        // Kiểm tra mã PC
+    async function addNewPhanCong() {
         try {
-            const exists = await checkMaPCExists(maPC);
-            if (exists) {
-                throw new Error('Mã PC đã tồn tại');
+            const maPC = parseInt(document.getElementById('addMaPC').value);
+
+            // Kiểm tra mã PC
+            try {
+                const exists = await checkMaPCExists(maPC);
+                if (exists) {
+                    throw new Error('Mã PC đã tồn tại');
+                }
+            } catch (error) {
+                alert(error.message);
+                return;
             }
+
+            // Kiểm tra học kỳ hợp lệ
+            const khoaHoc = document.getElementById('addKhoaHoc').value;
+            if (khoaHoc !== "Học kỳ 1" && khoaHoc !== "Học kỳ 2") {
+                alert("Vui lòng chọn học kỳ hợp lệ (Học kỳ 1 hoặc Học kỳ 2)");
+                return;
+            }
+
+            const phanCong = {
+                maPC: maPC,
+                khoaHoc: khoaHoc,
+                heSoHP: parseFloat(document.getElementById('addHeSoHP').value),
+                tongSoNhom: parseInt(document.getElementById('addTongSoNhom').value),
+                slSVMotNhom: parseInt(document.getElementById('addSlSVMotNhom').value),
+                maGV: {
+                    maGV: parseInt(document.getElementById('addMaGV').value)
+                },
+                soTietThucTe: parseInt(document.getElementById('addSoTietThucTe').value),
+                maHocPhan: {
+                    maHocPhan: document.getElementById('addMaHocPhan').value.trim()
+                }
+            };
+
+            // Validate dữ liệu
+            if (phanCong.tongSoNhom <= 0 || phanCong.slSVMotNhom <= 0 || phanCong.soTietThucTe <= 0) {
+                alert("Số nhóm, số SV và số tiết phải lớn hơn 0");
+                return;
+            }
+
+            const response = await fetch('/api/phanconggiangday', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(phanCong)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Lỗi khi thêm phân công');
+            }
+
+            alert('Thêm phân công giảng dạy thành công!');
+            closeModal('addModal');
+            fetchAllPhanCong();
+
+            // Reset form - CÁCH MỚI
+            document.getElementById('addPhanCongForm').reset();
         } catch (error) {
-            alert(error.message);
-            return;
+            console.error('Lỗi khi thêm phân công:', error);
+            alert('Lỗi khi thêm phân công: ' + error.message);
         }
-
-        // Kiểm tra học kỳ hợp lệ
-        const khoaHoc = document.getElementById('addKhoaHoc').value;
-        if (khoaHoc !== "Học kỳ 1" && khoaHoc !== "Học kỳ 2") {
-            alert("Vui lòng chọn học kỳ hợp lệ (Học kỳ 1 hoặc Học kỳ 2)");
-            return;
-        }
-
+    }
+    async function saveEditPhanCong() {
+        const maPC = document.getElementById('editMaPC').value;
         const phanCong = {
-            maPC: maPC,
-            khoaHoc: khoaHoc,
-            heSoHP: parseFloat(document.getElementById('addHeSoHP').value),
-            tongSoNhom: parseInt(document.getElementById('addTongSoNhom').value),
-            slSVMotNhom: parseInt(document.getElementById('addSlSVMotNhom').value),
+            khoaHoc: document.getElementById('editKhoaHoc').value.trim(),
+            heSoHP: parseFloat(document.getElementById('editHeSoHP').value),
+            tongSoNhom: parseInt(document.getElementById('editTongSoNhom').value),
+            slSVMotNhom: parseInt(document.getElementById('editSlSVMotNhom').value),
+            soTietThucTe: parseInt(document.getElementById('editSoTietThucTe').value),
             maGV: {
-                maGV: parseInt(document.getElementById('addMaGV').value)
+                maGV: parseInt(document.getElementById('editMaGV').value)
             },
-            soTietThucTe: parseInt(document.getElementById('addSoTietThucTe').value),
             maHocPhan: {
-                maHocPhan: document.getElementById('addMaHocPhan').value.trim()
+                maHocPhan: document.getElementById('editMaHocPhan').value.trim()
             }
         };
-
-        // Validate dữ liệu
-        if (phanCong.tongSoNhom <= 0 || phanCong.slSVMotNhom <= 0 || phanCong.soTietThucTe <= 0) {
-            alert("Số nhóm, số SV và số tiết phải lớn hơn 0");
+        if (!phanCong.khoaHoc || isNaN(phanCong.heSoHP) || isNaN(phanCong.tongSoNhom) ||
+            isNaN(phanCong.slSVMotNhom) || isNaN(phanCong.soTietThucTe)) {
+            alert('Vui lòng điền đầy đủ thông tin hợp lệ');
             return;
         }
 
-        const response = await fetch('/api/phanconggiangday', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(phanCong)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Lỗi khi thêm phân công');
+        try {
+            await updatePhanCong(maPC, phanCong);
+            alert('Cập nhật phân công giảng dạy thành công!');
+            closeModal('editModal');
+            fetchAllPhanCong(); // Refresh table
+        } catch (error) {
+            alert(`Lỗi khi cập nhật phân công giảng dạy: ${error.message}`);
         }
-
-       alert('Thêm phân công giảng dạy thành công!');
-        closeModal('addModal');
-        fetchAllPhanCong();
-
-        // Reset form - CÁCH MỚI
-        document.getElementById('addPhanCongForm').reset();
-    } catch (error) {
-        console.error('Lỗi khi thêm phân công:', error);
-        alert('Lỗi khi thêm phân công: ' + error.message);
     }
-}
-    async function saveEditPhanCong() {
-    const maPC = document.getElementById('editMaPC').value;
-    const phanCong = {
-        khoaHoc: document.getElementById('editKhoaHoc').value.trim(),
-        heSoHP: parseFloat(document.getElementById('editHeSoHP').value),
-        tongSoNhom: parseInt(document.getElementById('editTongSoNhom').value),
-        slSVMotNhom: parseInt(document.getElementById('editSlSVMotNhom').value),
-        soTietThucTe: parseInt(document.getElementById('editSoTietThucTe').value),
-        maGV: {
-            maGV: parseInt(document.getElementById('editMaGV').value)
-        },
-        maHocPhan: {
-            maHocPhan: document.getElementById('editMaHocPhan').value.trim()
-        }
-    };
-        if (!phanCong.khoaHoc || isNaN(phanCong.heSoHP) || isNaN(phanCong.tongSoNhom) ||
-        isNaN(phanCong.slSVMotNhom) || isNaN(phanCong.soTietThucTe)) {
-        alert('Vui lòng điền đầy đủ thông tin hợp lệ');
-        return;
-    }
-
-    try {
-        await updatePhanCong(maPC, phanCong);
-        alert('Cập nhật phân công giảng dạy thành công!');
-        closeModal('editModal');
-        fetchAllPhanCong(); // Refresh table
-    } catch (error) {
-        alert(`Lỗi khi cập nhật phân công giảng dạy: ${error.message}`);
-    }
-}
 
     async function confirmDelete() {
         const maPC = document.getElementById('deleteModal').dataset.maPC;
@@ -825,36 +832,36 @@ async function addNewPhanCong() {
     }
 
     // Tìm kiếm phân công
-   async function searchAssignments() {
-    const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-    if (!searchTerm) {
-        fetchAllPhanCong();
-        return;
+    async function searchAssignments() {
+        const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (!searchTerm) {
+            fetchAllPhanCong();
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/phanconggiangday');
+            if (!response.ok) throw new Error('Không thể lấy danh sách phân công giảng dạy');
+            const allPhanCong = await response.json();
+
+            const filtered = allPhanCong.filter(pc => {
+                const maGV = pc.maGV?.maGV?.toString() || '';
+                const hoTenGV = pc.maGV?.hoTen?.toLowerCase() || '';
+                const maHocPhan = pc.maHocPhan?.maHocPhan?.toLowerCase() || '';
+                const tenHocPhan = pc.maHocPhan?.tenHocPhan?.toLowerCase() || '';
+
+                return maGV.includes(searchTerm) ||
+                       hoTenGV.includes(searchTerm) ||
+                       maHocPhan.includes(searchTerm) ||
+                       tenHocPhan.includes(searchTerm);
+            });
+
+            renderTable(filtered);
+        } catch (error) {
+            console.error('Lỗi:', error.message);
+            alert('Đã xảy ra lỗi khi tìm kiếm phân công giảng dạy');
+        }
     }
-
-    try {
-        const response = await fetch('/api/phanconggiangday');
-        if (!response.ok) throw new Error('Không thể lấy danh sách phân công giảng dạy');
-        const allPhanCong = await response.json();
-
-        const filtered = allPhanCong.filter(pc => {
-            const maGV = pc.maGV?.maGV?.toString() || '';
-            const hoTenGV = pc.maGV?.hoTen?.toLowerCase() || '';
-            const maHocPhan = pc.maHocPhan?.maHocPhan?.toLowerCase() || '';
-            const tenHocPhan = pc.maHocPhan?.tenHocPhan?.toLowerCase() || '';
-
-            return maGV.includes(searchTerm) ||
-                   hoTenGV.includes(searchTerm) ||
-                   maHocPhan.includes(searchTerm) ||
-                   tenHocPhan.includes(searchTerm);
-        });
-
-        renderTable(filtered);
-    } catch (error) {
-        console.error('Lỗi:', error.message);
-        alert('Đã xảy ra lỗi khi tìm kiếm phân công giảng dạy');
-    }
-}
 
     // Lọc phân công
     async function filterAssignments() {

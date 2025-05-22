@@ -8,9 +8,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
+import com.example.quanlydaotao.model.TaiKhoan;
+import com.example.quanlydaotao.repository.TaiKhoanRepo;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Controller
 public class MainController {
+
+    private final TaiKhoanRepo taiKhoanRepo;
+
+    public MainController(TaiKhoanRepo taiKhoanRepo) {
+        this.taiKhoanRepo = taiKhoanRepo;
+    }
 
     @GetMapping("/")
     public String index() {
@@ -20,6 +29,16 @@ public class MainController {
     @GetMapping("/login")
     public String login(Model model, Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
+            // Kiểm tra trạng thái tài khoản
+            TaiKhoan taiKhoan = taiKhoanRepo.findByUserName(authentication.getName())
+                .orElse(null);
+                
+            if (taiKhoan == null || taiKhoan.getTrangThai() != 1) {
+                // Nếu tài khoản không tồn tại hoặc bị khóa, đăng xuất người dùng
+                SecurityContextHolder.clearContext();
+                model.addAttribute("error", "Tài khoản của bạn đã bị khóa!");
+                return "login";
+            }
             return "redirect:/home";
         }
         return "login";
@@ -36,6 +55,18 @@ public class MainController {
     @GetMapping("/home")
     public String home(Model model, Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
+            // Kiểm tra trạng thái tài khoản
+            TaiKhoan taiKhoan = taiKhoanRepo.findByUserName(authentication.getName())
+                .orElse(null);
+                
+            if (taiKhoan == null || taiKhoan.getTrangThai() != 1) {
+                // Nếu tài khoản không tồn tại hoặc bị khóa, đăng xuất người dùng
+                SecurityContextHolder.clearContext();
+                model.addAttribute("isLoggedIn", false);
+                model.addAttribute("error", "Tài khoản của bạn đã bị khóa!");
+                return "home"; // Trả về trang home thay vì chuyển hướng
+            }
+
             addCurrentUserInfo(model, authentication);
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             String role = authorities.iterator().next().getAuthority();
@@ -240,6 +271,18 @@ public class MainController {
 
     private void addCurrentUserInfo(Model model, Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
+            // Lấy thông tin tài khoản từ database
+            TaiKhoan taiKhoan = taiKhoanRepo.findByUserName(authentication.getName())
+                .orElse(null);
+                
+            // Kiểm tra trạng thái tài khoản
+            if (taiKhoan == null || taiKhoan.getTrangThai() != 1) {
+                // Nếu tài khoản không tồn tại hoặc bị khóa, đăng xuất người dùng
+                SecurityContextHolder.clearContext();
+                model.addAttribute("isLoggedIn", false);
+                return;
+            }
+
             model.addAttribute("currentUser", authentication.getName());
             model.addAttribute("isLoggedIn", true);
             

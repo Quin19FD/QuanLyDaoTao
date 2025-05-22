@@ -481,10 +481,26 @@
     </div>
 
 
-    <script>
-        const isAdmin = /*[[${isAdmin}]]*/ true;
+    <script th:inline="javascript">
+        const isAdmin = /*[[${isAdmin}]]*/ false;
+        console.log("Giá trị isAdmin từ server:", isAdmin);
 
-        console.log("Giá trị isAdmin:", isAdmin);
+        // Thêm hàm kiểm tra quyền admin
+        async function checkAdminStatus() {
+            try {
+                const response = await fetch('/check-admin');
+                const isAdminFromServer = await response.json();
+                console.log("Kiểm tra quyền admin từ server:", isAdminFromServer);
+            } catch (error) {
+                console.error("Lỗi khi kiểm tra quyền admin:", error);
+            }
+        }
+
+        // Gọi hàm kiểm tra khi trang được tải
+        window.onload = function() {
+            checkAdminStatus();
+            loadLecturers();
+        };
 
         async function loadLecturers() {
             const response = await fetch('/api/giangvien');
@@ -520,8 +536,6 @@
             });
         }
 
-
-        window.onload = loadLecturers;
 
         document.getElementById("searchInput").addEventListener("input", function() {
             const searchText = this.value.toLowerCase();
