@@ -338,7 +338,6 @@
             <li th:if="${isAdmin or isTeacher or isUser}"><a th:href="@{/kehoachmonhom}"><i class="fas fa-users"></i> Kế Hoạch Mở Nhóm</a></li>
             <li th:if="${isAdmin or isTeacher}"><a th:href="@{/giangvien}"><i class="fas fa-chalkboard-teacher"></i> Giảng Viên</a></li>
             <li th:if="${isAdmin or isTeacher}"><a th:href="@{/phanconggiangday}"><i class="fas fa-tasks"></i> Phân Công Giảng Dạy</a></li>
-            <li th:if="${isAdmin}"><a th:href="@{/thongke}"><i class="fas fa-chart-bar"></i> Thống Kê</a></li>
             <li th:if="${isAdmin}"><a th:href="@{/quanlytaikhoan}"><i class="fas fa-user-cog"></i> Quản Lý Tài Khoản</a></li>
         </ul>
     </nav>
