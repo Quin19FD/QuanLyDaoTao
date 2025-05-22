@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) //kiet
 @Table(name = "hocphan")
 public class HocPhan {
     @Id
