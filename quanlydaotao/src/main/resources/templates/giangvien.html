@@ -388,7 +388,7 @@
                         <input type="email" id="lecturerEmail" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="save-btn" onclick="saveNewLecturer()">Thêm</button>
+                        <button th:if="${isAdmin}" type="button" class="save-btn" onclick="saveNewLecturer()">Thêm</button>
                         <button type="button" class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
                     </div>
                 </form>
@@ -454,7 +454,7 @@
                         <input type="email" id="editLecturerEmail" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="save-btn" onclick="saveEdit()">Lưu</button>
+                        <button th:if="${isAdmin}" type="button" class="save-btn" onclick="saveEdit()">Lưu</button>
                         <button type="button" class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
                     </div>
                 </form>
@@ -473,7 +473,7 @@
                 <p>Bạn có chắc chắn muốn xóa giảng viên <span id="deleteLecturerName"></span> không?</p>
                 <span id="deleteMaGV" style="display: none;"></span>
                 <div class="form-actions">
-                    <button class="delete-btn" onclick="confirmDelete()">Xóa</button>
+                    <button th:if="${isAdmin}" class="delete-btn" onclick="confirmDelete()">Xóa</button>
                     <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
                 </div>
             </div>
