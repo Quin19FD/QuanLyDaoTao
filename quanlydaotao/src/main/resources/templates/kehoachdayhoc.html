@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" >
 
 <head>
     <meta charset="UTF-8">
@@ -46,6 +46,7 @@
             background: #d35400;
         }
 
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -89,6 +90,108 @@
             background: #f9e5d9;
             font-weight: bold;
         }
+
+        /* CSS cho modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 70%;
+    max-width: 800px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+/* CSS cho form trong modal */
+.form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+
+
+/* CSS cho nút trong modal */
+.save-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.cancel-btn {
+    background-color: #ccc;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #000;
+}
 
         /* Thêm style cho nút trở về trang chủ */
         .back-home-btn {
@@ -143,166 +246,548 @@
             <option value="">-- Lọc theo học kỳ --</option>
             <option value="1">Học kỳ 1</option>
             <option value="2">Học kỳ 2</option>
-            <option value="3">Học kỳ 3</option>
-            <option value="4">Học kỳ 4</option>
-            <option value="5">Học kỳ 5</option>
-            <option value="6">Học kỳ 6</option>
-            <option value="7">Học kỳ 7</option>
-            <option value="8">Học kỳ 8</option>
-            <option value="9">Học kỳ 9</option>
-            <option value="10">Học kỳ 10</option>
-            <option value="11">Học kỳ 11</option>
-            <option value="12">Học kỳ 12</option>
+            <!-- Các học kỳ khác từ 3-12 -->
         </select>
-        <button th:if="${isAdmin}" onclick="addRow()">Thêm</button>
+        <button th:if="${isAdmin}" onclick="openModal('addModal')">Thêm</button>
         <button th:if="${isAdmin}" onclick="deleteSelected()">Xóa</button>
     </div>
 
     <table id="hp-table">
         <thead>
-            <tr>
-                <th rowspan="2" th:if="${isAdmin}">Chọn</th>
-                <th rowspan="2">TT</th>
-                <th rowspan="2">Mã HP</th>
-                <th rowspan="2">Tên Học phần</th>
-                <th rowspan="2">Số TC</th>
-                <th colspan="12">Học kỳ thực hiện</th>
-                <th rowspan="2">Mã HP trước</th>
-                <th rowspan="2" th:if="${isAdmin}">Sửa</th>
-            </tr>
-            <tr class="semester-header">
-                <th>1</th>
-                <th>2</th>
-                <th>3</th>
-                <th>4</th>
-                <th>5</th>
-                <th>6</th>
-                <th>7</th>
-                <th>8</th>
-                <th>9</th>
-                <th>10</th>
-                <th>11</th>
-                <th>12</th>
-            </tr>
+        <tr>
+            <th rowspan="2" th:if="${isAdmin}">Chọn</th>
+            <th rowspan="2">TT</th>
+            <th rowspan="2">Mã HP</th>
+            <th rowspan="2">Tên Học phần</th>
+            <th rowspan="2">Số TC</th>
+            <th colspan="12">Học kỳ thực hiện</th>
+            <th rowspan="2">Mã HP trước</th>
+            <th rowspan="2" th:if="${isAdmin}">Thao tác</th>
+        </tr>
+        <tr class="semester-header">
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+            <th>9</th>
+            <th>10</th>
+            <th>11</th>
+            <th>12</th>
+        </tr>
         </thead>
+
+        <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+            <div style="color: white; font-size: 24px;">Đang tải...</div>
+        </div>
+
         <tbody>
-            <tr>
-                <td th:if="${isAdmin}"><input type="checkbox"></td>
-                <td>1</td>
-                <td>861301</td>
-                <td>Triết học Mác – Lênin</td>
-                <td>3</td>
-                <td class="x">x</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td th:if="${isAdmin}"><button onclick="editRow(this)">Sửa</button></td>
-            </tr>
+        <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
         </tbody>
     </table>
 
+        <!-- Modal Thêm mới -->
+        <div id="addModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('addModal')">×</span>
+                <h2>Thêm Kế Hoạch Dạy Học Mới</h2>
+                <form id="addKeHoachForm">
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label for="addMaHocPhan">Mã học phần:</label>
+                            <select id="addMaHocPhan" required>
+                                <option value="">-- Chọn học phần --</option>
+                                <!-- Options sẽ được điền bằng JS -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="addHocKy">Học kỳ thực hiện:</label>
+                            <select id="addHocKy" required>
+                                <option value="">-- Chọn học kỳ --</option>
+                                <option value="1">Học kỳ 1</option>
+                                <option value="2">Học kỳ 2</option>
+                                <option value="3">Học kỳ 3</option>
+                                <option value="4">Học kỳ 4</option>
+                                <option value="5">Học kỳ 5</option>
+                                <option value="6">Học kỳ 6</option>
+                                <option value="7">Học kỳ 7</option>
+                                <option value="8">Học kỳ 8</option>
+                                <option value="9">Học kỳ 9</option>
+                                <option value="10">Học kỳ 10</option>
+                                <option value="11">Học kỳ 11</option>
+                                <option value="12">Học kỳ 12</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="addMaHocPhanTruoc">Học phần trước (nếu có):</label>
+                            <select id="addMaHocPhanTruoc">
+                                <option value="">-- Không có --</option>
+                                <!-- Options sẽ được điền bằng JS -->
+                            </select>
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button th:if="${isAdmin}" type="button" class="save-btn" onclick="addNewKeHoach()">Thêm</button>
+                        <button type="button" class="cancel-btn" onclick="closeModal('addModal')">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Sửa -->
+        <div id="editModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('editModal')">×</span>
+                <h2>Sửa Kế Hoạch Dạy Học</h2>
+                <form id="editKeHoachForm">
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label for="editMaKeHoach">Mã kế hoạch:</label>
+                            <input type="text" id="editMaKeHoach" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="editMaHocPhan">Mã học phần:</label>
+                            <input type="text" id="editMaHocPhan" readonly style="width: 110%;">
+                        </div>
+                        <div class="form-group">
+                            <label for="editHocKy">Học kỳ thực hiện:</label>
+                            <select id="editHocKy" required style="width: 110%;">
+                                <option value="">-- Chọn học kỳ --</option>
+                                <option value="1">Học kỳ 1</option>
+                                <option value="2">Học kỳ 2</option>
+                                <option value="3">Học kỳ 3</option>
+                                <option value="4">Học kỳ 4</option>
+                                <option value="5">Học kỳ 5</option>
+                                <option value="6">Học kỳ 6</option>
+                                <option value="7">Học kỳ 7</option>
+                                <option value="8">Học kỳ 8</option>
+                                <option value="9">Học kỳ 9</option>
+                                <option value="10">Học kỳ 10</option>
+                                <option value="11">Học kỳ 11</option>
+                                <option value="12">Học kỳ 12</option>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editMaHocPhanTruoc">Học phần trước (nếu có):</label>
+                            <select id="editMaHocPhanTruoc">
+                                <option value="">-- Không có --</option>
+                                <!-- Options sẽ được điền bằng JS -->
+                            </select>
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button th:if="${isAdmin}" type="button" class="save-btn" onclick="saveEditKeHoach()">Lưu</button>
+                        <button type="button" class="cancel-btn" onclick="closeModal('editModal')">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Xác nhận xóa -->
+        <div id="deleteModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal('deleteModal')">×</span>
+                <h2>Xác Nhận Xóa</h2>
+                <div style="margin: 20px 0; text-align: center;">
+                    <p>Bạn có chắc chắn muốn xóa kế hoạch dạy học:</p>
+                    <p style="font-weight: bold; margin-top: 10px;" id="deleteKeHoachInfo"></p>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button th:if="${isAdmin}" class="delete-btn" onclick="confirmDelete()">Xóa</button>
+                    <button class="cancel-btn" onclick="closeModal('deleteModal')">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </table>
+
     <script>
-        const table = document.getElementById("hp-table").getElementsByTagName("tbody")[0];
-        const searchInput = document.getElementById("search");
-        const filterSelect = document.getElementById("semester-filter");
-        const isAdmin = /*[[${isAdmin}]]*/ false;
-        
-        function addRow() {
-            if (!isAdmin) return;
-            const newRow = table.insertRow();
-            newRow.innerHTML = `
-            <td th:if="${isAdmin}"><input type="checkbox"></td>
-            <td>${table.rows.length}</td>
-            <td contenteditable="true">Mã HP</td>
-            <td contenteditable="true">Tên học phần</td>
-            <td contenteditable="true">3</td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td contenteditable="true"></td>
-            <td th:if="${isAdmin}"><button onclick="editRow(this)">Sửa</button></td>
-        `;
+        // Biến toàn cục
+
+
+      const isAdmin = true;
+      let isLoading = false;
+
+        // Hàm chung
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
         }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showLoading() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+
+        function showAlert(message, isSuccess = true) {
+            const alertBox = document.createElement('div');
+            alertBox.style.position = 'fixed';
+            alertBox.style.top = '20px';
+            alertBox.style.right = '20px';
+            alertBox.style.padding = '15px';
+            alertBox.style.backgroundColor = isSuccess ? '#4CAF50' : '#f44336';
+            alertBox.style.color = 'white';
+            alertBox.style.borderRadius = '5px';
+            alertBox.style.zIndex = '1000';
+            alertBox.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+            alertBox.textContent = message;
+
+            document.body.appendChild(alertBox);
+
+            setTimeout(() => {
+                alertBox.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(alertBox), 500);
+            }, 3000);
+        }
+
+        // ========== Load dữ liệu ==========
+        async function loadKeHoachData() {
+    if (isLoading) return;
+    isLoading = true;
+    try {
+        const response = await fetch('/api/kehoachdayhoc');
+        if (!response.ok) throw new Error('Không thể lấy danh sách kế hoạch');
+        const data = await response.json();
+        console.log("Dữ liệu nhận được:", data); // Thêm dòng này để debug
+        renderKeHoachTable(data);
+    } catch (error) {
+        console.error('Lỗi:', error);
+        alert('Lỗi khi tải dữ liệu: ' + error.message);
+    } finally {
+        isLoading = false;
+    }
+}
+
+       function renderKeHoachTable(keHoachList) {
+    console.log("Bắt đầu render bảng với dữ liệu:", keHoachList);
+    const tbody = document.querySelector('#hp-table tbody');
+    tbody.innerHTML = '';
+
+    if (!keHoachList || keHoachList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="20" class="text-center">Không có dữ liệu</td></tr>';
+        console.log("Không có dữ liệu để hiển thị");
+        return;
+    }
+
+    keHoachList.forEach((kh, index) => {
+        const row = document.createElement('tr');
+        row.dataset.maKeHoach = kh.maKeHoach;
+
+        const hocKy = parseInt(kh.hocKyThucHien) || 0;
+
+        const maHPTruoc = kh.maHocPhanTruoc?.maHocPhan ||
+                         (typeof kh.maHocPhanTruoc === 'string' ? kh.maHocPhanTruoc : '');
+
+        // Tạo checkbox nếu là admin
+        const checkboxCell = isAdmin ? `<td><input type="checkbox" class="select-row" data-id="${kh.maKeHoach}"></td>` : '';
+
+        // Tạo các ô học kỳ
+        const hocKyCells = Array.from({length: 12}, (_, i) => {
+            return `<td class="${hocKy === i+1 ? 'x' : ''}">${hocKy === i+1 ? 'x' : ''}</td>`;
+        }).join('');
+
+        // Tạo nút thao tác nếu là admin
+        const actionButtons = isAdmin ? `
+            <td class="action-buttons">
+                <button class="edit-btn" onclick="showEditModal(${kh.maKeHoach})">Sửa</button>
+            </td>
+        ` : '';
+
+        row.innerHTML = `
+            ${checkboxCell}
+            <td>${index + 1}</td>
+            <td>${kh.maHocPhan?.maHocPhan || ''}</td>
+            <td>${kh.maHocPhan?.tenHocPhan || ''}</td>
+            <td>${kh.maHocPhan?.soTinChi || ''}</td>
+            ${hocKyCells}
+            <td>${maHPTruoc}</td>
+            ${actionButtons}
+        `;
+
+        tbody.appendChild(row);
+    });
+    console.log("Đã render xong bảng");
+}
+
+        async function loadHocPhanOptions() {
+            try {
+                const response = await fetch('/api/hocphan');
+                if (!response.ok) throw new Error('Không thể lấy danh sách học phần');
+
+                const hocPhanList = await response.json();
+                const addSelect = document.getElementById('addMaHocPhan');
+                const editSelect = document.getElementById('editMaHocPhanTruoc');
+
+                // Giữ lại option đầu tiên
+                while (addSelect.options.length > 1) addSelect.remove(1);
+                editSelect.innerHTML = '<option value="">-- Không có --</option>';
+
+                hocPhanList.forEach(hp => {
+                    const option1 = document.createElement('option');
+                    option1.value = hp.maHocPhan;
+                    option1.textContent = `${hp.maHocPhan} - ${hp.tenHocPhan}`;
+                    addSelect.appendChild(option1.cloneNode(true));
+                    editSelect.appendChild(option1);
+                });
+            } catch (error) {
+                console.error('Lỗi khi tải học phần:', error);
+                showAlert('Lỗi khi tải danh sách học phần', false);
+            }
+        }
+
+        // ========== CRUD Operations ==========
+
+async function addNewKeHoach() {
+    if (isLoading) return;
+    isLoading = true;
+
+    try {
+        const formData = {
+            maHocPhan: { maHocPhan: document.getElementById('addMaHocPhan').value },
+            hocKyThucHien: document.getElementById('addHocKy').value,
+            maHocPhanTruoc: document.getElementById('addMaHocPhanTruoc').value
+                ? { maHocPhan: document.getElementById('addMaHocPhanTruoc').value }
+                : null
+        };
+
+        const response = await fetch('/api/kehoachdayhoc', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await parseResponse(response);
+
+        showAlert('Thêm kế hoạch thành công!');
+        closeModal('addModal');
+        loadKeHoachData();
+        window.location.reload();
+    } catch (error) {
+        showAlert(error.message, false);
+    } finally {
+        isLoading = false;
+    }
+}
+
+// Thêm hàm refresh dữ liệu
+async function refreshKeHoachData() {
+    // Làm mờ bảng trong lúc loading
+    const table = document.querySelector('#hp-table');
+    table.style.opacity = '0.5';
+
+    try {
+        // Load lại dữ liệu
+        await loadKeHoachData();
+
+        // Reset các bộ lọc/tìm kiếm nếu cần
+        document.getElementById('search').value = '';
+        document.getElementById('semester-filter').value = '';
+
+    } catch (error) {
+        console.error('Lỗi khi refresh dữ liệu:', error);
+    } finally {
+        // Khôi phục hiển thị bảng
+        table.style.opacity = '1';
+    }
+}
+
+async function parseResponse(response) {
+    const text = await response.text();
+    try {
+        const data = JSON.parse(text);
+        if (!response.ok) throw new Error();
+        return data;
+    } catch {
+        throw new Error();
+    }
+}
+
+
+        async function showEditModal(maKeHoach) {
+    if (isLoading) return;
+    isLoading = true;
+    try {
+        console.log("Đang tải thông tin kế hoạch", maKeHoach);
+        const response = await fetch(`/api/kehoachdayhoc/${maKeHoach}`);
+        if (!response.ok) throw new Error('Không thể lấy thông tin kế hoạch');
+
+        const keHoach = await response.json();
+        console.log("Dữ liệu kế hoạch nhận được:", keHoach);
+        currentKeHoach = keHoach;
+
+        // Điền dữ liệu vào form
+        document.getElementById('editMaKeHoach').value = keHoach.maKeHoach;
+        document.getElementById('editMaHocPhan').value =
+            `${keHoach.maHocPhan?.maHocPhan || ''} - ${keHoach.maHocPhan?.tenHocPhan || ''}`;
+        document.getElementById('editHocKy').value = keHoach.hocKyThucHien || '';
+        document.getElementById('editMaHocPhanTruoc').value =
+            keHoach.maHocPhanTruoc?.maHocPhan || '';
+
+        openModal('editModal');
+    } catch (error) {
+        console.error('Lỗi:', error);
+        showAlert('Lỗi khi tải thông tin kế hoạch: ' + error.message, false);
+    } finally {
+        isLoading = false;
+    }
+}
+
+       async function saveEditKeHoach() {
+    if (!currentKeHoach || isLoading) return;
+
+    const hocKy = document.getElementById('editHocKy').value;
+    const maHocPhanTruoc = document.getElementById('editMaHocPhanTruoc').value || null;
+
+    showLoading();
+    try {
+        // Tạo DTO đơn giản, chỉ gửi các trường cần thiết
+        const updatedData = {
+            hocKyThucHien: hocKy,
+            maHocPhan: {
+                maHocPhan: currentKeHoach.maHocPhan?.maHocPhan || currentKeHoach.maHocPhan
+            },
+            maHocPhanTruoc: maHocPhanTruoc ? { maHocPhan: maHocPhanTruoc } : null
+        };
+
+        console.log("Dữ liệu cập nhật:", updatedData);
+
+        const response = await fetch(`/api/kehoachdayhoc/${currentKeHoach.maKeHoach}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedData)
+        });
+
+        // Xử lý response tương tự hàm add
+        const responseText = await response.text();
+        if (!response.ok) {
+            try {
+                const errorData = JSON.parse(responseText);
+                throw new Error(errorData.message || errorData.error || 'Lỗi khi cập nhật kế hoạch');
+            } catch {
+                throw new Error(responseText || 'Lỗi khi cập nhật kế hoạch');
+            }
+        }
+
+        const result = JSON.parse(responseText);
+        console.log("Kết quả cập nhật:", result);
+
+        showAlert('Cập nhật kế hoạch thành công!');
+        closeModal('editModal');
+        await loadKeHoachData();
+    } catch (error) {
+        console.error('Lỗi khi cập nhật kế hoạch:', error);
+        showAlert('Lỗi khi cập nhật kế hoạch: ' + error.message, false);
+    } finally {
+        hideLoading();
+    }
+}
 
         function deleteSelected() {
-            if (!isAdmin) return;
-            const checkboxes = table.querySelectorAll('input[type="checkbox"]:checked');
-            checkboxes.forEach(cb => {
-                const row = cb.closest("tr");
-                row.remove();
+    const checkboxes = document.querySelectorAll('#hp-table tbody .select-row:checked');
+    if (checkboxes.length === 0) {
+        showAlert('Vui lòng chọn ít nhất một kế hoạch để xóa', false);
+        return;
+    }
+
+    if (confirm(`Bạn có chắc chắn muốn xóa ${checkboxes.length} kế hoạch đã chọn?`)) {
+        const deletePromises = Array.from(checkboxes).map(cb => {
+            const maKeHoach = cb.dataset.id;
+            return fetch(`/api/kehoachdayhoc/${maKeHoach}`, { method: 'DELETE' });
+        });
+
+        Promise.all(deletePromises)
+            .then(() => {
+                showAlert(`Đã xóa ${checkboxes.length} kế hoạch thành công!`);
+                loadKeHoachData();
+            })
+            .catch(error => {
+                console.error('Lỗi khi xóa:', error);
+                showAlert('Lỗi khi xóa kế hoạch: ' + error.message, false);
             });
-            updateOrder();
+    }
+}
+
+
+        function showDeleteModal(maKeHoach, tenHocPhan) {
+            currentKeHoach = { maKeHoach, tenHocPhan };
+            document.getElementById('deleteKeHoachInfo').textContent =
+                `Mã KH: ${maKeHoach} - ${tenHocPhan}`;
+            openModal('deleteModal');
         }
 
-        function editRow(btn) {
-            if (!isAdmin) return;
-            const row = btn.closest("tr");
-            const tds = row.querySelectorAll("td");
-            for (let i = 2; i < tds.length - 1; i++) {
-                tds[i].contentEditable = true;
+        async function confirmDelete() {
+            if (!currentKeHoach || isLoading) return;
+
+            showLoading();
+            try {
+                const response = await fetch(`/api/kehoachdayhoc/${currentKeHoach.maKeHoach}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Không thể xóa kế hoạch');
+
+                showAlert('Xóa kế hoạch thành công!');
+                closeModal('deleteModal');
+                await loadKeHoachData();
+            } catch (error) {
+                console.error('Lỗi:', error);
+                showAlert('Lỗi khi xóa kế hoạch: ' + error.message, false);
+            } finally {
+                hideLoading();
             }
-            btn.innerText = "Lưu";
-            btn.onclick = () => {
-                for (let i = 2; i < tds.length - 1; i++) {
-                    const cell = tds[i];
-                    if (i >= 5 && i <= 16) {
-                        cell.innerText = cell.innerText.trim().toLowerCase() === "x" ? "x" : "";
-                        if (cell.innerText === "x") {
-                            cell.classList.add("x");
-                        } else {
-                            cell.classList.remove("x");
-                        }
-                    }
-                    cell.contentEditable = false;
-                }
-                btn.innerText = "Sửa";
-                btn.onclick = () => editRow(btn);
-            };
         }
 
-        function updateOrder() {
-            [...table.rows].forEach((row, index) => {
-                row.cells[1].innerText = index + 1;
+        // ========== Search & Filter ==========
+        function handleSearch() {
+            const keyword = document.getElementById('search').value.toLowerCase();
+            const rows = document.querySelectorAll('#hp-table tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(keyword) ? '' : 'none';
             });
         }
 
-        searchInput.addEventListener("input", () => {
-            const keyword = searchInput.value.toLowerCase();
-            [...table.rows].forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(keyword) ? "" : "none";
-            });
-        });
+        function filterBySemester() {
+            const semester = document.getElementById('semester-filter').value;
+            const rows = document.querySelectorAll('#hp-table tbody tr');
 
-        filterSelect.addEventListener("change", () => {
-            const sem = filterSelect.value;
-            [...table.rows].forEach(row => {
-                if (!sem) {
-                    row.style.display = "";
-                } else {
-                    const td = row.cells[parseInt(sem) + 4];
-                    row.style.display = td && td.innerText.includes("x") ? "" : "none";
+            rows.forEach(row => {
+                if (!semester) {
+                    row.style.display = '';
+                    return;
                 }
+
+                // Học kỳ bắt đầu từ cột thứ 6 (index 5)
+                const hocKyCell = row.cells[parseInt(semester) + 5];
+                row.style.display = hocKyCell?.textContent.trim() === 'x' ? '' : 'none';
             });
-        });
+        }
+
+        // ========== Khởi tạo sự kiện ==========
+document.addEventListener('DOMContentLoaded', function() {
+    // Ẩn tất cả modal khi tải trang
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.style.display = 'none';
+    });
+
+    // Load dữ liệu ban đầu
+    loadKeHoachData();
+    loadHocPhanOptions();
+
+    // Gán sự kiện tìm kiếm và lọc
+    document.getElementById('search').addEventListener('input', handleSearch);
+    document.getElementById('semester-filter').addEventListener('change', filterBySemester);
+});
     </script>
 </body>
 
